@@ -1,0 +1,31 @@
+{
+  "name": "@music-lyric-kit/utils",
+  "version": "0.0.0",
+  "author": "folltoshe",
+  "type": "module",
+  "description": "Music Lyric Kit - Utils",
+  "license": "MIT",
+  "scripts": {},
+  "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
+  "bugs": {
+    "url": "https://github.com/music-lyric/music-lyric-kit-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
+    "directory": "packages/utils"
+  },
+  "main": "./dist/index.comm.js",
+  "module": "./dist/index.ecma.js",
+  "types": "./dist/index.ecma.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.ecma.d.ts",
+      "import": "./dist/index.ecma.js",
+      "require": "./dist/index.comm.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}

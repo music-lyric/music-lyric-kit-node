@@ -1,9 +1,10 @@
 {
-  "name": "music-lyric-kit",
+  "name": "@music-lyric-kit/test",
   "version": "0.0.0",
   "author": "folltoshe",
   "type": "module",
-  "description": "Music Lyric Kit",
+  "private": true,
+  "description": "Music Lyric Kit - Test",
   "license": "MIT",
   "scripts": {},
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
@@ -12,11 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/music-lyric/music-lyric-kit-node.git"
-  },
-  "packageManager": "pnpm@10.25.0",
-  "devDependencies": {
-    "@types/node": "^25.0.3",
-    "typescript": "5.8.2"
+    "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
+    "directory": "private/test"
   }
 }
