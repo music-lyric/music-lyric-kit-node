@@ -26,7 +26,11 @@ importers:
 
   app: {}
 
-  packages/core: {}
+  packages/core:
+    dependencies:
+      '@music-lyric-kit/lyric':
+        specifier: workspace:^
+        version: link:../lyric
 
   packages/lyric: {}
 

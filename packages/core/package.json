@@ -29,5 +29,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "peerDependencies": {
+    "@music-lyric-kit/lyric": "workspace:^"
+  }
 }
