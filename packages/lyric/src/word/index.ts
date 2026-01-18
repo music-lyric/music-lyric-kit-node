@@ -1,0 +1,38 @@
+import { Time } from '../time'
+import { Extended } from '../extended'
+
+export enum WordType {
+  Normal = 'Normal',
+  Space = 'Space',
+}
+
+export class WordNormal {
+  readonly type = WordType.Normal
+
+  time: Time = new Time()
+
+  extended: Extended = new Extended()
+
+  content: string = ''
+
+  toJSON() {
+    return {
+      type: this.type,
+      time: this.time,
+      content: this.content,
+    }
+  }
+}
+
+export class WordSpace {
+  readonly type = WordType.Space
+
+  count: number = 1
+
+  toJSON() {
+    return {
+      type: this.type,
+      count: this.count,
+    }
+  }
+}
