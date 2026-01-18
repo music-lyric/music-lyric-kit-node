@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Music Lyric Kit",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "build": "vite build"
+  },
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
   "bugs": {
     "url": "https://github.com/music-lyric/music-lyric-kit-node/issues"

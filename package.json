@@ -5,7 +5,11 @@
   "type": "module",
   "description": "Music Lyric Kit",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "dev": "turbo watch dev",
+    "build": "turbo run build",
+    "build:force": "turbo run build --force"
+  },
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
   "bugs": {
     "url": "https://github.com/music-lyric/music-lyric-kit-node/issues"
@@ -17,6 +21,9 @@
   "packageManager": "pnpm@10.25.0",
   "devDependencies": {
     "@types/node": "^25.0.3",
-    "typescript": "5.8.2"
+    "turbo": "^2.7.1",
+    "typescript": "5.8.2",
+    "vite": "^7.3.0",
+    "vite-plugin-dts": "^4.5.4"
   }
 }

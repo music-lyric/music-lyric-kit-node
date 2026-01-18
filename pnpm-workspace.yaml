@@ -3,3 +3,6 @@ packages:
   - private/*
   - plugins/*
   - app
+
+onlyBuiltDependencies:
+  - esbuild
