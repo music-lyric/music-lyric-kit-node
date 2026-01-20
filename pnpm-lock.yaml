@@ -44,6 +44,8 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
 
+  plugins/format-lrc: {}
+
   private/test: {}
 
 packages:
