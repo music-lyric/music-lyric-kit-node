@@ -1,12 +1,17 @@
 import { Context, Params, Plugin } from './interface'
-import { CommonLoader, FormatLoader } from './loader'
+import { FormatLoader, PluginLoader } from './loader'
 
 export type { Context, Params, Plugin }
 
-export class Parser {
-  formats: FormatLoader = new FormatLoader()
+export { PluginLoader }
 
-  plugins: CommonLoader = new CommonLoader()
+export class Parser {
+  readonly plugins = {
+    before: new PluginLoader(),
+    after: new PluginLoader(),
+  }
+
+  readonly formats: FormatLoader = new FormatLoader()
 
   infer(params: Params) {
     const ctx: Context = {
@@ -45,11 +50,7 @@ export class Parser {
       result: null,
     }
 
-    const plugins = [
-      ...(Array.isArray(this.plugins.before) ? this.plugins.before : []),
-      ...formatValue.plugins,
-      ...(Array.isArray(this.plugins.after) ? this.plugins.after : []),
-    ]
+    const plugins = [...this.plugins.before.current, ...formatValue.plugin.current, ...this.plugins.after.current]
 
     for (const plugin of plugins) {
       try {

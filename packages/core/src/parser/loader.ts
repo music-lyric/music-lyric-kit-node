@@ -1,4 +1,36 @@
-import { Format, Plugin } from './interface'
+import { Context, Plugin } from './interface'
+
+export class PluginLoader {
+  private data: Plugin[] = []
+
+  add(plugin: Plugin) {
+    this.data.push(plugin)
+  }
+
+  unshift(plugin: Plugin) {
+    this.data.unshift(plugin)
+  }
+
+  delete(plugin: Plugin) {
+    const index = this.data.findIndex((it) => it === plugin)
+    if (index >= 0) {
+      this.data.splice(index, 1)
+    }
+  }
+
+  clear() {
+    this.data = []
+  }
+
+  get current() {
+    return this.data
+  }
+}
+
+export interface Format {
+  check: (ctx: Context) => boolean
+  plugin: PluginLoader
+}
 
 export class FormatLoader {
   private current: Map<string, Format> = new Map()
@@ -26,22 +58,4 @@ export class FormatLoader {
   keys() {
     return this.current.keys()
   }
-
-  updatePlugin(format: string, plugins: Plugin[]) {
-    const now = this.current.get(format)
-    if (!now) {
-      return false
-    }
-
-    now.plugins = plugins
-    this.current.set(format, now)
-
-    return true
-  }
-}
-
-export class CommonLoader {
-  before: Plugin[] = []
-
-  after: Plugin[] = []
 }

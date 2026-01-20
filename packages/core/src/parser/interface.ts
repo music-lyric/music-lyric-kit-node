@@ -16,8 +16,3 @@ export interface Context extends BaseContext {
 }
 
 export type Plugin = BasePlugin<Context>
-
-export interface Format {
-  check: (ctx: Context) => boolean
-  plugins: Plugin[]
-}
