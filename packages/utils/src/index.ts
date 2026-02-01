@@ -1,4 +1,5 @@
 export * from './object'
+export * from './number'
 export * from './string'
 export * from './regex'
 export * from './time'
