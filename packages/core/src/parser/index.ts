@@ -1,35 +1,31 @@
-import { Context, Params, Plugin } from './interface'
-import { FormatLoader, PluginLoader } from './loader'
+import { Context, Params, BasePlugin, BeforeExecPlugin, ParserPlugin, TransformPlugin, AlignPlugin, AfterExecPlugin } from './plugin'
+import { PluginStage, PluginLoader } from './plugin'
 
-export type { Context, Params, Plugin }
-
-export { PluginLoader }
+export type { Context, Params, BasePlugin, BeforeExecPlugin, ParserPlugin, TransformPlugin, AlignPlugin, AfterExecPlugin }
+export { PluginStage, PluginLoader }
 
 export class Parser {
-  readonly plugins = {
-    before: new PluginLoader(),
-    after: new PluginLoader(),
-  }
-
-  readonly formats: FormatLoader = new FormatLoader()
+  readonly plugin: PluginLoader = new PluginLoader()
 
   infer(params: Params) {
     const ctx: Context = {
       params,
+      runtime: {
+        extendeds: [],
+      },
       result: null,
     }
 
-    const all = this.formats.keys()
+    const plugins = this.plugin.filterByStage(PluginStage.Parser) as ParserPlugin[]
 
-    for (const key of all) {
-      const value = this.formats.get(key)
-      if (!value) {
+    for (const plugin of plugins) {
+      if (typeof plugin !== 'object') {
         continue
       }
       try {
-        const result = value.check.call(value, ctx)
+        const result = plugin.check.call(plugin, ctx)
         if (result === true) {
-          return key
+          return plugin.format
         }
       } catch {
         continue
@@ -40,17 +36,30 @@ export class Parser {
   }
 
   parse(format: string, params: Params) {
-    const formatValue = this.formats.get(format)
-    if (!formatValue) {
+    const parsers = this.plugin.filterByStage(PluginStage.Parser) as ParserPlugin[]
+    const current = parsers.find((item) => item.format === format)
+
+    if (!current) {
       throw new Error('format not found')
     }
 
     const ctx: Context = {
       params,
+      runtime: {
+        extendeds: [],
+      },
       result: null,
     }
 
-    const plugins = [...this.plugins.before.current, ...formatValue.plugin.current, ...this.plugins.after.current]
+    const plugins: BasePlugin[] = []
+
+    plugins.push(...this.plugin.filterByStage(PluginStage.BeforeExec, true))
+    plugins.push(current)
+    plugins.push(...this.plugin.filterByStage(PluginStage.Transform, true))
+    if (current?.config?.needAlign === true) {
+      plugins.push(...this.plugin.filterByStage(PluginStage.Align, true))
+    }
+    plugins.push(...this.plugin.filterByStage(PluginStage.AfterExec, true))
 
     for (const plugin of plugins) {
       try {

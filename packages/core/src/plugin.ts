@@ -5,7 +5,9 @@ export interface BaseContext {
 }
 
 export interface BasePlugin<Context extends BaseContext = BaseContext> {
-  name: string
+  name?: string
+
+  priority?: number
 
   exec: (ctx: Context) => void
 }
