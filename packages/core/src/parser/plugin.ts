@@ -1,29 +1,8 @@
-import type { Info, Extended, Time } from '@music-lyric-kit/lyric'
+import type { BasePlugin } from '../plugin'
 
-import type { BaseContext, BasePlugin as _BasePlugin } from '../plugin'
+import type { Context } from './interface'
 
-export interface Params {
-  content: any
-  musicInfo?: {
-    name?: string
-    singer?: string[]
-  }
-}
-
-export interface Context extends BaseContext {
-  // input
-  params: Params
-
-  // runtime data
-  runtime: {
-    extendeds: [Time, Extended][]
-  }
-
-  // result lyric info
-  result: Info | null
-}
-
-export enum PluginStage {
+export enum Stage {
   BeforeExec = 'BeforeExec',
   Parser = 'Parser',
   Transform = 'Transform',
@@ -31,16 +10,16 @@ export enum PluginStage {
   AfterExec = 'AfterExec',
 }
 
-export interface BasePlugin extends _BasePlugin<Context> {
-  stage: PluginStage
+export interface Base extends BasePlugin<Context> {
+  stage: Stage
 }
 
-export interface BeforeExecPlugin extends BasePlugin {
-  stage: PluginStage.BeforeExec
+export interface BeforeExec extends Base {
+  stage: Stage.BeforeExec
 }
 
-export interface ParserPlugin extends BasePlugin {
-  stage: PluginStage.Parser
+export interface FormatParser extends Base {
+  stage: Stage.Parser
 
   format: string
 
@@ -51,26 +30,26 @@ export interface ParserPlugin extends BasePlugin {
   check: (ctx: Context) => boolean
 }
 
-export interface TransformPlugin extends BasePlugin {
-  stage: PluginStage.Transform
+export interface Transform extends Base {
+  stage: Stage.Transform
 }
 
-export interface AlignPlugin extends BasePlugin {
-  stage: PluginStage.Align
+export interface Align extends Base {
+  stage: Stage.Align
 }
 
-export interface AfterExecPlugin extends BasePlugin {
-  stage: PluginStage.AfterExec
+export interface AfterExec extends Base {
+  stage: Stage.AfterExec
 }
 
-export class PluginLoader {
-  private current: BasePlugin[] = []
+export class Loader {
+  private current: Base[] = []
 
-  add(plugin: BasePlugin) {
+  add(plugin: Base) {
     this.current.push(plugin)
   }
 
-  delete(plugin: BasePlugin) {
+  delete(plugin: Base) {
     const index = this.current.findIndex((it) => it === plugin)
     if (index >= 0) {
       this.current.splice(index, 1)
@@ -81,7 +60,7 @@ export class PluginLoader {
     this.current = []
   }
 
-  filterByStage(stage: PluginStage, sort: boolean = false) {
+  filterByStage(stage: Stage, sort: boolean = false) {
     const target = this.current.filter((item) => item.stage === stage)
     if (sort) {
       return target.sort((a, b) => (Number(a) || 100) - (Number(b) || 100))

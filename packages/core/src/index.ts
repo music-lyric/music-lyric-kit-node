@@ -1,3 +1,3 @@
 export * from './plugin'
 
-export * as LyricParser from './parser'
+export * as Parser from './parser'

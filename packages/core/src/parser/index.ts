@@ -1,11 +1,13 @@
-import { Context, Params, BasePlugin, BeforeExecPlugin, ParserPlugin, TransformPlugin, AlignPlugin, AfterExecPlugin } from './plugin'
-import { PluginStage, PluginLoader } from './plugin'
+import type { Context, Params } from './interface'
 
-export type { Context, Params, BasePlugin, BeforeExecPlugin, ParserPlugin, TransformPlugin, AlignPlugin, AfterExecPlugin }
-export { PluginStage, PluginLoader }
+export type { Context, Params }
 
-export class Parser {
-  readonly plugin: PluginLoader = new PluginLoader()
+import * as Plugin from './plugin'
+
+export { Plugin }
+
+export class Client {
+  readonly plugin: Plugin.Loader = new Plugin.Loader()
 
   infer(params: Params) {
     const ctx: Context = {
@@ -16,7 +18,7 @@ export class Parser {
       result: null,
     }
 
-    const plugins = this.plugin.filterByStage(PluginStage.Parser) as ParserPlugin[]
+    const plugins = this.plugin.filterByStage(Plugin.Stage.Parser) as Plugin.FormatParser[]
 
     for (const plugin of plugins) {
       if (typeof plugin !== 'object') {
@@ -36,7 +38,7 @@ export class Parser {
   }
 
   parse(format: string, params: Params) {
-    const parsers = this.plugin.filterByStage(PluginStage.Parser) as ParserPlugin[]
+    const parsers = this.plugin.filterByStage(Plugin.Stage.Parser) as Plugin.FormatParser[]
     const current = parsers.find((item) => item.format === format)
 
     if (!current) {
@@ -51,15 +53,15 @@ export class Parser {
       result: null,
     }
 
-    const plugins: BasePlugin[] = []
+    const plugins: Plugin.Base[] = []
 
-    plugins.push(...this.plugin.filterByStage(PluginStage.BeforeExec, true))
+    plugins.push(...this.plugin.filterByStage(Plugin.Stage.BeforeExec, true))
     plugins.push(current)
-    plugins.push(...this.plugin.filterByStage(PluginStage.Transform, true))
+    plugins.push(...this.plugin.filterByStage(Plugin.Stage.Transform, true))
     if (current?.config?.needAlign === true) {
-      plugins.push(...this.plugin.filterByStage(PluginStage.Align, true))
+      plugins.push(...this.plugin.filterByStage(Plugin.Stage.Align, true))
     }
-    plugins.push(...this.plugin.filterByStage(PluginStage.AfterExec, true))
+    plugins.push(...this.plugin.filterByStage(Plugin.Stage.AfterExec, true))
 
     for (const plugin of plugins) {
       try {
