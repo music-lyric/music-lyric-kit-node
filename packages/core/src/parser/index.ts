@@ -1,10 +1,8 @@
-import type { Context, Params } from './interface'
-
-export type { Context, Params }
+import { Info } from '@music-lyric-kit/lyric'
 
 import * as Plugin from './plugin'
 
-export { Plugin }
+import type { Context, Params } from './interface'
 
 export class Client {
   readonly plugin: Plugin.Loader = new Plugin.Loader()
@@ -15,7 +13,7 @@ export class Client {
       runtime: {
         extendeds: [],
       },
-      result: null,
+      result: new Info(),
     }
 
     const plugins = this.plugin.filterByStage(Plugin.Stage.Parser) as Plugin.FormatParser[]
@@ -50,7 +48,7 @@ export class Client {
       runtime: {
         extendeds: [],
       },
-      result: null,
+      result: new Info(),
     }
 
     const plugins: Plugin.Base[] = []
@@ -74,3 +72,7 @@ export class Client {
     return ctx.result
   }
 }
+
+export type { Context, Params }
+
+export { Plugin }

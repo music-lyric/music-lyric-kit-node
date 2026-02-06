@@ -20,5 +20,5 @@ export interface Context extends BaseContext {
   }
 
   // result lyric info
-  result: Info | null
+  result: Info
 }
