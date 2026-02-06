@@ -54,6 +54,7 @@ export {
   Version,
   // info
   Info,
+  Type,
 }
 
 export type { Word }
@@ -76,4 +77,5 @@ export default {
   Version,
   // info
   Info,
+  Type,
 }
