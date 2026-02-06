@@ -36,3 +36,5 @@ export class WordSpace {
     }
   }
 }
+
+export type Word = WordNormal | WordSpace
