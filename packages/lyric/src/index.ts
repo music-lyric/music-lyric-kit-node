@@ -1,7 +1,9 @@
 import { Time } from './time'
-import { Word, WordNormal, WordSpace, WordType } from './word'
+import { WordNormal, WordSpace, WordType } from './word'
 import { Extended, ExtendedType } from './extended'
 import { Line, LineContent, LineType } from './line'
+
+import type { Word } from './word'
 
 const Version = '0.1.0' as const
 
@@ -38,7 +40,6 @@ export {
   // time
   Time,
   // word
-  Word,
   WordNormal,
   WordSpace,
   WordType,
@@ -54,6 +55,8 @@ export {
   // info
   Info,
 }
+
+export type { Word }
 
 export default {
   // time
