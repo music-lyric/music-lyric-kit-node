@@ -5,31 +5,33 @@ import { Line, LineContent, LineType } from './line'
 
 const Version = '0.1.0' as const
 
-class Config {
-  /** is instrumental music (may) */
-  isInsturmental: boolean = false
-
-  /** can syllable */
-  isSyllable: boolean = false
-
-  /** is support auto scroll lyric (no lyric time info) */
-  canAutoScroll: boolean = false
-
-  toJSON() {
-    return {
-      isInsturmental: this.isInsturmental,
-      isSyllable: this.isSyllable,
-      canAutoScroll: this.canAutoScroll,
-    }
-  }
+enum Type {
+  // parse lyric failed
+  Incorrect = 'Incorrect',
+  // normal lyric (line by line)
+  Normal = 'Normal',
+  // syllable lyric
+  Syllable = 'Syllable',
+  // pure music (no lyric line)
+  Pure = 'Pure',
+  // no time flag, but has lyric line
+  NoTime = 'NoTime',
 }
 
 class Info {
   version = Version
 
+  type: Type = Type.Incorrect
+
   lines: Line[] = []
 
-  config: Config = new Config()
+  toJSON() {
+    return {
+      version: this.version,
+      type: this.type,
+      lines: this.lines,
+    }
+  }
 }
 
 export {
@@ -49,8 +51,6 @@ export {
   LineType,
   // version
   Version,
-  // config
-  Config,
   // info
   Info,
 }
@@ -71,8 +71,6 @@ export default {
   LineType,
   // version
   Version,
-  // config
-  Config,
   // info
   Info,
 }
