@@ -14,8 +14,10 @@ enum Type {
   Normal = 'Normal',
   // syllable lyric
   Syllable = 'Syllable',
-  // pure music (no lyric line)
+  // pure music
   Pure = 'Pure',
+  // empty lyric (no lyric line)
+  Empty = 'Empty',
   // no time flag, but has lyric line
   NoTime = 'NoTime',
 }
