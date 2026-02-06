@@ -1,13 +1,11 @@
-import { Line } from './line'
+import { Time } from './time'
+import { Word, WordNormal, WordSpace, WordType } from './word'
+import { Extended, ExtendedType } from './extended'
+import { Line, LineContent, LineType } from './line'
 
-export * from './time'
-export * from './word'
-export * from './line'
-export * from './extended'
+const Version = '0.1.0' as const
 
-export const Version = '0.1.0' as const
-
-export class Config {
+class Config {
   /** is instrumental music (may) */
   isInsturmental: boolean = false
 
@@ -26,10 +24,55 @@ export class Config {
   }
 }
 
-export class Info {
+class Info {
   version = Version
 
   lines: Line[] = []
 
   config: Config = new Config()
+}
+
+export {
+  // time
+  Time,
+  // word
+  Word,
+  WordNormal,
+  WordSpace,
+  WordType,
+  // extended
+  Extended,
+  ExtendedType,
+  // line
+  Line,
+  LineContent,
+  LineType,
+  // version
+  Version,
+  // config
+  Config,
+  // info
+  Info,
+}
+
+export default {
+  // time
+  Time,
+  // word
+  WordNormal,
+  WordSpace,
+  WordType,
+  // extended
+  Extended,
+  ExtendedType,
+  // line
+  Line,
+  LineContent,
+  LineType,
+  // version
+  Version,
+  // config
+  Config,
+  // info
+  Info,
 }
