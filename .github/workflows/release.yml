@@ -34,7 +34,7 @@ jobs:
         run: pnpm install
 
       - name: Build Code
-        run: pnpm run build
+        run: pnpm run build:force
 
       - name: Publish Package
         run: pnpm run publish
@@ -42,7 +42,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Build Current Change Log
-        run: pnpm run build:change-log:current
+        run: pnpm run change-log:build:current
 
       - name: Create Github Release
         uses: softprops/action-gh-release@v2
