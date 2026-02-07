@@ -31,8 +31,15 @@ importers:
       '@music-lyric-kit/lyric':
         specifier: workspace:^
         version: link:../lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:^
+        version: link:../utils
 
-  packages/lyric: {}
+  packages/lyric:
+    dependencies:
+      '@music-lyric-kit/utils':
+        specifier: workspace:^
+        version: link:../utils
 
   packages/utils:
     dependencies:
@@ -44,9 +51,29 @@ importers:
         specifier: ^4.17.12
         version: 4.17.12
 
-  plugins/format-lrc: {}
+  plugins/format-lrc:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:^
+        version: link:../../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:^
+        version: link:../../packages/lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
 
-  private/test: {}
+  private/test:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@music-lyric-kit/plugin-format-lrc':
+        specifier: workspace:*
+        version: link:../../plugins/format-lrc
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
 
 packages:
 
