@@ -7,7 +7,9 @@ export enum WordType {
 }
 
 export class WordNormal {
-  readonly type = WordType.Normal
+  get type() {
+    return WordType.Normal as const
+  }
 
   time: Time = new Time()
 
@@ -25,7 +27,9 @@ export class WordNormal {
 }
 
 export class WordSpace {
-  readonly type = WordType.Space
+  get type() {
+    return WordType.Space as const
+  }
 
   count: number = 1
 

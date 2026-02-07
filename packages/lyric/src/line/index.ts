@@ -1,6 +1,8 @@
 import { Time } from '../time'
 import { Extended } from '../extended'
-import { WordNormal, WordSpace, WordType } from '../word'
+import { WordType } from '../word'
+
+import type { Word } from '../word'
 
 export enum LineType {
   Normal = 'Normal',
@@ -26,7 +28,7 @@ export class InterludeLine {
 }
 
 export class NormalLineContent {
-  words: (WordNormal | WordSpace)[] = []
+  words: Word[] = []
 
   extended: Extended[] = []
 
