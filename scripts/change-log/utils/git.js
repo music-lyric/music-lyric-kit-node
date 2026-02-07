@@ -113,7 +113,7 @@ const parseCommitBlocks = (text) => {
  */
 export const getCommitInfo = async (start, end = 'HEAD') => {
   try {
-    const range = start || end ? `${start}..${end}` : ''
+    const range = !start && end ? `${end}` : start || end ? `${start}..${end}` : ''
     const command = `git log ${range} --pretty=format:"---block---%n %h%n %H%n %an%n %ad%n %s%n %b%n ---block---%n" --date=short`
 
     const result = await runGitCommand(command)

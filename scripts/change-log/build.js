@@ -93,10 +93,10 @@ const main = async () => {
 
   if (args.current) {
     const [latest, old] = await getAllTags()
-    if (!latest || !old) {
+    if (!latest) {
       return
     }
-    result = await handleBuild(old, latest, repo, args.showCurrentHead)
+    result = await handleBuild(old || '', latest, repo, args.showCurrentHead)
     file = CURRENT_CHANGE_LOG_FILE
   } else {
     result = await handleBuild('', '', repo)
