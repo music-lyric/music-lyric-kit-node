@@ -29,5 +29,8 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@music-lyric-kit/utils": "workspace:^"
+  }
 }

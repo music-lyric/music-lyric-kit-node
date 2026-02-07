@@ -30,7 +30,7 @@
   "files": [
     "dist"
   ],
-  "peerDependencies": {
+  "dependencies": {
     "@music-lyric-kit/lyric": "workspace:^",
     "@music-lyric-kit/utils": "workspace:^"
   }
