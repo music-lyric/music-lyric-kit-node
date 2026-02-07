@@ -1,6 +1,6 @@
 {
   "name": "@music-lyric-kit/plugin-format-lrc",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "author": "folltoshe",
   "type": "module",
   "description": "Music Lyric Kit - Lrc Format Plugin",
