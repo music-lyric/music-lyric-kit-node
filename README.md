@@ -53,4 +53,4 @@ if (format) {
 
 [MIT](https://opensource.org/licenses/MIT)
 
-Copyright (c) 2025 - now, Folltoshe
+Copyright (c) 2026 - now, Folltoshe
