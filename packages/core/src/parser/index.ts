@@ -1,9 +1,9 @@
-import * as Plugin from './plugin'
-
+import type { Plugin } from './plugin'
 import type { Options, OptionsRequired } from './options'
 import type { Params } from './context'
 
 import { OptionsManager } from '@root/utils'
+import { Stage, PluginLoader } from './plugin'
 import { Context } from './context'
 
 import { DEFAULT_OPTIONS } from './options'
@@ -13,7 +13,7 @@ import { alignExtended } from './utils'
 export class Client {
   readonly options: OptionsManager<OptionsRequired, Options> = new OptionsManager(DEFAULT_OPTIONS)
 
-  readonly plugin: Plugin.Loader = new Plugin.Loader()
+  readonly plugin: PluginLoader = new PluginLoader()
 
   constructor(options: Options = {}) {
     this.options.update(options)
@@ -22,7 +22,7 @@ export class Client {
   infer(params: Params) {
     const context = new Context(params)
 
-    const plugins = this.plugin.filterByStage(Plugin.Stage.FormatParser) as Plugin.FormatParser[]
+    const plugins = this.plugin.filterByStage(Stage.FormatParser) as Plugin.FormatParser[]
 
     for (const plugin of plugins) {
       if (typeof plugin !== 'object') {
@@ -31,7 +31,7 @@ export class Client {
       try {
         const result = plugin.check.call(plugin, context)
         if (result === true) {
-          return plugin.format
+          return plugin.meta.format
         }
       } catch {
         continue
@@ -42,8 +42,8 @@ export class Client {
   }
 
   parse(format: string, params: Params) {
-    const parsers = this.plugin.filterByStage(Plugin.Stage.FormatParser) as Plugin.FormatParser[]
-    const current = parsers.find((item) => item.format === format)
+    const parsers = this.plugin.filterByStage(Stage.FormatParser) as Plugin.FormatParser[]
+    const current = parsers.find((item) => item.meta.format === format)
 
     if (!current) {
       throw new Error('format not found')
@@ -55,19 +55,22 @@ export class Client {
 
     const context = new Context(params)
 
-    const plugins: Plugin.Base[] = []
+    const plugins: Plugin.All[] = []
 
     // before parse
-    plugins.push(...this.plugin.filterByStage(Plugin.Stage.BeforeExec, true))
+    plugins.push(...this.plugin.filterByStage(Stage.BeforeExec, true))
     // current format parser
     plugins.push(current)
     // transform
-    plugins.push(...this.plugin.filterByStage(Plugin.Stage.Transform, true))
+    plugins.push(...this.plugin.filterByStage(Stage.Transform, true))
     // align
-    if (current.config?.needAlignExtended) {
+    if (current.meta.config.needAlignExtended) {
       const fuzzyThreshold = this.options.current.align.fuzzyThreshold
       plugins.push({
-        stage: Plugin.Stage.Transform,
+        meta: {
+          name: 'align',
+          stage: Stage.Transform,
+        },
         exec(ctx) {
           const lines = ctx.result?.lines || []
           const extendeds = ctx.runtime?.extendeds || []
@@ -86,7 +89,7 @@ export class Client {
       })
     }
     // after all step
-    plugins.push(...this.plugin.filterByStage(Plugin.Stage.AfterExec, true))
+    plugins.push(...this.plugin.filterByStage(Stage.AfterExec, true))
 
     for (const plugin of plugins) {
       try {
@@ -102,6 +105,6 @@ export class Client {
   }
 }
 
-export type { Params, Options }
+export type { Params, Options, Plugin }
 
-export { Context, Plugin }
+export { Context, Stage }

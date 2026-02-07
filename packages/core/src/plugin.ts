@@ -5,9 +5,10 @@ export interface BaseContext {
 }
 
 export interface BasePlugin<Context extends BaseContext = BaseContext> {
-  name?: string
-
-  priority?: number
+  meta: {
+    name: string
+    priority?: number
+  }
 
   exec: (ctx: Context) => void
 }

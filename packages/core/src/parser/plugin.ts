@@ -9,42 +9,52 @@ export enum Stage {
   AfterExec = 'AfterExec',
 }
 
-export interface Base extends BasePlugin<Context> {
-  stage: Stage
-}
+export namespace Plugin {
+  type Base = BasePlugin<Context>
 
-export interface BeforeExec extends Base {
-  stage: Stage.BeforeExec
-}
-
-export interface FormatParser extends Base {
-  stage: Stage.FormatParser
-
-  format: string
-
-  config: {
-    needAlignExtended?: boolean
+  export type BeforeExec = Base & {
+    meta: {
+      stage: Stage.BeforeExec
+    }
   }
 
-  check: (ctx: Context) => boolean
+  export type FormatParser = Base & {
+    meta: {
+      stage: Stage.FormatParser
+
+      format: string
+
+      config: {
+        needAlignExtended?: boolean
+      }
+    }
+
+    check: (ctx: Context) => boolean
+  }
+
+  export type Transform = Base & {
+    meta: {
+      stage: Stage.Transform
+    }
+  }
+
+  export type AfterExec = Base & {
+    meta: {
+      stage: Stage.AfterExec
+    }
+  }
+
+  export type All = BeforeExec | FormatParser | Transform | AfterExec
 }
 
-export interface Transform extends Base {
-  stage: Stage.Transform
-}
+export class PluginLoader {
+  private current: Plugin.All[] = []
 
-export interface AfterExec extends Base {
-  stage: Stage.AfterExec
-}
-
-export class Loader {
-  private current: Base[] = []
-
-  add(plugin: Base) {
+  add(plugin: Plugin.All) {
     this.current.push(plugin)
   }
 
-  delete(plugin: Base) {
+  delete(plugin: Plugin.All) {
     const index = this.current.findIndex((it) => it === plugin)
     if (index >= 0) {
       this.current.splice(index, 1)
@@ -55,11 +65,13 @@ export class Loader {
     this.current = []
   }
 
-  filterByStage(stage: Stage, sort: boolean = false) {
-    const target = this.current.filter((item) => item.stage === stage)
+  filterByStage(stage: Stage, sort: boolean = false): Plugin.All[] {
+    const target = this.current.filter((item) => item.meta.stage === stage)
+
     if (sort) {
-      return target.sort((a, b) => (Number(a) || 100) - (Number(b) || 100))
+      return target.sort((a, b) => (Number(a.meta.priority) || 100) - (Number(b.meta.priority) || 100))
     }
+
     return target
   }
 }
