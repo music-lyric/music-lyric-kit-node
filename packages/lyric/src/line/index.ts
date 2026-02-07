@@ -1,3 +1,5 @@
+import { createRandomHex } from '@music-lyric-kit/utils'
+
 import { Time } from '../time'
 import { Extended } from '../extended'
 import { WordType } from '../word'
@@ -14,7 +16,7 @@ export class LineInterlude {
     return LineType.Interlude as const
   }
 
-  id: string = ''
+  id: string = createRandomHex(4).toUpperCase()
 
   time: Time = new Time()
 
@@ -54,7 +56,7 @@ export class LineNormal {
     return LineType.Normal as const
   }
 
-  id: string = ''
+  id: string = createRandomHex(4).toUpperCase()
 
   time: Time = new Time()
 
