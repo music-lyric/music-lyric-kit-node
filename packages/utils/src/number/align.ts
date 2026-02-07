@@ -1,7 +1,9 @@
 export interface AlignNumberArrayResult {
   base: number
-  target: number | null
-  diff: number
+  targets: Array<{
+    value: number
+    diff: number
+  }>
 }
 
 /**
@@ -18,41 +20,31 @@ export const alignNumberArray = (base: number[], target: number[], fuzzyThreshol
   for (let i = 0; i < base.length; i++) {
     const baseValue = base[i]
 
-    let matchedIndex = -1
-    let matchedItem = null
-    let matchedDiff = 0
+    const matched: AlignNumberArrayResult['targets'] = []
 
-    // find full match
-    matchedIndex = pending.findIndex((item) => item === baseValue)
+    for (let j = 0; j < pending.length; j++) {
+      const diff = Math.abs(pending[j] - baseValue)
 
-    // fuzzy
-    if (matchedIndex < 0) {
-      let minDiff = Infinity
-      let closestIndex = -1
-
-      for (let j = 0; j < pending.length; j++) {
-        const diff = Math.abs(pending[j] - baseValue)
-        if (diff <= fuzzyThreshold && diff < minDiff) {
-          minDiff = diff
-          closestIndex = j
-        }
-      }
-
-      if (closestIndex !== -1) {
-        matchedIndex = closestIndex
-        matchedDiff = minDiff
+      if (diff === 0 || diff <= fuzzyThreshold) {
+        matched.push({
+          value: pending[j],
+          diff,
+        })
       }
     }
 
-    if (matchedIndex > 0) {
-      matchedItem = pending[matchedIndex]
-      pending.splice(matchedIndex, 1)
+    if (matched.length > 0) {
+      const matchedSet = new Set(matched.map((m) => m.value))
+      for (let k = pending.length - 1; k >= 0; k--) {
+        if (matchedSet.has(pending[k])) {
+          pending.splice(k, 1)
+        }
+      }
     }
 
     result.push({
       base: baseValue,
-      target: matchedItem ?? null,
-      diff: matchedDiff,
+      targets: matched,
     })
   }
 
