@@ -11,7 +11,7 @@ export enum LineType {
 
 export class InterludeLine {
   get type() {
-    return LineType.Interlude
+    return LineType.Interlude as const
   }
 
   id: string = ''
@@ -51,7 +51,7 @@ export class NormalLineContent {
 
 export class NormalLine {
   get type() {
-    return LineType.Normal
+    return LineType.Normal as const
   }
 
   id: string = ''
