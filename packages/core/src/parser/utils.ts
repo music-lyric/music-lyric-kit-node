@@ -3,7 +3,7 @@ import { alignNumberArray } from '@music-lyric-kit/utils'
 
 import type { Runtime } from './context'
 
-export const handleAlignExtended = (lines: Line[], extendeds: Runtime['extendeds']) => {
+export const alignExtended = (lines: Line[], extendeds: Runtime['extendeds'], fuzzyThreshold?: number) => {
   const target = [...lines]
 
   const baseMap: Map<number, number> = new Map()
@@ -44,7 +44,7 @@ export const handleAlignExtended = (lines: Line[], extendeds: Runtime['extendeds
     line.content.extended.push(...content)
   }
 
-  const result = alignNumberArray([...baseMap.keys()], [...extendedMap.keys()])
+  const result = alignNumberArray([...baseMap.keys()], [...extendedMap.keys()], fuzzyThreshold)
   for (const item of result) {
     const base = item.base
     const baseIndex = baseMap.get(base)

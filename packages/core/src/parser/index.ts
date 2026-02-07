@@ -1,11 +1,23 @@
 import * as Plugin from './plugin'
 
-import { Context, Params } from './context'
+import type { Options, OptionsRequired } from './options'
+import type { Params } from './context'
 
-import { handleAlignExtended } from './utils'
+import { OptionsManager } from '@root/utils'
+import { Context } from './context'
+
+import { DEFAULT_OPTIONS } from './options'
+
+import { alignExtended } from './utils'
 
 export class Client {
+  readonly options: OptionsManager<OptionsRequired, Options> = new OptionsManager(DEFAULT_OPTIONS)
+
   readonly plugin: Plugin.Loader = new Plugin.Loader()
+
+  constructor(options: Options = {}) {
+    this.options.update(options)
+  }
 
   infer(params: Params) {
     const context = new Context(params)
@@ -53,6 +65,7 @@ export class Client {
     plugins.push(...this.plugin.filterByStage(Plugin.Stage.Transform, true))
     // align
     if (current.config?.needAlignExtended) {
+      const fuzzyThreshold = this.options.current.align.fuzzyThreshold
       plugins.push({
         stage: Plugin.Stage.Transform,
         exec(ctx) {
@@ -64,7 +77,7 @@ export class Client {
           if (!lines.length || !extendeds.length) {
             return
           }
-          const result = handleAlignExtended(lines, extendeds)
+          const result = alignExtended(lines, extendeds, fuzzyThreshold)
           if (!result.length) {
             return
           }
@@ -89,6 +102,6 @@ export class Client {
   }
 }
 
-export type { Context, Params }
+export type { Params, Options }
 
-export { Plugin }
+export { Context, Plugin }
