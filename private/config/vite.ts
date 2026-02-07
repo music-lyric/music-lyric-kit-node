@@ -8,7 +8,7 @@ import PluginDts from 'vite-plugin-dts'
 const root = join(process.cwd())
 const src = join(root, 'src')
 
-const external: string[] = []
+const external: string[] = ['@music-lyric-kit', 'lodash-es']
 
 const formatMap: Record<string, string> = {
   cjs: 'comm',
