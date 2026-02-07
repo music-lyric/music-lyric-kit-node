@@ -1,6 +1,6 @@
 import type { BasePlugin } from '../plugin'
 
-import type { Context } from './interface'
+import type { Context } from './context'
 
 export enum Stage {
   BeforeExec = 'BeforeExec',
