@@ -24,7 +24,17 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@25.0.9)(rollup@4.55.1)(typescript@5.8.2)(vite@7.3.1(@types/node@25.0.9))
 
-  app: {}
+  app:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:*
+        version: link:../packages/lyric
+      '@music-lyric-kit/plugin-format-lrc':
+        specifier: workspace:*
+        version: link:../plugins/format-lrc
 
   packages/core:
     dependencies:
@@ -65,15 +75,9 @@ importers:
 
   private/test:
     dependencies:
-      '@music-lyric-kit/core':
+      music-lyric-kit:
         specifier: workspace:*
-        version: link:../../packages/core
-      '@music-lyric-kit/plugin-format-lrc':
-        specifier: workspace:*
-        version: link:../../plugins/format-lrc
-      '@music-lyric-kit/utils':
-        specifier: workspace:*
-        version: link:../../packages/utils
+        version: link:../../app
 
 packages:
 
