@@ -1,0 +1,39 @@
+name: Report Bug
+description: Report A Bug, Please Search Issue Is Has Same Bug First
+title: '[Bug]: '
+body:
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Package Version
+      placeholder: v1.0.0
+    validations:
+      required: true
+  - type: input
+    id: last-known-working-version
+    attributes:
+      label: Last Working Version
+      placeholder: v1.0.0
+  - type: input
+    id: operating-system-version
+    attributes:
+      label: System Version
+      placeholder: 'Windows 11 24H2 / Ubuntu 24.10 / MacOS Sequoia 15.1.1'
+    validations:
+      required: true
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Extra Information
