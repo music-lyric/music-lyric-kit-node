@@ -10,13 +10,15 @@ export interface Params {
   }
 }
 
+export interface Runtime {
+  extendeds: [Time, Extended][]
+}
+
 export class Context implements BaseContext {
   private readonly current: {
     params: Params
     result: Info
-    runtime: {
-      extendeds: [Time, Extended][]
-    }
+    runtime: Runtime
   }
 
   constructor(params: Params) {

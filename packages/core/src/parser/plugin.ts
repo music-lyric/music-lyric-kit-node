@@ -6,7 +6,6 @@ export enum Stage {
   BeforeExec = 'BeforeExec',
   Parser = 'Parser',
   Transform = 'Transform',
-  Align = 'Align',
   AfterExec = 'AfterExec',
 }
 
@@ -24,7 +23,7 @@ export interface FormatParser extends Base {
   format: string
 
   config: {
-    needAlign?: boolean
+    needAlignExtended?: boolean
   }
 
   check: (ctx: Context) => boolean
@@ -32,10 +31,6 @@ export interface FormatParser extends Base {
 
 export interface Transform extends Base {
   stage: Stage.Transform
-}
-
-export interface Align extends Base {
-  stage: Stage.Align
 }
 
 export interface AfterExec extends Base {

@@ -2,6 +2,8 @@ import * as Plugin from './plugin'
 
 import { Context, Params } from './context'
 
+import { handleAlignExtended } from './utils'
+
 export class Client {
   readonly plugin: Plugin.Loader = new Plugin.Loader()
 
@@ -43,12 +45,34 @@ export class Client {
 
     const plugins: Plugin.Base[] = []
 
+    // before parse
     plugins.push(...this.plugin.filterByStage(Plugin.Stage.BeforeExec, true))
+    // current format parser
     plugins.push(current)
+    // transform
     plugins.push(...this.plugin.filterByStage(Plugin.Stage.Transform, true))
-    if (current.config?.needAlign === true) {
-      plugins.push(...this.plugin.filterByStage(Plugin.Stage.Align, true))
+    // align
+    if (current.config?.needAlignExtended) {
+      plugins.push({
+        stage: Plugin.Stage.Transform,
+        exec(ctx) {
+          const lines = ctx.result?.lines || []
+          const extendeds = ctx.runtime?.extendeds || []
+          if (!Array.isArray(lines) || !Array.isArray(extendeds)) {
+            return
+          }
+          if (!lines.length || !extendeds.length) {
+            return
+          }
+          const result = handleAlignExtended(lines, extendeds)
+          if (!result.length) {
+            return
+          }
+          ctx.result.lines = result
+        },
+      })
     }
+    // after all step
     plugins.push(...this.plugin.filterByStage(Plugin.Stage.AfterExec, true))
 
     for (const plugin of plugins) {
