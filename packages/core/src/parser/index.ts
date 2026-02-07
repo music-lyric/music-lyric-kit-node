@@ -22,7 +22,7 @@ export class Client {
   infer(params: Params) {
     const context = new Context(params)
 
-    const plugins = this.plugin.filterByStage(Plugin.Stage.Parser) as Plugin.FormatParser[]
+    const plugins = this.plugin.filterByStage(Plugin.Stage.FormatParser) as Plugin.FormatParser[]
 
     for (const plugin of plugins) {
       if (typeof plugin !== 'object') {
@@ -42,7 +42,7 @@ export class Client {
   }
 
   parse(format: string, params: Params) {
-    const parsers = this.plugin.filterByStage(Plugin.Stage.Parser) as Plugin.FormatParser[]
+    const parsers = this.plugin.filterByStage(Plugin.Stage.FormatParser) as Plugin.FormatParser[]
     const current = parsers.find((item) => item.format === format)
 
     if (!current) {

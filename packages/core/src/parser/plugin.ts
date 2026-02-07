@@ -4,7 +4,7 @@ import type { Context } from './context'
 
 export enum Stage {
   BeforeExec = 'BeforeExec',
-  Parser = 'Parser',
+  FormatParser = 'FormatParser',
   Transform = 'Transform',
   AfterExec = 'AfterExec',
 }
@@ -18,7 +18,7 @@ export interface BeforeExec extends Base {
 }
 
 export interface FormatParser extends Base {
-  stage: Stage.Parser
+  stage: Stage.FormatParser
 
   format: string
 
