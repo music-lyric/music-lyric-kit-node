@@ -9,7 +9,7 @@ export enum LineType {
   Interlude = 'Interlude',
 }
 
-export class InterludeLine {
+export class LineInterlude {
   get type() {
     return LineType.Interlude as const
   }
@@ -27,7 +27,7 @@ export class InterludeLine {
   }
 }
 
-export class NormalLineContent {
+export class LineNormalContent {
   words: Word[] = []
 
   extended: Extended[] = []
@@ -49,7 +49,7 @@ export class NormalLineContent {
   }
 }
 
-export class NormalLine {
+export class LineNormal {
   get type() {
     return LineType.Normal as const
   }
@@ -58,7 +58,7 @@ export class NormalLine {
 
   time: Time = new Time()
 
-  content: NormalLineContent = new NormalLineContent()
+  content: LineNormalContent = new LineNormalContent()
 
   toJSON() {
     return {
@@ -70,4 +70,4 @@ export class NormalLine {
   }
 }
 
-export type Line = InterludeLine | NormalLine
+export type Line = LineInterlude | LineNormal

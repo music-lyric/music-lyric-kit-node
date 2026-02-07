@@ -1,7 +1,7 @@
 import { Time } from './time'
 import { WordNormal, WordSpace, WordType } from './word'
 import { Extended, ExtendedType } from './extended'
-import { Line, LineType, InterludeLine, NormalLine, NormalLineContent } from './line'
+import { Line, LineType, LineInterlude, LineNormal, LineNormalContent } from './line'
 
 import type { Word } from './word'
 
@@ -49,9 +49,9 @@ export {
   Extended,
   ExtendedType,
   // line
-  InterludeLine,
-  NormalLine,
-  NormalLineContent,
+  LineInterlude,
+  LineNormal,
+  LineNormalContent,
   LineType,
   // version
   Version,
@@ -73,9 +73,9 @@ export default {
   Extended,
   ExtendedType,
   // line
-  InterludeLine,
-  NormalLine,
-  NormalLineContent,
+  LineInterlude,
+  LineNormal,
+  LineNormalContent,
   LineType,
   // version
   Version,
