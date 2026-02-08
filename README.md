@@ -22,7 +22,7 @@ const parser = new Parser.Client()
 const lrc = Lrc.Parser.Plugin()
 
 // add plugin
-client.plugin.add(lrc)
+parser.plugin.add(lrc)
 
 const input = {
   original: '[00:01.114]TEST',
@@ -33,12 +33,12 @@ const input = {
 // or
 const input = '[00:01.114]TEST'
 
-const format = client.infer({
+const format = parser.infer({
   content: input,
 })
 
 if (format) {
-  const result = client.parse(format, {
+  const result = parser.parse(format, {
     content: input,
   })
   console.log(result)
