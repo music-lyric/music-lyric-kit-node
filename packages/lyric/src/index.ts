@@ -23,7 +23,9 @@ enum Type {
 }
 
 class Info {
-  version = Version
+  get version() {
+    return Version
+  }
 
   type: Type = Type.Incorrect
 
