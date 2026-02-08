@@ -61,25 +61,3 @@ export {
 }
 
 export type { Word, Line }
-
-export default {
-  // time
-  Time,
-  // word
-  WordNormal,
-  WordSpace,
-  WordType,
-  // extended
-  Extended,
-  ExtendedType,
-  // line
-  LineInterlude,
-  LineNormal,
-  LineNormalContent,
-  LineType,
-  // version
-  Version,
-  // info
-  Info,
-  Type,
-}
