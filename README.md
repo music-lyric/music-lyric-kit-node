@@ -47,7 +47,7 @@ if (format) {
 
 ## Contributor
 
-[![Contributor](https://contrib.rocks/image?repo=folltoshe/music-lyric-kit)](https://github.com/folltoshe/music-lyric-kit/graphs/contributors)
+[![Contributor](https://contrib.rocks/image?repo=music-lyric/music-lyric-kit-node)](https://github.com/music-lyric/music-lyric-kit-node/graphs/contributors)
 
 ## License
 
