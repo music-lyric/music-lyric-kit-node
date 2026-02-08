@@ -1,7 +1,7 @@
-import Lyric from '@music-lyric-kit/lyric'
+import * as Lyric from '@music-lyric-kit/lyric'
+export { Lyric }
 
 import { Parser } from '@music-lyric-kit/core'
-
-export { Lyric, Parser }
+export { Parser }
 
 export * from './plugins'
