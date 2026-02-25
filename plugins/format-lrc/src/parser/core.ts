@@ -5,6 +5,7 @@ import { Extended, ExtendedType, Line, Time, Type } from '@music-lyric-kit/lyric
 
 import { matchLyric } from './utils'
 import { processNormal, processSyllable } from './line'
+import { processMeta } from './meta'
 
 const processMain = (params: ContentTypeObject): [MatchInfo, Line[], Type] => {
   const syllableMatch = matchLyric(params.syllable)
@@ -24,6 +25,8 @@ const processMain = (params: ContentTypeObject): [MatchInfo, Line[], Type] => {
 
 export const processLyric = (params: ContentTypeObject) => {
   const [match, lines, type] = processMain(params)
+
+  const metas = processMeta(match.meta)
 
   const extendeds: [Time, Extended][] = []
 
@@ -46,6 +49,7 @@ export const processLyric = (params: ContentTypeObject) => {
   return {
     type,
     lines,
+    metas,
     extendeds,
   }
 }

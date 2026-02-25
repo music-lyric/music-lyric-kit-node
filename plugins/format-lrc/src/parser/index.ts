@@ -51,10 +51,11 @@ export const Plugin = (): Parser.Plugin.FormatParser => {
         return
       }
 
-      const { type, lines, extendeds } = processLyric(input)
+      const { type, lines, metas, extendeds } = processLyric(input)
 
       ctx.result.type = type
       ctx.result.lines = lines
+      ctx.result.metas = metas
       ctx.runtime.extendeds = extendeds
     },
   }
