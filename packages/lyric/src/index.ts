@@ -1,11 +1,14 @@
 import { Time } from './time'
 import { WordNormal, WordSpace, WordType } from './word'
 import { Extended, ExtendedType } from './extended'
-import { Line, LineType, LineInterlude, LineNormal, LineNormalContent } from './line'
+import { LineType, LineInterlude, LineNormal, LineNormalContent } from './line'
+import { MetaType, MetaOffset, MetaDuration, MetaTitle, MetaSinger, MetaAlbum, MetaCreator, MetaUnKnown } from './meta'
 
 import type { Word } from './word'
+import type { Line } from './line'
+import type { Meta } from './meta'
 
-const Version = '0.1.0' as const
+const Version = '0.2.0' as const
 
 enum Type {
   // parse lyric failed
@@ -29,12 +32,15 @@ class Info {
 
   type: Type = Type.Incorrect
 
+  metas: Meta[] = []
+
   lines: Line[] = []
 
   toJSON() {
     return {
       version: this.version,
       type: this.type,
+      metas: this.metas,
       lines: this.lines,
     }
   }
@@ -55,6 +61,15 @@ export {
   LineNormal,
   LineNormalContent,
   LineType,
+  // meta
+  MetaOffset,
+  MetaDuration,
+  MetaTitle,
+  MetaSinger,
+  MetaAlbum,
+  MetaCreator,
+  MetaUnKnown,
+  MetaType,
   // version
   Version,
   // info
@@ -62,4 +77,4 @@ export {
   Type,
 }
 
-export type { Word, Line }
+export type { Word, Line, Meta }
