@@ -1,3 +1,20 @@
+## v0.2.0 (2026-02-26)
+
+### test
+
+- Feature
+  - add parse page ([d37fc1c](https://github.com/music-lyric/music-lyric-kit-node/commit/d37fc1c))
+
+### plugin-format-lrc (v0.2.0)
+
+- Feature
+  - support parse meta ([8a7c906](https://github.com/music-lyric/music-lyric-kit-node/commit/8a7c906))
+
+### lyric (v0.2.0)
+
+- Feature
+  - add meta info ([a9846f9](https://github.com/music-lyric/music-lyric-kit-node/commit/a9846f9))
+
 ## v0.1.1 (2026-02-08)
 
 ### common
@@ -6,12 +23,12 @@
   - update use example ([0acd910](https://github.com/music-lyric/music-lyric-kit-node/commit/0acd910))
   - update contributor info ([6e033b6](https://github.com/music-lyric/music-lyric-kit-node/commit/6e033b6))
 
-### app (v0.1.1)
+### app (v0.2.0)
 
 - Bug Fix
   - export content ([59766f3](https://github.com/music-lyric/music-lyric-kit-node/commit/59766f3))
 
-### lyric (v0.1.1)
+### lyric (v0.2.0)
 
 - Feature
   - change info version to getter ([457c38a](https://github.com/music-lyric/music-lyric-kit-node/commit/457c38a))
@@ -30,17 +47,17 @@
 - Bug Fix
   - dependencies resolve failed when build ([2a49d51](https://github.com/music-lyric/music-lyric-kit-node/commit/2a49d51))
 
-### app (v0.1.1)
+### app (v0.2.0)
 
 - Feature
   - add export ([00cf2e8](https://github.com/music-lyric/music-lyric-kit-node/commit/00cf2e8))
 
-### plugin-format-lrc (v0.1.0)
+### plugin-format-lrc (v0.2.0)
 
 - Feature
   - add parser ([e7f77ee](https://github.com/music-lyric/music-lyric-kit-node/commit/e7f77ee))
 
-### lyric (v0.1.1)
+### lyric (v0.2.0)
 
 - Feature
   - auto generate id when create line ([ba8899f](https://github.com/music-lyric/music-lyric-kit-node/commit/ba8899f))
