@@ -17,5 +17,8 @@
     "type": "git",
     "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
     "directory": "private/test"
+  },
+  "dependencies": {
+    "music-lyric-kit": "workspace:*"
   }
 }
