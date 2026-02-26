@@ -220,7 +220,6 @@ const buildTypeContents = (data, repo) => {
     if (!value) {
       continue
     }
-    result.push('\n')
     result.push(buildScopeHeader(key))
     processCommits(value)
   }

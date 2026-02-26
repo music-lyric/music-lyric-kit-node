@@ -4,16 +4,12 @@
 
 - `app`
   - add plugin ([9fc495e](https://github.com/music-lyric/music-lyric-kit-node/commit/9fc495e))
-
 - `core`
   - switch to use common config manager ([343fa0d](https://github.com/music-lyric/music-lyric-kit-node/commit/343fa0d))
-
 - `plugin-transform-interlude`
   - add plugin ([ff7c01a](https://github.com/music-lyric/music-lyric-kit-node/commit/ff7c01a))
-
 - `test`
   - add plugin ([0a31c4f](https://github.com/music-lyric/music-lyric-kit-node/commit/0a31c4f))
-
 - `utils`
   - add config manager ([71935dc](https://github.com/music-lyric/music-lyric-kit-node/commit/71935dc))
 
@@ -36,10 +32,8 @@
 
 - `lyric`
   - add meta info ([a9846f9](https://github.com/music-lyric/music-lyric-kit-node/commit/a9846f9))
-
 - `plugin-format-lrc`
   - support parse meta ([8a7c906](https://github.com/music-lyric/music-lyric-kit-node/commit/8a7c906))
-
 - `test`
   - add parse page ([d37fc1c](https://github.com/music-lyric/music-lyric-kit-node/commit/d37fc1c))
 
@@ -76,7 +70,6 @@
 
 - `app`
   - add export ([00cf2e8](https://github.com/music-lyric/music-lyric-kit-node/commit/00cf2e8))
-
 - `core`
   - add plugin meta ([7be13b5](https://github.com/music-lyric/music-lyric-kit-node/commit/7be13b5))
   - change parser stage ([c64a8d6](https://github.com/music-lyric/music-lyric-kit-node/commit/c64a8d6))
@@ -86,7 +79,6 @@
   - change default result type to not null in parser context ([5fa2d1a](https://github.com/music-lyric/music-lyric-kit-node/commit/5fa2d1a))
   - add parser implement ([673a733](https://github.com/music-lyric/music-lyric-kit-node/commit/673a733))
   - add base plugin interface ([2d50437](https://github.com/music-lyric/music-lyric-kit-node/commit/2d50437))
-
 - `lyric`
   - auto generate id when create line ([ba8899f](https://github.com/music-lyric/music-lyric-kit-node/commit/ba8899f))
   - change export name for line content class ([dfe45fb](https://github.com/music-lyric/music-lyric-kit-node/commit/dfe45fb))
@@ -98,10 +90,8 @@
   - add default export ([71f7d48](https://github.com/music-lyric/music-lyric-kit-node/commit/71f7d48))
   - export word type ([5b9a7a1](https://github.com/music-lyric/music-lyric-kit-node/commit/5b9a7a1))
   - add interface and constant ([f556ac4](https://github.com/music-lyric/music-lyric-kit-node/commit/f556ac4))
-
 - `plugin-format-lrc`
   - add parser ([e7f77ee](https://github.com/music-lyric/music-lyric-kit-node/commit/e7f77ee))
-
 - `utils`
   - add random hex string tool ([7777687](https://github.com/music-lyric/music-lyric-kit-node/commit/7777687))
   - number align tool support multiple targets ([bdd570c](https://github.com/music-lyric/music-lyric-kit-node/commit/bdd570c))
@@ -111,7 +101,6 @@
 ### Bug Fix
 
 - dependencies resolve failed when build ([2a49d51](https://github.com/music-lyric/music-lyric-kit-node/commit/2a49d51))
-
 - `lyric`
   - line type getter return error type ([ac3ed22](https://github.com/music-lyric/music-lyric-kit-node/commit/ac3ed22))
   - export type ([78f7672](https://github.com/music-lyric/music-lyric-kit-node/commit/78f7672))
