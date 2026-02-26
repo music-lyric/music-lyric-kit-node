@@ -38,6 +38,9 @@ importers:
       '@music-lyric-kit/plugin-format-lrc':
         specifier: workspace:*
         version: link:../plugins/format-lrc
+      '@music-lyric-kit/plugin-transform-interlude':
+        specifier: workspace:*
+        version: link:../plugins/transform-interlude
 
   packages/core:
     dependencies:
