@@ -4,11 +4,10 @@ import { parseArgs } from 'node:util'
 import { join } from 'node:path'
 import { writeFileSync } from 'node:fs'
 
+import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant.js'
+
 import { root, rootVersion } from '../target.js'
 import { getRepoInfo, getCommitInfo, getAllTags, buildContents, buildHeader, formatResult } from './utils/index.js'
-
-const CHANGE_LOG_FILE = 'CHANGELOG.md'
-const CURRENT_CHANGE_LOG_FILE = 'CURRENT_CHANGELOG.md'
 
 const { values: args } = parseArgs({
   allowPositionals: true,

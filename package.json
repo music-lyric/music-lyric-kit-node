@@ -10,7 +10,7 @@
     "build": "turbo run build",
     "build:force": "turbo run build --force",
     "change-log:build": "node scripts/change-log/build.js",
-    "change-log:build:current": "node scripts/change-log/build.js --current",
+    "change-log:match": "node scripts/change-log/match.js",
     "publish": "node scripts/publish.js"
   },
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
