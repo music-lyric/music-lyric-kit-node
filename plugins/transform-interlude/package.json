@@ -1,0 +1,38 @@
+{
+  "name": "@music-lyric-kit/plugin-transform-interlude",
+  "version": "0.1.0",
+  "author": "folltoshe",
+  "type": "module",
+  "description": "Music Lyric Kit - Transform Interlude Plugin",
+  "license": "MIT",
+  "scripts": {
+    "build": "vite build"
+  },
+  "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
+  "bugs": {
+    "url": "https://github.com/music-lyric/music-lyric-kit-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
+    "directory": "plugins/transform-interlude"
+  },
+  "main": "./dist/index.comm.js",
+  "module": "./dist/index.ecma.js",
+  "types": "./dist/index.ecma.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.ecma.d.ts",
+      "import": "./dist/index.ecma.js",
+      "require": "./dist/index.comm.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@music-lyric-kit/core": "workspace:*",
+    "@music-lyric-kit/lyric": "workspace:*",
+    "@music-lyric-kit/utils": "workspace:*"
+  }
+}
