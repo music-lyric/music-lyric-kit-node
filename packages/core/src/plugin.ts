@@ -1,4 +1,4 @@
-import { OptionsManager } from './utils'
+import { ConfigManager } from '@music-lyric-kit/utils'
 
 export abstract class BaseContext {
   abstract params: any
@@ -21,7 +21,7 @@ export abstract class BasePlugin<Context = BaseContext> {
     return ''
   }
 
-  readonly config?: OptionsManager<any, any>
+  readonly config?: ConfigManager<any, any>
 
   abstract check(ctx: Context): boolean
 

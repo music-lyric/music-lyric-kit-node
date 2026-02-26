@@ -1,10 +1,9 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
 
 import { Extended, LineNormal, LineType } from '@music-lyric-kit/lyric'
-import { OptionsManager } from '@root/utils'
 import { ParserPlugin, ParserStage, ParserContext } from '../plugin'
 
-import { alignNumberArray } from '@music-lyric-kit/utils'
+import { ConfigManager, alignNumberArray } from '@music-lyric-kit/utils'
 
 export interface AlignPluginConfig {
   fuzzyThreshold: number
@@ -15,7 +14,7 @@ const DEFAULT_CONFIG: AlignPluginConfig = {
 } as const
 
 export class AlignPlugin extends ParserPlugin<AlignPluginConfig, DeepPartial<AlignPluginConfig>> {
-  override config = new OptionsManager(DEFAULT_CONFIG)
+  override config = new ConfigManager(DEFAULT_CONFIG)
 
   override get id() {
     return 'BUILT-IN-ALIGN'

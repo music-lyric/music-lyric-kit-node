@@ -1,4 +1,4 @@
-import { OptionsManager } from '@root/utils'
+import { ConfigManager } from '@music-lyric-kit/utils'
 import { BasePlugin } from '@root/plugin'
 
 import type { ParserContext } from './context'
@@ -13,7 +13,7 @@ export enum ParserStage {
 export abstract class ParserPlugin<Config = any, InitConfig = any> extends BasePlugin<ParserContext> {
   abstract get stage(): ParserStage
 
-  declare readonly config?: OptionsManager<Config, InitConfig>
+  declare readonly config?: ConfigManager<Config, InitConfig>
 }
 
 export class PluginLoader {
