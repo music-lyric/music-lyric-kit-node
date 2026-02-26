@@ -10,10 +10,8 @@ export enum ParserStage {
   After,
 }
 
-export abstract class ParserPlugin<Config = any, InitConfig = any> extends BasePlugin<ParserContext> {
+export abstract class ParserPlugin extends BasePlugin<ParserContext> {
   abstract get stage(): ParserStage
-
-  declare readonly config?: ConfigManager<Config, InitConfig>
 }
 
 export class PluginLoader {

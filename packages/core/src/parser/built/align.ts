@@ -13,8 +13,8 @@ const DEFAULT_CONFIG: AlignPluginConfig = {
   fuzzyThreshold: 0,
 } as const
 
-export class AlignPlugin extends ParserPlugin<AlignPluginConfig, DeepPartial<AlignPluginConfig>> {
-  override config = new ConfigManager(DEFAULT_CONFIG)
+export class AlignPlugin extends ParserPlugin {
+  override readonly config = new ConfigManager<AlignPluginConfig, DeepPartial<AlignPluginConfig>>(DEFAULT_CONFIG)
 
   override get id() {
     return 'BUILT-IN-ALIGN'
