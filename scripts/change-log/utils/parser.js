@@ -1,6 +1,5 @@
 // @ts-check
 
-import { targets } from '../../target.js'
 import { formatDate } from '../../utils.js'
 
 const ALLOW_TYPES = ['feat', 'fix', 'revert', 'docs', 'refactor']
@@ -71,26 +70,6 @@ const buildTypeHeader = (type) => {
   // @ts-expect-error
   const title = TYPE_TITLE_MAP[type]
   return `### ${title}`
-}
-
-/**
- *
- * @param {string} scope
- */
-const buildScopeHeader = (scope) => {
-  return `- ${scope}`
-}
-
-/**
- *
- * @param {any} commit
- * @param {any} repo
- * @param {boolean} inScope
- */
-const buildBody = (commit, repo, inScope = false) => {
-  const { hash, message } = commit
-
-  return `${inScope ? '  ' : ''}- ${message} ([${hash.short}](https://github.com/${repo.owner}/${repo.name}/commit/${hash.short}))`
 }
 
 /**
@@ -186,6 +165,75 @@ const buildScopeContent = (infos, repo) => {
 }
 
 /**
+ *
+ * @param {string} scope
+ */
+const buildScopeHeader = (scope) => {
+  return '- `' + scope + '`'
+}
+
+/**
+ *
+ * @param {any} commit
+ * @param {any} repo
+ */
+const buildBody = (commit, repo, isCommon = false) => {
+  const { hash, message } = commit
+  return `${isCommon ? '' : '  '}- ${message} ([${hash.short}](https://github.com/${repo.owner}/${repo.name}/commit/${hash.short}))`
+}
+
+/**
+ * @param {*} data
+ * @param {*} repo
+ */
+const buildTypeContents = (data, repo) => {
+  /** @type {string[]} */
+  const result = []
+  /** @type {string[]} */
+  const breaking = []
+
+  /**
+   * @param {any[]} commits
+   * @param {boolean} isCommon
+   */
+  const processCommits = (commits, isCommon = false) => {
+    for (const commit of commits) {
+      const body = buildBody(commit, repo, isCommon)
+      result.push(body)
+      const breakingChange = extractBreakingChangeInfo(commit.body)
+      if (breakingChange) {
+        breaking.push(...breakingChange)
+      }
+    }
+  }
+
+  const common = data.get('common')
+  data.delete('common')
+
+  if (common) {
+    processCommits(common, true)
+  }
+
+  const keys = [...data.keys()].sort()
+  for (const key of keys) {
+    const value = data.get(key)
+    if (!value) {
+      continue
+    }
+    result.push('\n')
+    result.push(buildScopeHeader(key))
+    processCommits(value)
+  }
+
+  const breakings = buildBreakingChange(breaking)
+  if (breakings) {
+    result.push(...breakings)
+  }
+
+  return result
+}
+
+/**
  * @param {*[]} infos
  * @param {*} repo
  */
@@ -193,7 +241,7 @@ export const buildContents = (infos, repo) => {
   /** @type {string[]} */
   const result = []
 
-  const scopeMap = new Map()
+  const typeMap = new Map()
 
   for (const info of infos) {
     const type = info.type
@@ -202,46 +250,34 @@ export const buildContents = (infos, repo) => {
     }
 
     const scope = info.scope || 'common'
+    const scopeMap = typeMap.get(type) || new Map()
 
     const current = scopeMap.get(scope)
     if (current) {
       current.push(info)
+      scopeMap.set(scope, current)
+    } else {
+      scopeMap.set(scope, [info])
+    }
+
+    typeMap.set(type, scopeMap)
+  }
+
+  const typeKeys = [...typeMap.keys()].sort()
+  for (const key of typeKeys) {
+    const value = typeMap.get(key)
+    if (!value) {
       continue
     }
 
-    scopeMap.set(scope, [info])
-  }
-
-  /**
-   *
-   * @param {string} scope
-   * @param {string} version
-   */
-  const buildScopeHeader = (scope, version = '') => {
-    return `### ${scope}${version ? ` (v${version})` : ''}`
-  }
-
-  const common = scopeMap.get('common')
-  if (common) {
     result.push('\n')
-    result.push(buildScopeHeader('common'))
+    result.push(buildTypeHeader(key))
     result.push('\n')
 
-    const contents = buildScopeContent(common, repo)
-    result.push(...contents)
-  }
-  scopeMap.delete('common')
-
-  for (const [key, value] of scopeMap.entries()) {
-    const pkg = targets.find((item) => item.id === key)
-    const version = pkg?.version
-
-    result.push('\n')
-    result.push(buildScopeHeader(key, version))
-    result.push('\n')
-
-    const contents = buildScopeContent(value, repo)
-    result.push(...contents)
+    const target = buildTypeContents(value, repo)
+    if (target) {
+      result.push(...target)
+    }
   }
 
   return result
