@@ -1,16 +1,17 @@
-import type { Plugin } from './plugin'
 import type { Options, OptionsRequired } from './options'
-import type { Params } from './context'
+import type { ParserParams, ParserRuntime } from './plugin/context'
 
 import { OptionsManager } from '@root/utils'
-import { Stage, PluginLoader } from './plugin'
-import { Context } from './context'
-
 import { DEFAULT_OPTIONS } from './options'
 
-import { alignExtended } from './utils'
+import { ParserPlugin, ParserStage, PluginLoader } from './plugin'
+import { ParserContext } from './plugin/context'
 
-export class Client {
+import { AlignPlugin } from './built'
+
+export class Parser {
+  private readonly alignPlugin = new AlignPlugin()
+
   readonly options: OptionsManager<OptionsRequired, Options> = new OptionsManager(DEFAULT_OPTIONS)
 
   readonly plugin: PluginLoader = new PluginLoader()
@@ -19,10 +20,10 @@ export class Client {
     this.options.update(options)
   }
 
-  infer(params: Params) {
-    const context = new Context(params)
+  infer(params: ParserParams) {
+    const context = new ParserContext(params)
 
-    const plugins = this.plugin.filterByStage(Stage.FormatParser) as Plugin.FormatParser[]
+    const plugins = this.plugin.filterByStage(ParserStage.Parse) as ParserPlugin[]
 
     for (const plugin of plugins) {
       if (typeof plugin !== 'object') {
@@ -31,7 +32,7 @@ export class Client {
       try {
         const result = plugin.check.call(plugin, context)
         if (result === true) {
-          return plugin.meta.format
+          return plugin.format
         }
       } catch {
         continue
@@ -41,9 +42,9 @@ export class Client {
     return null
   }
 
-  parse(format: string, params: Params) {
-    const parsers = this.plugin.filterByStage(Stage.FormatParser) as Plugin.FormatParser[]
-    const current = parsers.find((item) => item.meta.format === format)
+  parse(format: string, params: ParserParams) {
+    const parsers = this.plugin.filterByStage(ParserStage.Parse)
+    const current = parsers.find((item) => item.format === format)
 
     if (!current) {
       throw new Error('format not found')
@@ -53,49 +54,35 @@ export class Client {
       throw new Error('bad format plugin')
     }
 
-    const context = new Context(params)
+    const context = new ParserContext(params)
 
-    const plugins: Plugin.All[] = []
+    const plugins: ParserPlugin[] = []
 
-    // before parse
-    plugins.push(...this.plugin.filterByStage(Stage.BeforeExec, true))
-    // current format parser
+    // before
+    plugins.push(...this.plugin.filterByStage(ParserStage.Before, true))
+    // parser
     plugins.push(current)
     // transform
-    plugins.push(...this.plugin.filterByStage(Stage.Transform, true))
-    // align
-    if (current.meta.config.needAlignExtended) {
-      const fuzzyThreshold = this.options.current.align.fuzzyThreshold
-      plugins.push({
-        meta: {
-          name: 'align',
-          stage: Stage.Transform,
-        },
-        exec(ctx) {
-          const lines = ctx.result?.lines || []
-          const extendeds = ctx.runtime?.extendeds || []
-          if (!Array.isArray(lines) || !Array.isArray(extendeds)) {
-            return
-          }
-          if (!lines.length || !extendeds.length) {
-            return
-          }
-          const result = alignExtended(lines, extendeds, fuzzyThreshold)
-          if (!result.length) {
-            return
-          }
-          ctx.result.lines = result
-        },
-      })
-    }
-    // after all step
-    plugins.push(...this.plugin.filterByStage(Stage.AfterExec, true))
+    plugins.push(...this.plugin.filterByStage(ParserStage.Transform, true))
+    // after all
+    plugins.push(...this.plugin.filterByStage(ParserStage.After, true))
 
-    for (const plugin of plugins) {
+    while (plugins.length > 0) {
+      const plugin = plugins.shift()
+
+      if (!plugin) {
+        continue
+      }
+
       try {
         plugin.exec.call(plugin, context)
-      } catch {
+      } catch (e) {
         break
+      }
+
+      if (plugin.id === current.id && context.needAlignExtended) {
+        this.alignPlugin.config.update(this.options.current.align)
+        plugins.unshift(this.alignPlugin)
       }
     }
 
@@ -105,6 +92,6 @@ export class Client {
   }
 }
 
-export type { Params, Options, Plugin }
+export type { ParserParams, ParserContext, ParserRuntime }
 
-export { Context, Stage }
+export { ParserStage, ParserPlugin }

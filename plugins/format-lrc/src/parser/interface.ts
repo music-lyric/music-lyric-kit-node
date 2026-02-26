@@ -1,8 +1,8 @@
-export interface ContentTypeObject {
+export interface ParserContentObject {
   original: string
   translate?: string
   roman?: string
   syllable?: string
 }
 
-export type ContentType = string | ContentTypeObject
+export type ParserContentType = string | ParserContentObject

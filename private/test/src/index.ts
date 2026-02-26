@@ -32,8 +32,9 @@ const STORAGE_KEYS = {
 }
 
 const main = () => {
-  const parser = new Parser.Client()
-  const lrc = Lrc.Parser.Plugin()
+  const parser = new Parser()
+
+  const lrc = new Lrc.Parser()
   parser.plugin.add(lrc)
 
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement

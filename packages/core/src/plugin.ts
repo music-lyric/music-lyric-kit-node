@@ -1,14 +1,29 @@
-export interface BaseContext {
-  params: any
+import { OptionsManager } from './utils'
 
-  result: any
+export abstract class BaseContext {
+  abstract params: any
+
+  abstract result: any
 }
 
-export interface BasePlugin<Context extends BaseContext = BaseContext> {
-  meta: {
-    name: string
-    priority?: number
+export abstract class BasePlugin<Context = BaseContext> {
+  abstract get id(): string
+
+  abstract get name(): string
+
+  abstract get stage(): any
+
+  get priority(): number {
+    return 100
   }
 
-  exec: (ctx: Context) => void
+  get format(): string {
+    return ''
+  }
+
+  readonly config?: OptionsManager<any, any>
+
+  abstract check(ctx: Context): boolean
+
+  abstract exec(ctx: Context): void
 }

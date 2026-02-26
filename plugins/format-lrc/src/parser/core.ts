@@ -1,4 +1,4 @@
-import type { ContentTypeObject } from './interface'
+import type { ParserContentObject } from './interface'
 import type { MatchInfo } from './utils'
 
 import { Extended, ExtendedType, Line, Time, Type } from '@music-lyric-kit/lyric'
@@ -7,7 +7,7 @@ import { matchLyric } from './utils'
 import { processNormal, processSyllable } from './line'
 import { processMeta } from './meta'
 
-const processMain = (params: ContentTypeObject): [MatchInfo, Line[], Type] => {
+const processMain = (params: ParserContentObject): [MatchInfo, Line[], Type] => {
   const syllableMatch = matchLyric(params.syllable)
   const syllable = processSyllable(syllableMatch.line)
   if (syllable && syllable.length > 0) {
@@ -23,7 +23,7 @@ const processMain = (params: ContentTypeObject): [MatchInfo, Line[], Type] => {
   return [originalMatch, [], Type.Empty]
 }
 
-export const processLyric = (params: ContentTypeObject) => {
+export const processLyric = (params: ParserContentObject) => {
   const [match, lines, type] = processMain(params)
 
   const metas = processMeta(match.meta)

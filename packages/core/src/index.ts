@@ -1,3 +1,3 @@
 export * from './plugin'
 
-export * as Parser from './parser'
+export * from './parser'
