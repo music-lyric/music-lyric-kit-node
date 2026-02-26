@@ -1,4 +1,4 @@
-import { Parser, Lrc } from 'music-lyric-kit'
+import { Parser, Plugins } from 'music-lyric-kit'
 
 const DEFAULT_ORIGINAL = `
 [ti: title]
@@ -34,8 +34,11 @@ const STORAGE_KEYS = {
 const main = () => {
   const parser = new Parser()
 
-  const lrc = new Lrc.Parser()
+  const lrc = new Plugins.Lrc.Parser()
   parser.plugin.add(lrc)
+
+  const interlude = new Plugins.Interlude.Plugin()
+  parser.plugin.add(interlude)
 
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
