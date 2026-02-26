@@ -1,3 +1,35 @@
+## v0.3.0 (2026-02-26)
+
+### Feature
+
+- `app`
+  - add plugin ([9fc495e](https://github.com/music-lyric/music-lyric-kit-node/commit/9fc495e))
+
+- `core`
+  - switch to use common config manager ([343fa0d](https://github.com/music-lyric/music-lyric-kit-node/commit/343fa0d))
+
+- `plugin-transform-interlude`
+  - add plugin ([ff7c01a](https://github.com/music-lyric/music-lyric-kit-node/commit/ff7c01a))
+
+- `test`
+  - add plugin ([0a31c4f](https://github.com/music-lyric/music-lyric-kit-node/commit/0a31c4f))
+
+- `utils`
+  - add config manager ([71935dc](https://github.com/music-lyric/music-lyric-kit-node/commit/71935dc))
+
+### Bug Fix
+
+- `core`
+  - type error ([e94d9d9](https://github.com/music-lyric/music-lyric-kit-node/commit/e94d9d9))
+
+### Code Refactor
+
+- plugin system ([630a1dd](https://github.com/music-lyric/music-lyric-kit-node/commit/630a1dd))
+
+### Breaking Change
+
+- plugin interface has been changed
+
 ## v0.2.0 (2026-02-26)
 
 ### Feature
