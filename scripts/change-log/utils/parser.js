@@ -13,7 +13,7 @@ const TYPE_TITLE_MAP = {
   breaking: 'Breaking Change',
 }
 
-const BREAKING_CHANGE_REGEXP = /^breaking change:\s*(.*)/i
+const BREAKING_CHANGE_REGEXP = /^breaking:\s*(.*)/i
 
 /**
  * @param {string} text
