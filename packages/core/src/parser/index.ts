@@ -4,7 +4,8 @@ import type { ParserParams, ParserRuntime } from './plugin/context'
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { DEFAULT_OPTIONS } from './options'
 
-import { ParserPlugin, ParserStage, PluginLoader } from './plugin'
+import { PluginLoader } from '@root/plugin'
+import { ParserPlugin, ParserStage } from './plugin'
 import { ParserContext } from './plugin/context'
 
 import { AlignPlugin } from './built'
@@ -14,7 +15,7 @@ export class Parser {
 
   readonly options: ConfigManager<OptionsRequired, Options> = new ConfigManager(DEFAULT_OPTIONS)
 
-  readonly plugin: PluginLoader = new PluginLoader()
+  readonly plugin: PluginLoader<ParserPlugin> = new PluginLoader()
 
   constructor(options: Options = {}) {
     this.options.update(options)
