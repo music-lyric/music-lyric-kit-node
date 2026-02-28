@@ -4,4 +4,4 @@ export { Lyric }
 import * as Plugins from './plugins'
 export { Plugins }
 
-export { Parser } from '@music-lyric-kit/core'
+export { Parser, Generator } from '@music-lyric-kit/core'
