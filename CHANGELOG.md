@@ -1,3 +1,14 @@
+## v0.4.0 (2026-03-01)
+
+### Feature
+
+- `app`
+  - export generator ([8cec07d](https://github.com/music-lyric/music-lyric-kit-node/commit/8cec07d))
+- `core`
+  - add generator implement ([efd7ace](https://github.com/music-lyric/music-lyric-kit-node/commit/efd7ace))
+- `plugin-format-lrc`
+  - add generator ([29d5d7e](https://github.com/music-lyric/music-lyric-kit-node/commit/29d5d7e))
+
 ## v0.3.0 (2026-02-26)
 
 ### Feature
