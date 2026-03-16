@@ -1,3 +1,25 @@
+## v0.5.0 (2026-03-17)
+
+### Feature
+
+- `plugin-transform-interlude`
+  - rename export content ([f40396c](https://github.com/music-lyric/music-lyric-kit-node/commit/f40396c))
+- `plugin-transform-pure`
+  - add extract plugin ([f53bc50](https://github.com/music-lyric/music-lyric-kit-node/commit/f53bc50))
+  - add clean plugin ([a01c85c](https://github.com/music-lyric/music-lyric-kit-node/commit/a01c85c))
+- `plugin-transform-space`
+  - rename export content ([b4f5b75](https://github.com/music-lyric/music-lyric-kit-node/commit/b4f5b75))
+  - add insert plugin ([47ad20d](https://github.com/music-lyric/music-lyric-kit-node/commit/47ad20d))
+- `utils`
+  - add event listener support to config manager ([2b0403d](https://github.com/music-lyric/music-lyric-kit-node/commit/2b0403d))
+
+### Code Refactor
+
+- `plugin-transform-space`
+  - optimize code ([cacc43c](https://github.com/music-lyric/music-lyric-kit-node/commit/cacc43c))
+- `utils`
+  - remove unuse tools ([5a66a68](https://github.com/music-lyric/music-lyric-kit-node/commit/5a66a68))
+
 ## v0.4.0 (2026-03-01)
 
 ### Feature
