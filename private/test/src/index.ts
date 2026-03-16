@@ -43,6 +43,9 @@ const main = () => {
   const space = new Plugins.Space.InsertPlugin()
   parser.plugin.add(space)
 
+  const clean = new Plugins.Pure.CleanPlugin()
+  parser.plugin.add(clean)
+
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
   const inputTranslate = document.getElementById('input-translate') as HTMLTextAreaElement
