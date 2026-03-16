@@ -1,6 +1,6 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
 import type { Line } from '@music-lyric-kit/lyric'
-import type { TransformSpaceConfig } from './config'
+import type { SpaceConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
@@ -10,7 +10,7 @@ import { LineType } from '@music-lyric-kit/lyric'
 import { insertSpaceToLine } from './core'
 
 export class InsertPlugin extends ParserPlugin {
-  override config = new ConfigManager<TransformSpaceConfig, DeepPartial<TransformSpaceConfig>>(DEFAULT_CONFIG)
+  override config = new ConfigManager<SpaceConfig, DeepPartial<SpaceConfig>>(DEFAULT_CONFIG)
 
   override get id() {
     return 'TRANSFORM-INSERT-SPACE'
@@ -51,4 +51,4 @@ export class InsertPlugin extends ParserPlugin {
 export { INSERT_TEXT_SPACE_TYPES } from './constants'
 export type { InsertTextSpaceTypes } from './constants'
 
-export type { TransformSpaceConfig }
+export type { SpaceConfig }
