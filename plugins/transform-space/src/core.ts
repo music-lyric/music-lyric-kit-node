@@ -1,6 +1,7 @@
-import { LineNormalContent, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
 import type { InsertTextSpaceTypes } from './constants'
-import { INSERT_TEXT_SPACE_TYPES } from './constants'
+
+import { LineNormalContent, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
+import { INSERT_TEXT_SPACE_TYPES, INSERT_TEXT_SPACE_TYPES_VALUE } from './constants'
 
 const CJK_RANGE = '\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff' as const
 const ENGLISH_RANGE = 'A-Za-z' as const
@@ -62,7 +63,7 @@ const applyCompressSpaces = (text: string) => {
 
 const processTypes = (types?: InsertTextSpaceTypes[]) => {
   const target = types || [INSERT_TEXT_SPACE_TYPES.ALL]
-  return new Set<InsertTextSpaceTypes>(target.includes(INSERT_TEXT_SPACE_TYPES.ALL) ? Object.values(INSERT_TEXT_SPACE_TYPES) : target)
+  return new Set<InsertTextSpaceTypes>(target.includes(INSERT_TEXT_SPACE_TYPES.ALL) ? INSERT_TEXT_SPACE_TYPES_VALUE : target)
 }
 
 export const insertSpace = (text: string, types?: InsertTextSpaceTypes[]) => {
