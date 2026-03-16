@@ -1,4 +1,4 @@
-export interface TransformInterludeConfig {
+export interface InterludeConfig {
   /**
    * If these conditions are met, add an interlude.
    */
@@ -18,7 +18,7 @@ export interface TransformInterludeConfig {
   }
 }
 
-export const DEFAULT_CONFIG: TransformInterludeConfig = {
+export const DEFAULT_CONFIG: InterludeConfig = {
   checkTime: {
     first: 5000,
     normal: 10000,

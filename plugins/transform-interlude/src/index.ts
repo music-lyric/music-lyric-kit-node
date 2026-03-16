@@ -1,5 +1,5 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { TransformInterludeConfig } from './config'
+import type { InterludeConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
@@ -8,7 +8,7 @@ import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
 import { Line, LineInterlude } from '@music-lyric-kit/lyric'
 
 export class Plugin extends ParserPlugin {
-  override config = new ConfigManager<TransformInterludeConfig, DeepPartial<TransformInterludeConfig>>(DEFAULT_CONFIG)
+  override config = new ConfigManager<InterludeConfig, DeepPartial<InterludeConfig>>(DEFAULT_CONFIG)
 
   override get id() {
     return 'TRANSFORM-INTERLUDE'
@@ -73,4 +73,4 @@ export class Plugin extends ParserPlugin {
   }
 }
 
-export type { TransformInterludeConfig }
+export type { InterludeConfig }
