@@ -74,7 +74,7 @@ export class Matcher {
     }
 
     const targetLine = line.trim()
-    if (targetLine.length === 0) {
+    if (!targetLine.length) {
       return false
     }
 
@@ -94,22 +94,55 @@ export class Matcher {
   }
 
   private withExact(line: string): boolean {
-    const lineLen = line.length
-    const threshold = Math.max(this.options.exact.check, 0)
+    const thresholdPercent = Math.max(this.options.exact.check, 0)
+
+    const targetMatchCount = Math.ceil((thresholdPercent / 100) * line.length)
+    if (targetMatchCount === 0) {
+      return true
+    }
+
+    const matchedChars = new Uint8Array(line.length)
+    let matchedCount = 0
 
     for (let i = 0; i < this.stringRules.length; i++) {
       const rule = this.stringRules[i]
-      if (line.includes(rule)) {
-        const percent = (rule.length / lineLen) * 100
-        if (percent >= threshold) return true
+      const ruleLen = rule.length
+      if (ruleLen === 0) continue
+
+      let postion = line.indexOf(rule)
+      while (postion !== -1) {
+        for (let j = 0; j < ruleLen; j++) {
+          if (matchedChars[postion + j] === 0) {
+            matchedChars[postion + j] = 1
+            matchedCount++
+          }
+        }
+
+        if (matchedCount >= targetMatchCount) {
+          return true
+        }
+
+        postion = line.indexOf(rule, postion + ruleLen)
       }
     }
 
     for (let i = 0; i < this.regexRules.length; i++) {
       const matchResult = line.match(this.regexRules[i])
-      if (matchResult && matchResult[0]) {
-        const percent = (matchResult[0].length / lineLen) * 100
-        if (percent >= threshold) return true
+      if (matchResult && matchResult[0] && matchResult.index !== undefined) {
+        const matchStr = matchResult[0]
+        const matchLen = matchStr.length
+        const pos = matchResult.index
+
+        for (let j = 0; j < matchLen; j++) {
+          if (matchedChars[pos + j] === 0) {
+            matchedChars[pos + j] = 1
+            matchedCount++
+          }
+        }
+
+        if (matchedCount >= targetMatchCount) {
+          return true
+        }
       }
     }
 

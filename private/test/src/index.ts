@@ -40,11 +40,14 @@ const main = () => {
   const interlude = new Plugins.Interlude.Plugin()
   parser.plugin.add(interlude)
 
-  const space = new Plugins.Space.InsertPlugin()
-  parser.plugin.add(space)
-
   const clean = new Plugins.Pure.CleanPlugin()
   parser.plugin.add(clean)
+
+  const extract = new Plugins.Pure.ExtractCreatorPlugin()
+  parser.plugin.add(extract)
+
+  const space = new Plugins.Space.InsertPlugin()
+  parser.plugin.add(space)
 
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
