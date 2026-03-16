@@ -40,6 +40,9 @@ const main = () => {
   const interlude = new Plugins.Interlude.Plugin()
   parser.plugin.add(interlude)
 
+  const space = new Plugins.Space.InsertPlugin()
+  parser.plugin.add(space)
+
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
   const inputTranslate = document.getElementById('input-translate') as HTMLTextAreaElement
