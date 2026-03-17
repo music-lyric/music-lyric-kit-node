@@ -1,3 +1,25 @@
+## v0.6.0 (2026-03-17)
+
+### Feature
+
+- `lyric`
+  - add agent info ([8c6a18a](https://github.com/music-lyric/music-lyric-kit-node/commit/8c6a18a))
+- `plugin-transform-agent`
+  - add extract plugin ([41b7d09](https://github.com/music-lyric/music-lyric-kit-node/commit/41b7d09))
+- `plugin-transform-interlude`
+  - update priority ([a51c87d](https://github.com/music-lyric/music-lyric-kit-node/commit/a51c87d))
+- `plugin-transform-pure`
+  - update default extract creator rules ([6c7a594](https://github.com/music-lyric/music-lyric-kit-node/commit/6c7a594))
+  - update priority ([93183f2](https://github.com/music-lyric/music-lyric-kit-node/commit/93183f2))
+  - add music info support for first line clean ([6354bff](https://github.com/music-lyric/music-lyric-kit-node/commit/6354bff))
+- `utils`
+  - parse time support more formats ([ac2e2d9](https://github.com/music-lyric/music-lyric-kit-node/commit/ac2e2d9))
+
+### Code Refactor
+
+- `core`
+  - optimize code ([fdb68ac](https://github.com/music-lyric/music-lyric-kit-node/commit/fdb68ac))
+
 ## v0.5.0 (2026-03-17)
 
 ### Feature
