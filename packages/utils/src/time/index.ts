@@ -1,4 +1,8 @@
-const TIME_REGEXP = /^(?:(\d+):)?(\d+):(\d+)(?:\.(\d{1,3}))?$/u
+const TIME_REGEXP = /^(?:(?:(\d+):)?(\d+):)?(\d+)(?:\.(\d+))?$/u
+
+const parseMilliSecond = (content: string) => {
+  return content.padEnd(3, '0').slice(0, 3)
+}
 
 /**
  * parse time
@@ -7,16 +11,43 @@ const TIME_REGEXP = /^(?:(\d+):)?(\d+):(\d+)(?:\.(\d{1,3}))?$/u
  *    - hh:mm:ss.SSS
  *    - mm:ss
  *    - mm:ss.SSS
- * @param content time, e.g. 1:14:514
+ *    - ss.SSS
+ *    - SSS
+ * @param content time
+ * @example 1:14:514
+ * @example 14:514
+ * @example 14.514
+ * @example 123
  */
 export const parseTime = (content: string) => {
-  const match = content?.trim().match(TIME_REGEXP)
-  if (!match) return null
+  const trimmed = content?.trim()
+  if (!trimmed) {
+    return null
+  }
+
+  // .SSS
+  if (trimmed.startsWith('.')) {
+    const value = trimmed.slice(1)
+    if (!/^\d+$/.test(value)) {
+      return null
+    }
+    return parseInt(parseMilliSecond(value), 10)
+  }
+
+  // SSS
+  if (/^\d+$/.test(trimmed)) {
+    return parseInt(trimmed, 10)
+  }
+
+  const match = trimmed.match(TIME_REGEXP)
+  if (!match) {
+    return null
+  }
 
   const hour = parseInt(match[1], 10) || 0
   const minute = parseInt(match[2], 10) || 0
   const second = parseInt(match[3], 10) || 0
-  const milliSecond = parseInt((match[4] || '0').padEnd(3, '0').slice(0, 3), 10) || 0
+  const milliSecond = parseInt(parseMilliSecond(match[4] || '0'), 10) || 0
 
   return ((hour * 60 + minute) * 60 + second) * 1000 + milliSecond
 }
