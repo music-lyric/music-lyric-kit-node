@@ -3,12 +3,13 @@ import { WordNormal, WordSpace, WordType } from './word'
 import { Extended, ExtendedType } from './extended'
 import { LineType, LineInterlude, LineNormal, LineNormalContent } from './line'
 import { MetaType, MetaOffset, MetaDuration, MetaTitle, MetaSinger, MetaAlbum, MetaCreator, MetaUnKnown } from './meta'
+import { Agent, AgentLine, AgentLineIndex } from './agent'
 
 import type { Word } from './word'
 import type { Line } from './line'
 import type { Meta } from './meta'
 
-const Version = '0.2.0' as const
+const Version = '0.3.0' as const
 
 enum Type {
   // parse lyric failed
@@ -36,12 +37,15 @@ class Info {
 
   lines: Line[] = []
 
+  agents: Agent[] = []
+
   toJSON() {
     return {
       version: this.version,
       type: this.type,
       metas: this.metas,
       lines: this.lines,
+      agents: this.agents,
     }
   }
 }
@@ -70,6 +74,10 @@ export {
   MetaCreator,
   MetaUnKnown,
   MetaType,
+  // agent
+  Agent,
+  AgentLine,
+  AgentLineIndex,
   // version
   Version,
   // info

@@ -3,6 +3,7 @@ import { createRandomHex } from '@music-lyric-kit/utils'
 import { Time } from '../time'
 import { Extended } from '../extended'
 import { WordType } from '../word'
+import { AgentLine } from '../agent'
 
 import type { Word } from '../word'
 
@@ -62,12 +63,15 @@ export class LineNormal {
 
   content: LineNormalContent = new LineNormalContent()
 
+  agent?: AgentLine
+
   toJSON() {
     return {
       id: this.id,
       type: this.type,
       time: this.time,
       content: this.content,
+      agent: this.agent,
     }
   }
 }
