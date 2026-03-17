@@ -68,7 +68,7 @@ export class Matcher {
     this.init()
   }
 
-  match(line: string): boolean {
+  match(line: string, extra?: string[]): boolean {
     if (!line) {
       return false
     }
@@ -78,10 +78,10 @@ export class Matcher {
       return false
     }
 
-    return this.options.mode === 'fuzzy' ? this.withFuzzy(targetLine) : this.withExact(targetLine)
+    return this.options.mode === 'fuzzy' ? this.withFuzzy(targetLine, extra) : this.withExact(targetLine, extra)
   }
 
-  private withFuzzy(line: string): boolean {
+  private withFuzzy(line: string, extra?: string[]): boolean {
     if (this.combinedRegex && this.combinedRegex.test(line)) {
       return true
     }
@@ -90,10 +90,16 @@ export class Matcher {
       if (this.regexRules[i].test(line)) return true
     }
 
+    if (extra && extra.length > 0) {
+      for (let i = 0; i < extra.length; i++) {
+        if (line.includes(extra[i])) return true
+      }
+    }
+
     return false
   }
 
-  private withExact(line: string): boolean {
+  private withExact(line: string, extra?: string[]): boolean {
     const thresholdPercent = Math.max(this.options.exact.check, 0)
 
     const targetMatchCount = Math.ceil((thresholdPercent / 100) * line.length)
@@ -104,10 +110,13 @@ export class Matcher {
     const matchedChars = new Uint8Array(line.length)
     let matchedCount = 0
 
-    for (let i = 0; i < this.stringRules.length; i++) {
-      const rule = this.stringRules[i]
+    const stringRules = [...this.stringRules, ...(extra || [])]
+    for (let i = 0; i < stringRules.length; i++) {
+      const rule = stringRules[i]
       const ruleLen = rule.length
-      if (ruleLen === 0) continue
+      if (ruleLen === 0) {
+        continue
+      }
 
       let postion = line.indexOf(rule)
       while (postion !== -1) {

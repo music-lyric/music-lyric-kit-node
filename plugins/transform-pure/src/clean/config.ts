@@ -1,6 +1,14 @@
 import type { MatchOptions } from '@root/utils/match'
 
-export interface CleanConfig extends MatchOptions {}
+export interface CleanConfig extends MatchOptions {
+  /**
+   * use music info when clean first line
+   * @example song name - song singer -> will be remove
+   * @example song lyric -> skip
+   * @default true
+   */
+  firstLineWithMusicInfo: boolean
+}
 
 export const DEFAULT_CONFIG: CleanConfig = {
   mode: 'fuzzy',
@@ -12,4 +20,5 @@ export const DEFAULT_CONFIG: CleanConfig = {
     useDefault: true,
     custom: [],
   },
+  firstLineWithMusicInfo: true,
 }

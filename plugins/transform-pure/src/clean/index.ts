@@ -11,6 +11,8 @@ import { Matcher } from '@root/utils/match'
 import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 
+import { cleanText } from './utils'
+
 export class CleanPlugin extends ParserPlugin {
   private matcher: Matcher
 
@@ -42,20 +44,39 @@ export class CleanPlugin extends ParserPlugin {
 
   override exec(ctx: ParserContext) {
     const lines = ctx.result.lines
-    if (!lines.length) {
+    const linesLength = lines.length
+    if (!linesLength) {
       return
     }
 
     const newLines: Line[] = []
 
-    for (const line of lines) {
-      if (line.type == LineType.Normal) {
-        const result = this.matcher.match(line.content.original)
-        if (result) {
-          continue
+    for (let i = 0; i < linesLength; i++) {
+      const line = lines[i]
+      if (line.type !== LineType.Normal) {
+        newLines.push(line)
+        continue
+      }
+
+      const musicInfo = ctx.params.musicInfo
+      const extra = []
+
+      if (i === 0 && musicInfo && this.config.current.firstLineWithMusicInfo) {
+        const name = cleanText(musicInfo.name || '')
+        if (name) {
+          extra.push(name)
+        }
+        const singer = musicInfo.singer?.map((item) => cleanText(item))
+        if (singer) {
+          extra.push(...singer)
         }
       }
-      newLines.push(line)
+
+      const clean = extra.length ? cleanText(line.content.original) : line.content.original
+      const result = this.matcher.match(clean, extra)
+      if (!result) {
+        newLines.push(line)
+      }
     }
 
     ctx.result.lines = newLines

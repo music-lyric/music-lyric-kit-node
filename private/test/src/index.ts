@@ -29,6 +29,8 @@ const STORAGE_KEYS = {
   SYLLABLE: 'lyric_parser_syllable',
   TRANSLATE: 'lyric_parser_translate',
   ROMAN: 'lyric_parser_roman',
+  SONG_NAME: 'lyric_parser_song_name',
+  SINGERS: 'lyric_parser_singers',
 }
 
 const main = () => {
@@ -49,6 +51,8 @@ const main = () => {
   const space = new Plugins.Space.InsertPlugin()
   parser.plugin.add(space)
 
+  const inputSongName = document.getElementById('input-song-name') as HTMLInputElement
+  const inputSingers = document.getElementById('input-singers') as HTMLInputElement
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
   const inputTranslate = document.getElementById('input-translate') as HTMLTextAreaElement
@@ -57,11 +61,21 @@ const main = () => {
   const outputResult = document.getElementById('output-result') as HTMLPreElement
 
   const handleParse = () => {
+    const songName = inputSongName.value.trim()
+    const singersText = inputSingers.value.trim()
+    const singers = singersText
+      ? singersText
+          .split(',')
+          .map((s) => s.trim())
+          .filter((s) => s)
+      : []
     const original = inputOriginal.value
     const syllable = inputSyllable.value
     const translate = inputTranslate.value
     const roman = inputRoman.value
 
+    localStorage.setItem(STORAGE_KEYS.SONG_NAME, songName)
+    localStorage.setItem(STORAGE_KEYS.SINGERS, singersText)
     localStorage.setItem(STORAGE_KEYS.ORIGINAL, original)
     localStorage.setItem(STORAGE_KEYS.SYLLABLE, syllable)
     localStorage.setItem(STORAGE_KEYS.TRANSLATE, translate)
@@ -76,6 +90,9 @@ const main = () => {
 
       if (format) {
         console.log(`Inferred format: ${format}`)
+        console.log(`Song name: ${songName}`)
+        console.log(`Singers: ${singers.join(', ')}`)
+
         const start = performance.now()
         const result = parser.parse(format, {
           content: {
@@ -84,6 +101,13 @@ const main = () => {
             translate,
             roman,
           },
+          musicInfo:
+            songName || singers.length > 0
+              ? {
+                  name: songName,
+                  singer: singers,
+                }
+              : void 0,
         })
         const end = performance.now()
 
@@ -106,6 +130,8 @@ const main = () => {
     }
   }
 
+  inputSongName.value = localStorage.getItem(STORAGE_KEYS.SONG_NAME) ?? ''
+  inputSingers.value = localStorage.getItem(STORAGE_KEYS.SINGERS) ?? ''
   inputOriginal.value = localStorage.getItem(STORAGE_KEYS.ORIGINAL) ?? DEFAULT_ORIGINAL
   inputSyllable.value = localStorage.getItem(STORAGE_KEYS.SYLLABLE) ?? DEFAULT_SYLLABLE
   inputTranslate.value = localStorage.getItem(STORAGE_KEYS.TRANSLATE) ?? DEFAULT_TRANSLATE
