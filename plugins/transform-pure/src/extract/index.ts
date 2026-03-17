@@ -17,6 +17,10 @@ export class ExtractCreatorPlugin extends ParserPlugin {
 
   override config = new ConfigManager<ExtractCreatorConfig, DeepPartial<ExtractCreatorConfig>>(DEFAULT_CREATOR_CONFIG)
 
+  override get priority() {
+    return 40
+  }
+
   override get id() {
     return 'TRANSFORM-EXTRACT'
   }

@@ -18,6 +18,10 @@ export class CleanPlugin extends ParserPlugin {
 
   override config = new ConfigManager<CleanConfig, DeepPartial<CleanConfig>>(DEFAULT_CONFIG)
 
+  override get priority() {
+    return 50
+  }
+
   override get id() {
     return 'TRANSFORM-CLEAN'
   }
