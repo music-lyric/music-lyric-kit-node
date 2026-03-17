@@ -10,6 +10,10 @@ import { Line, LineInterlude } from '@music-lyric-kit/lyric'
 export class Plugin extends ParserPlugin {
   override config = new ConfigManager<InterludeConfig, DeepPartial<InterludeConfig>>(DEFAULT_CONFIG)
 
+  override get priority() {
+    return 500
+  }
+
   override get id() {
     return 'TRANSFORM-INTERLUDE'
   }
