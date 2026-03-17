@@ -42,6 +42,9 @@ const main = () => {
   const interlude = new Plugins.Interlude.Plugin()
   parser.plugin.add(interlude)
 
+  const agent = new Plugins.Agent.ExtractAgentPlugin()
+  parser.plugin.add(agent)
+
   const clean = new Plugins.Pure.CleanPlugin()
   parser.plugin.add(clean)
 

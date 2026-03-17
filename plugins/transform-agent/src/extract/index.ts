@@ -1,0 +1,116 @@
+import type { DeepPartial } from '@music-lyric-kit/utils'
+import type { Line } from '@music-lyric-kit/lyric'
+import type { ExtractAgentConfig } from './config'
+
+import { DEFAULT_AGENT_CONFIG } from './config'
+
+import { ConfigManager } from '@music-lyric-kit/utils'
+
+import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { LineType, Agent, AgentLine } from '@music-lyric-kit/lyric'
+
+import { createHash } from './utils'
+
+const SINGER_LINE_REGEXP = /^(.+?)\s*[:：]\s*(.*)$/
+
+export class ExtractAgentPlugin extends ParserPlugin {
+  override config = new ConfigManager<ExtractAgentConfig, DeepPartial<ExtractAgentConfig>>(DEFAULT_AGENT_CONFIG)
+
+  override get id() {
+    return 'TRANSFORM-AGENT-EXTRACT'
+  }
+
+  override get name() {
+    return 'TRANSFORM-AGENT-EXTRACT'
+  }
+
+  override get stage() {
+    return ParserStage.Transform
+  }
+
+  override check(ctx: ParserContext) {
+    return true
+  }
+
+  override exec(ctx: ParserContext) {
+    const lines = ctx.result.lines
+    if (!lines.length) {
+      return
+    }
+
+    const newLines: Line[] = []
+
+    const agentMap = new Map<string, Agent>()
+    const agentGlobalIndex = new Map<string, number>()
+
+    let currentId: string | null = null
+    let currentBlockIndex = 0
+
+    for (const line of lines) {
+      if (line.type != LineType.Normal) {
+        newLines.push(line)
+        continue
+      }
+
+      const trimmed = line.content.original.trim()
+      if (!trimmed) {
+        newLines.push(line)
+        continue
+      }
+
+      const match = trimmed.match(SINGER_LINE_REGEXP)
+
+      if (match) {
+        const name = match[1].trim()
+        const content = match[2].trim()
+
+        const id = createHash(name)
+
+        if (id !== currentId) {
+          currentBlockIndex = 0
+          currentId = id
+        }
+
+        if (!agentMap.has(id)) {
+          const agent = new Agent()
+          agent.id = id
+          agent.name = name
+          agentMap.set(id, agent)
+          agentGlobalIndex.set(id, 0)
+        }
+
+        if (!content) {
+          continue
+        }
+      } else {
+        if (!currentId) {
+          newLines.push(line)
+          continue
+        }
+      }
+
+      const globalIndex = agentGlobalIndex.get(currentId)!
+
+      const agent = new AgentLine()
+      agent.id = currentId
+      agent.index.global = globalIndex
+      agent.index.block = currentBlockIndex
+
+      agentGlobalIndex.set(currentId, globalIndex + 1)
+      currentBlockIndex++
+
+      const agentInfo = agentMap.get(currentId)
+      if (agentInfo) {
+        agentInfo.count++
+      }
+
+      line.agent = agent
+      newLines.push(line)
+    }
+
+    ctx.result.lines = newLines
+    ctx.result.agents = [...agentMap.values()]
+  }
+}
+
+export type { ExtractAgentConfig }

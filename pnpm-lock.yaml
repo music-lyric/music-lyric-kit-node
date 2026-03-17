@@ -38,6 +38,9 @@ importers:
       '@music-lyric-kit/plugin-format-lrc':
         specifier: workspace:*
         version: link:../plugins/format-lrc
+      '@music-lyric-kit/plugin-transform-agent':
+        specifier: workspace:*
+        version: link:../plugins/transform-agent
       '@music-lyric-kit/plugin-transform-interlude':
         specifier: workspace:*
         version: link:../plugins/transform-interlude
@@ -80,6 +83,18 @@ importers:
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
         specifier: workspace:^
+        version: link:../../packages/lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  plugins/transform-agent:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:*
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
         specifier: workspace:*
