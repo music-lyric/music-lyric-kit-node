@@ -109,7 +109,7 @@ export class ExtractAgentPlugin extends ParserPlugin {
     }
 
     ctx.result.lines = newLines
-    ctx.result.agents = [...agentMap.values()]
+    ctx.result.agents = [...ctx.result.agents, ...agentMap.values()]
   }
 }
 
