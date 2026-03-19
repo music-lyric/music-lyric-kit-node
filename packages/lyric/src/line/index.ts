@@ -65,6 +65,8 @@ export class LineNormal {
 
   agent?: AgentLine
 
+  background?: LineNormal[]
+
   toJSON() {
     return {
       id: this.id,
@@ -72,6 +74,7 @@ export class LineNormal {
       time: this.time,
       content: this.content,
       agent: this.agent,
+      background: this.background,
     }
   }
 }
