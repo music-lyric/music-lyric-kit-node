@@ -87,7 +87,8 @@ export class Parser {
       }
     }
 
-    context.sort()
+    context.handleSort()
+    context.handleCalcAgentIndex()
 
     return context.result
   }
