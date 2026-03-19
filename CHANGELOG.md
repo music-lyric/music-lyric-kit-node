@@ -1,7 +1,15 @@
+## v0.7.1 (2026-03-20)
+
+### Bug Fix
+
+- `plugin-transform-agent`
+  - bad version ([1fcae9c](https://github.com/music-lyric/music-lyric-kit-node/commit/1fcae9c))
+
 ## v0.7.0 (2026-03-19)
 
 ### Document
 
+- update description ([9bf6ea9](https://github.com/music-lyric/music-lyric-kit-node/commit/9bf6ea9))
 - update readme ([908d90a](https://github.com/music-lyric/music-lyric-kit-node/commit/908d90a))
 
 ### Feature
