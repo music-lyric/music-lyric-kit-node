@@ -1,4 +1,4 @@
-export interface InterludeConfig {
+export interface InsertConfig {
   /**
    * If these conditions are met, add an interlude.
    */
@@ -18,7 +18,7 @@ export interface InterludeConfig {
   }
 }
 
-export const DEFAULT_CONFIG: InterludeConfig = {
+export const DEFAULT_CONFIG: InsertConfig = {
   checkTime: {
     first: 5000,
     normal: 10000,

@@ -1,5 +1,5 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { InterludeConfig } from './config'
+import type { InsertConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
@@ -7,19 +7,19 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
 import { Line, LineInterlude } from '@music-lyric-kit/lyric'
 
-export class Plugin extends ParserPlugin {
-  override config = new ConfigManager<InterludeConfig, DeepPartial<InterludeConfig>>(DEFAULT_CONFIG)
+export class InsertPlugin extends ParserPlugin {
+  override config = new ConfigManager<InsertConfig, DeepPartial<InsertConfig>>(DEFAULT_CONFIG)
 
   override get priority() {
     return 500
   }
 
   override get id() {
-    return 'TRANSFORM-INTERLUDE'
+    return 'TRANSFORM-INTERLUDE-INSERT'
   }
 
   override get name() {
-    return 'TRANSFORM-INTERLUDE'
+    return 'TRANSFORM-INTERLUDE-INSERT'
   }
 
   override get stage() {
@@ -77,4 +77,4 @@ export class Plugin extends ParserPlugin {
   }
 }
 
-export type { InterludeConfig }
+export type { InsertConfig }
