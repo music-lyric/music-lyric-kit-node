@@ -1,4 +1,4 @@
-import { Info, Extended, Time, LineType } from '@music-lyric-kit/lyric'
+import { Info, Extended, Time, LineType, Type, WordType, Line } from '@music-lyric-kit/lyric'
 
 import type { BaseContext, BasePlugin as _BasePlugin } from '@root/plugin'
 
@@ -58,6 +58,30 @@ export class ParserContext implements BaseContext {
       return
     }
     this.result.lines.sort((a, b) => a.time.start - b.time.start)
+  }
+
+  handleCleanWords(lines?: Line[]) {
+    for (const line of lines || this.result.lines || []) {
+      if (line.type !== LineType.Normal) {
+        continue
+      }
+
+      if (line.background) {
+        this.handleCleanWords(line.background)
+      }
+
+      const words = line.content.words
+      if (!words.length) {
+        continue
+      }
+
+      if (words[words.length - 1].type === WordType.Space) {
+        words.pop()
+      }
+      if (words.length > 0 && words[0].type === WordType.Space) {
+        words.shift()
+      }
+    }
   }
 
   handleCalcAgentIndex() {
