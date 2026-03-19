@@ -18,12 +18,26 @@ const processLineAgent = (element: Xml.XmlElement) => {
   return agent
 }
 
-const processLineExtra = (element: Xml.XmlElement, line: LineNormal, role: string) => {
+const processLineBackground = (element: Xml.XmlElement, line: LineNormal) => {
+  const background = processLine(element, true)
+  if (!background) {
+    return
+  }
+
+  if (!line.background) {
+    line.background = [background]
+  } else {
+    line.background.push(background)
+  }
+}
+
+const processLineExtra = (element: Xml.XmlElement, line: LineNormal, role: string, background: boolean) => {
   if (!ALL_EXTRA_ROLE.includes(role)) {
     return
   }
 
-  if (role === 'x-bg') {
+  if (role === 'x-bg' && !background) {
+    processLineBackground(element, line)
     return
   }
 
@@ -44,7 +58,7 @@ const processLineExtra = (element: Xml.XmlElement, line: LineNormal, role: strin
   }
 }
 
-const processLine = (element: Xml.XmlElement) => {
+const processLine = (element: Xml.XmlElement, background: boolean = false) => {
   const spans = getChildElementByLocal(element, 'span')
 
   const rawBegin = getAttributeByName(element, 'begin', true)
@@ -94,7 +108,7 @@ const processLine = (element: Xml.XmlElement) => {
     if (item.type === Xml.XmlNodeType.Element && item.local === 'span') {
       const role = getAttributeByName(item, 'role', true)
       if (role) {
-        processLineExtra(item, line, role)
+        processLineExtra(item, line, role, background)
         continue
       }
 
