@@ -1,10 +1,35 @@
-<div align="center">
-  <img src="https://socialify.git.ci/music-lyric/music-lyric-kit-node/image?custom_description=Music+Lyric+Kits&description=1&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto" />
-</div>
+<p align="center">
+  <img
+    src="https://socialify.git.ci/music-lyric/music-lyric-kit-node/image?custom_description=Music+Lyric+Kit&description=1&font=Inter&forks=1&issues=1&language=1&name=1&owner=1&pattern=Plus&pulls=1&stargazers=1&theme=Auto"
+  />
+</p>
+
+<p align="center">Lyric toolkit for parsing, generating and processing</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/music-lyric-kit">
+    <img src="https://img.shields.io/npm/v/music-lyric-kit?color=a1b858&label=npm" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/music-lyric-kit">
+    <img src="https://img.shields.io/npm/dm/music-lyric-kit?color=50a36f&label=downloads" alt="npm downloads" />
+  </a>
+  <a href="https://github.com/music-lyric/music-lyric-kit-node/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/music-lyric/music-lyric-kit-node" alt="license" />
+  </a>
+</p>
+
+<p align="center">
+  English | <a href="./README.zh-CN.md">简体中文</a>
+</p>
 
 > [!WARNING]
 >
-> This project is currently under development, and some interfaces are not yet stable. Please use them with caution!
+> This project is currently under development, and some interfaces are not yet stable.
+
+## Features
+
+- **Format inference** — Auto-detect lyric format from input content
+- **Plugin system** — Built-in plugins, load on demand
 
 ## Install
 
@@ -14,40 +39,82 @@ npm install music-lyric-kit
 
 ## Usage
 
+### Parse
+
 ```js
-import { Parser, Lrc } from 'music-lyric-kit'
+import { Parser, Plugins } from 'music-lyric-kit'
 
 const parser = new Parser.Client()
 
-const lrc = Lrc.Parser.Plugin()
+// Format plugin
+parser.plugin.add(new Plugins.Formats.Lrc.Parser.Plugin())
 
-// add plugin
-parser.plugin.add(lrc)
+// Transform plugins
+parser.plugin.add(new Plugins.Transforms.Space.Plugin())
+parser.plugin.add(new Plugins.Transforms.Interlude.Plugin())
 
 const input = {
-  original: '[00:01.114]TEST',
+  original: '[00:01.114]Hello world',
   syllable: '',
   translate: '',
   roman: '',
 }
-// or
-const input = '[00:01.114]TEST'
 
-const format = parser.infer({
-  content: input,
-})
+// Infer format
+const format = parser.infer({ content: input })
 
 if (format) {
-  const result = parser.parse(format, {
-    content: input,
-  })
+  const result = parser.parse(format, { content: input })
   console.log(result)
 }
 ```
 
-## Contributor
+### Generate
 
-[![Contributor](https://contrib.rocks/image?repo=music-lyric/music-lyric-kit-node)](https://github.com/music-lyric/music-lyric-kit-node/graphs/contributors)
+```js
+import { Generator, Plugins } from 'music-lyric-kit'
+
+const generator = new Generator.Client()
+
+// Format plugin
+generator.plugin.add(new Plugins.Formats.Lrc.Generator.Plugin())
+
+const output = generator.generate(format, { content: result })
+console.log(output)
+```
+
+## Packages
+
+### Core
+
+| Package                                    | Description     |
+| ------------------------------------------ | --------------- |
+| [music-lyric-kit](./app)                   | Main entry      |
+| [@music-lyric-kit/core](./packages/core)   | Plugin system   |
+| [@music-lyric-kit/lyric](./packages/lyric) | Data structures |
+| [@music-lyric-kit/utils](./packages/utils) | Utilities       |
+
+### Format Plugins
+
+| Plugin                                                       | Description |
+| ------------------------------------------------------------ | ----------- |
+| [@music-lyric-kit/plugin-format-lrc](./plugins/format-lrc)   | LRC         |
+| [@music-lyric-kit/plugin-format-ttml](./plugins/format-ttml) | TTML        |
+
+### Transform Plugins
+
+| Plugin                                                                         | Description          |
+| ------------------------------------------------------------------------------ | -------------------- |
+| [@music-lyric-kit/plugin-transform-space](./plugins/transform-space)           | Space normalization  |
+| [@music-lyric-kit/plugin-transform-pure](./plugins/transform-pure)             | Pure lyric detection |
+| [@music-lyric-kit/plugin-transform-interlude](./plugins/transform-interlude)   | Interlude handling   |
+| [@music-lyric-kit/plugin-transform-background](./plugins/transform-background) | Background vocals    |
+| [@music-lyric-kit/plugin-transform-agent](./plugins/transform-agent)           | Multi-voice support  |
+| [@music-lyric-kit/plugin-transform-stress](./plugins/transform-stress)         | Stress marks         |
+
+## Contributors
+
+[![Contributors](https://contrib.rocks/image?repo=music-lyric/music-lyric-kit-node)](https://github.com/music-lyric/music-lyric-kit-node/graphs/contributors)
 
 ## License
 
