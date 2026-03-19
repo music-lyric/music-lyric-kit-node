@@ -44,6 +44,9 @@ importers:
       '@music-lyric-kit/plugin-transform-agent':
         specifier: workspace:*
         version: link:../plugins/transform-agent
+      '@music-lyric-kit/plugin-transform-background':
+        specifier: workspace:*
+        version: link:../plugins/transform-background
       '@music-lyric-kit/plugin-transform-interlude':
         specifier: workspace:*
         version: link:../plugins/transform-interlude
@@ -104,6 +107,18 @@ importers:
         version: link:../../packages/utils
 
   plugins/transform-agent:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:*
+        version: link:../../packages/lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  plugins/transform-background:
     dependencies:
       '@music-lyric-kit/core':
         specifier: workspace:*

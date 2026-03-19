@@ -1,9 +1,9 @@
 {
-  "name": "music-lyric-kit",
-  "version": "0.6.0",
+  "name": "@music-lyric-kit/plugin-transform-background",
+  "version": "0.1.0",
   "author": "folltoshe",
   "type": "module",
-  "description": "Music Lyric Kit",
+  "description": "Music Lyric Kit - Transform Background Lyric Plugin",
   "license": "MIT",
   "scripts": {
     "build": "vite build"
@@ -15,13 +15,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
-    "directory": "app"
+    "directory": "plugins/transform-background"
   },
-  "keywords": [
-    "music",
-    "lyric",
-    "kit"
-  ],
   "main": "./dist/index.comm.js",
   "module": "./dist/index.ecma.js",
   "types": "./dist/index.ecma.d.ts",
@@ -38,12 +33,6 @@
   "dependencies": {
     "@music-lyric-kit/core": "workspace:*",
     "@music-lyric-kit/lyric": "workspace:*",
-    "@music-lyric-kit/plugin-format-lrc": "workspace:*",
-    "@music-lyric-kit/plugin-format-ttml": "workspace:*",
-    "@music-lyric-kit/plugin-transform-interlude": "workspace:*",
-    "@music-lyric-kit/plugin-transform-background": "workspace:*",
-    "@music-lyric-kit/plugin-transform-space": "workspace:*",
-    "@music-lyric-kit/plugin-transform-pure": "workspace:*",
-    "@music-lyric-kit/plugin-transform-agent": "workspace:*"
+    "@music-lyric-kit/utils": "workspace:*"
   }
 }

@@ -56,10 +56,13 @@ const main = () => {
   const ttml = new Plugins.Ttml.AmllParser()
   parser.plugin.add(ttml)
 
-  const interlude = new Plugins.Interlude.Plugin()
+  const interlude = new Plugins.Interlude.InsertPlugin()
   parser.plugin.add(interlude)
 
-  const agent = new Plugins.Agent.ExtractAgentPlugin()
+  const background = new Plugins.Background.ExtractPlugin()
+  parser.plugin.add(background)
+
+  const agent = new Plugins.Agent.ExtractPlugin()
   parser.plugin.add(agent)
 
   const clean = new Plugins.Pure.CleanPlugin()
