@@ -74,6 +74,9 @@ const main = () => {
   const space = new Plugins.Transforms.Space.InsertPlugin()
   parser.plugin.add(space)
 
+  const stress = new Plugins.Transforms.Stress.MarkPlugin()
+  parser.plugin.add(stress)
+
   const inputSongName = document.getElementById('input-song-name') as HTMLInputElement
   const inputSingers = document.getElementById('input-singers') as HTMLInputElement
   const btnParse = document.getElementById('btn-parse') as HTMLButtonElement

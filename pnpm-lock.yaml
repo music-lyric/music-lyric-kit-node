@@ -56,6 +56,9 @@ importers:
       '@music-lyric-kit/plugin-transform-space':
         specifier: workspace:*
         version: link:../plugins/transform-space
+      '@music-lyric-kit/plugin-transform-stress':
+        specifier: workspace:*
+        version: link:../plugins/transform-stress
 
   packages/core:
     dependencies:
@@ -155,6 +158,18 @@ importers:
         version: link:../../packages/utils
 
   plugins/transform-space:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:*
+        version: link:../../packages/lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
+  plugins/transform-stress:
     dependencies:
       '@music-lyric-kit/core':
         specifier: workspace:*
