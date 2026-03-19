@@ -1,4 +1,4 @@
-export interface ExtractAgentConfig {
+export interface ExtractConfig {
   split: string | RegExp
   /**
    * is replace this line when matched
@@ -7,7 +7,7 @@ export interface ExtractAgentConfig {
   replace: boolean
 }
 
-export const DEFAULT_AGENT_CONFIG: ExtractAgentConfig = {
+export const DEFAULT_CONFIG: ExtractConfig = {
   split: '/',
   replace: true,
 }

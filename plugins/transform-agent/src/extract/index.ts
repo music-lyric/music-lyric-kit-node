@@ -1,8 +1,8 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
 import type { Line } from '@music-lyric-kit/lyric'
-import type { ExtractAgentConfig } from './config'
+import type { ExtractConfig } from './config'
 
-import { DEFAULT_AGENT_CONFIG } from './config'
+import { DEFAULT_CONFIG } from './config'
 
 import { ConfigManager } from '@music-lyric-kit/utils'
 
@@ -13,8 +13,8 @@ import { createHash } from './utils'
 
 const SINGER_LINE_REGEXP = /^(.+?)\s*[:：]\s*(.*)$/
 
-export class ExtractAgentPlugin extends ParserPlugin {
-  override config = new ConfigManager<ExtractAgentConfig, DeepPartial<ExtractAgentConfig>>(DEFAULT_AGENT_CONFIG)
+export class ExtractPlugin extends ParserPlugin {
+  override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
 
   override get id() {
     return 'TRANSFORM-AGENT-EXTRACT'
@@ -94,4 +94,4 @@ export class ExtractAgentPlugin extends ParserPlugin {
   }
 }
 
-export type { ExtractAgentConfig }
+export type { ExtractConfig }
