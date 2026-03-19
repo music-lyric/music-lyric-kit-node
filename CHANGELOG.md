@@ -1,3 +1,45 @@
+## v0.7.0 (2026-03-19)
+
+### Document
+
+- update readme ([908d90a](https://github.com/music-lyric/music-lyric-kit-node/commit/908d90a))
+
+### Feature
+
+- `core`
+  - parser support clean redundant space ([1784f78](https://github.com/music-lyric/music-lyric-kit-node/commit/1784f78))
+  - support pre check before exec plugin ([7b9ca93](https://github.com/music-lyric/music-lyric-kit-node/commit/7b9ca93))
+  - support calc line agent index in context ([05699e9](https://github.com/music-lyric/music-lyric-kit-node/commit/05699e9))
+- `lyric`
+  - add word config ([452b4a3](https://github.com/music-lyric/music-lyric-kit-node/commit/452b4a3))
+  - add background line ([70e0315](https://github.com/music-lyric/music-lyric-kit-node/commit/70e0315))
+- `plugin-format-ttml`
+  - support parse background line in amll format ([86040e3](https://github.com/music-lyric/music-lyric-kit-node/commit/86040e3))
+  - add amll format parser plugin ([c818869](https://github.com/music-lyric/music-lyric-kit-node/commit/c818869))
+- `plugin-transform-background`
+  - add extract plugin ([dd249da](https://github.com/music-lyric/music-lyric-kit-node/commit/dd249da))
+- `plugin-transform-stress`
+  - add mark plugin ([cfe6174](https://github.com/music-lyric/music-lyric-kit-node/commit/cfe6174))
+- `utils`
+  - add xml util tools ([600025c](https://github.com/music-lyric/music-lyric-kit-node/commit/600025c))
+
+### Bug Fix
+
+- `lyric`
+  - word extended content ([1764bd4](https://github.com/music-lyric/music-lyric-kit-node/commit/1764bd4))
+- `plugin-transform-agent`
+  - existing agents not being added to result ([b31b11f](https://github.com/music-lyric/music-lyric-kit-node/commit/b31b11f))
+
+### Code Refactor
+
+- `app`
+  - export content name ([9160b2a](https://github.com/music-lyric/music-lyric-kit-node/commit/9160b2a))
+- `plugin-transform-agent`
+  - export content name ([b6713f3](https://github.com/music-lyric/music-lyric-kit-node/commit/b6713f3))
+  - remove index calc ([bccefb3](https://github.com/music-lyric/music-lyric-kit-node/commit/bccefb3))
+- `plugin-transform-interlude`
+  - export content name ([749b42b](https://github.com/music-lyric/music-lyric-kit-node/commit/749b42b))
+
 ## v0.6.0 (2026-03-17)
 
 ### Feature
