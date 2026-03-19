@@ -76,6 +76,13 @@ export class Parser {
       }
 
       try {
+        const result = plugin.check.call(plugin, context)
+        if (!result) {
+          continue
+        }
+      } catch {}
+
+      try {
         plugin.exec.call(plugin, context)
       } catch (e) {
         break
