@@ -25,7 +25,7 @@ export class WordNormal {
 
   content: string = ''
 
-  extended: Extended = new Extended()
+  extended: Extended[] = []
 
   config: WordNormalConfig = new WordNormalConfig()
 
