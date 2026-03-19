@@ -9,7 +9,7 @@ import type { Word } from './word'
 import type { Line } from './line'
 import type { Meta } from './meta'
 
-const Version = '0.4.0' as const
+const Version = '0.5.0' as const
 
 enum Type {
   // parse lyric failed

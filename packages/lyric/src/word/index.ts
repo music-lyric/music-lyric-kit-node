@@ -6,6 +6,16 @@ export enum WordType {
   Space = 'Space',
 }
 
+export class WordNormalConfig {
+  stress: boolean = false
+
+  toJSON() {
+    return {
+      stress: this.stress,
+    }
+  }
+}
+
 export class WordNormal {
   get type() {
     return WordType.Normal as const
@@ -13,15 +23,19 @@ export class WordNormal {
 
   time: Time = new Time()
 
+  content: string = ''
+
   extended: Extended = new Extended()
 
-  content: string = ''
+  config: WordNormalConfig = new WordNormalConfig()
 
   toJSON() {
     return {
       type: this.type,
       time: this.time,
       content: this.content,
+      extended: this.extended,
+      config: this.config,
     }
   }
 }
