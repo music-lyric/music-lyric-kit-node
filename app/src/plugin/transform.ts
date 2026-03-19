@@ -1,8 +1,3 @@
-import * as Lrc from '@music-lyric-kit/plugin-format-lrc'
-import * as Ttml from '@music-lyric-kit/plugin-format-ttml'
-
-export { Lrc, Ttml }
-
 import * as Interlude from '@music-lyric-kit/plugin-transform-interlude'
 import * as Background from '@music-lyric-kit/plugin-transform-background'
 import * as Agent from '@music-lyric-kit/plugin-transform-agent'

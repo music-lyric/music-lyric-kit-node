@@ -50,28 +50,28 @@ const STORAGE_KEYS = {
 const main = () => {
   const parser = new Parser()
 
-  const lrc = new Plugins.Lrc.Parser()
+  const lrc = new Plugins.Formats.Lrc.Parser()
   parser.plugin.add(lrc)
 
-  const ttml = new Plugins.Ttml.AmllParser()
+  const ttml = new Plugins.Formats.Ttml.AmllParser()
   parser.plugin.add(ttml)
 
-  const interlude = new Plugins.Interlude.InsertPlugin()
+  const interlude = new Plugins.Transforms.Interlude.InsertPlugin()
   parser.plugin.add(interlude)
 
-  const background = new Plugins.Background.ExtractPlugin()
+  const background = new Plugins.Transforms.Background.ExtractPlugin()
   parser.plugin.add(background)
 
-  const agent = new Plugins.Agent.ExtractPlugin()
+  const agent = new Plugins.Transforms.Agent.ExtractPlugin()
   parser.plugin.add(agent)
 
-  const clean = new Plugins.Pure.CleanPlugin()
+  const clean = new Plugins.Transforms.Pure.CleanPlugin()
   parser.plugin.add(clean)
 
-  const extract = new Plugins.Pure.ExtractCreatorPlugin()
+  const extract = new Plugins.Transforms.Pure.ExtractCreatorPlugin()
   parser.plugin.add(extract)
 
-  const space = new Plugins.Space.InsertPlugin()
+  const space = new Plugins.Transforms.Space.InsertPlugin()
   parser.plugin.add(space)
 
   const inputSongName = document.getElementById('input-song-name') as HTMLInputElement
