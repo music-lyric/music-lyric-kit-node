@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "author": "folltoshe",
   "type": "module",
-  "description": "Music Lyric Kit",
+  "description": "Lyric toolkit for parsing, generating and processing",
   "license": "MIT",
   "scripts": {
     "dev": "turbo watch dev",
