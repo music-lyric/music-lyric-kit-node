@@ -142,6 +142,60 @@
         border-color: var(--primary-color);
       }
 
+      .format-selector {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      }
+
+      .format-selector > label {
+        font-weight: 600;
+        color: #666;
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .format-options {
+        display: flex;
+        gap: 8px;
+      }
+
+      .format-btn {
+        padding: 8px 20px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: var(--card-bg);
+        color: var(--text-color);
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .format-btn:hover {
+        border-color: var(--primary-color);
+        color: var(--primary-color);
+      }
+
+      .format-btn.active {
+        background: var(--primary-color);
+        border-color: var(--primary-color);
+        color: #fff;
+      }
+
+      .input-grid.single {
+        grid-template-columns: 1fr;
+      }
+
+      .input-grid.single textarea {
+        min-height: 300px;
+      }
+
       .action-area {
         display: flex;
         justify-content: center;
@@ -219,7 +273,15 @@
         </div>
       </div>
 
-      <div class="input-grid">
+      <div class="format-selector">
+        <label>Format</label>
+        <div class="format-options">
+          <button class="format-btn active" data-format="lrc">LRC</button>
+          <button class="format-btn" data-format="ttml">TTML</button>
+        </div>
+      </div>
+
+      <div class="input-grid" id="input-grid-lrc">
         <div class="input-group">
           <label for="input-original">Original Lyrics</label>
           <textarea id="input-original" placeholder="Paste original lyrics here..."></textarea>
@@ -235,6 +297,13 @@
         <div class="input-group">
           <label for="input-roman">Romanization</label>
           <textarea id="input-roman" placeholder="Paste romanization here..."></textarea>
+        </div>
+      </div>
+
+      <div class="input-grid single" id="input-grid-ttml" style="display: none;">
+        <div class="input-group">
+          <label for="input-ttml">TTML Content</label>
+          <textarea id="input-ttml" placeholder="Paste TTML XML content here..."></textarea>
         </div>
       </div>
 
