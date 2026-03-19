@@ -41,10 +41,8 @@ export class ExtractAgentPlugin extends ParserPlugin {
     const newLines: Line[] = []
 
     const agentMap = new Map<string, Agent>()
-    const agentGlobalIndex = new Map<string, number>()
 
     let currentId: string | null = null
-    let currentBlockIndex = 0
 
     for (const line of lines) {
       if (line.type != LineType.Normal) {
@@ -65,18 +63,13 @@ export class ExtractAgentPlugin extends ParserPlugin {
         const content = match[2].trim()
 
         const id = createHash(name)
-
-        if (id !== currentId) {
-          currentBlockIndex = 0
-          currentId = id
-        }
+        currentId = id
 
         if (!agentMap.has(id)) {
           const agent = new Agent()
           agent.id = id
           agent.name = name
           agentMap.set(id, agent)
-          agentGlobalIndex.set(id, 0)
         }
 
         if (!content) {
@@ -89,20 +82,8 @@ export class ExtractAgentPlugin extends ParserPlugin {
         }
       }
 
-      const globalIndex = agentGlobalIndex.get(currentId)!
-
       const agent = new AgentLine()
       agent.id = currentId
-      agent.index.global = globalIndex
-      agent.index.block = currentBlockIndex
-
-      agentGlobalIndex.set(currentId, globalIndex + 1)
-      currentBlockIndex++
-
-      const agentInfo = agentMap.get(currentId)
-      if (agentInfo) {
-        agentInfo.count++
-      }
 
       line.agent = agent
       newLines.push(line)
