@@ -1,5 +1,5 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { Line } from '@music-lyric-kit/lyric'
+import type { Line, WordNormal } from '@music-lyric-kit/lyric'
 import type { ExtractConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
@@ -7,11 +7,9 @@ import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
 import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
-import { LineType, Agent, AgentLine } from '@music-lyric-kit/lyric'
+import { LineType, Agent, AgentLine, WordType } from '@music-lyric-kit/lyric'
 
 import { createHash } from './utils'
-
-const SINGER_LINE_REGEXP = /^(.+?)\s*[:：]\s*(.*)$/
 
 export class ExtractPlugin extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
@@ -50,17 +48,46 @@ export class ExtractPlugin extends ParserPlugin {
         continue
       }
 
+      const words = line.content.words
+
       const trimmed = line.content.original.trim()
       if (!trimmed) {
         newLines.push(line)
         continue
       }
 
-      const match = trimmed.match(SINGER_LINE_REGEXP)
+      const colonWordIndex = words.findIndex((item) => {
+        if (item.type !== WordType.Normal) {
+          return false
+        }
+        const text = item.content.trim()
+        return text.includes('：') || text.includes(':')
+      })
 
-      if (match) {
-        const name = match[1].trim()
-        const content = match[2].trim()
+      if (colonWordIndex !== -1) {
+        const colonWord = words[colonWordIndex] as WordNormal
+        const colonText = colonWord.content.trim()
+
+        const colonIndex = Math.max(colonText.indexOf('：'), colonText.indexOf(':'))
+        const beforeColon = colonText.slice(0, colonIndex)
+        const afterColon = colonText.slice(colonIndex + 1).trim()
+
+        const nameParts = words.slice(0, colonWordIndex).map((item) => (item.type === WordType.Space ? ' '.repeat(item.count) : item.content))
+        if (beforeColon) {
+          nameParts.push(beforeColon)
+        }
+        const name = nameParts.join('').trim()
+
+        if (this.config.current.replace) {
+          if (afterColon) {
+            // ":abc"
+            colonWord.content = afterColon
+            line.content.words = words.slice(colonWordIndex)
+          } else {
+            // "abc:" ?? ":"
+            line.content.words = words.slice(colonWordIndex + 1)
+          }
+        }
 
         const id = createHash(name)
         currentId = id
@@ -72,7 +99,7 @@ export class ExtractPlugin extends ParserPlugin {
           agentMap.set(id, agent)
         }
 
-        if (!content) {
+        if (!line.content.words.length) {
           continue
         }
       } else {

@@ -1,7 +1,7 @@
 export interface ExtractConfig {
   split: string | RegExp
   /**
-   * is replace this line when matched
+   * replace name when matched
    * @default true
    */
   replace: boolean
