@@ -1,13 +1,14 @@
 import type { ParserContentObject } from './interface'
 import type { MatchInfo } from './utils'
 
-import { Extended, ExtendedType, Line, Time, Type } from '@music-lyric-kit/lyric'
+import { Extended, ExtendedType, LineNormal, Type } from '@music-lyric-kit/lyric'
 
 import { matchLyric } from './utils'
 import { processNormal, processSyllable } from './line'
 import { processMeta } from './meta'
+import { alignNumberArray } from '@music-lyric-kit/utils'
 
-const processMain = (params: ParserContentObject): [MatchInfo, Line[], Type] => {
+const processMain = (params: ParserContentObject): [MatchInfo, LineNormal[], Type] => {
   const syllableMatch = matchLyric(params.syllable)
   const syllable = processSyllable(syllableMatch.line)
   if (syllable && syllable.length > 0) {
@@ -23,33 +24,61 @@ const processMain = (params: ParserContentObject): [MatchInfo, Line[], Type] => 
   return [originalMatch, [], Type.Empty]
 }
 
-export const processLyric = (params: ParserContentObject) => {
-  const [match, lines, type] = processMain(params)
+const processExtended = (lines: LineNormal[], params: ParserContentObject) => {
+  const lineMap: Map<number, LineNormal> = new Map()
+  const extendedMap: Map<number, Extended> = new Map()
 
-  const metas = processMeta(match.meta)
-
-  const extendeds: [Time, Extended][] = []
+  for (const line of lines) {
+    lineMap.set(line.time.start, line)
+  }
 
   const translate = processNormal(matchLyric(params.translate).line)
   for (const item of translate || []) {
     const extended = new Extended()
     extended.type = ExtendedType.Translate
     extended.content = item.content.original
-    extendeds.push([item.time, extended])
+    extendedMap.set(item.time.start, extended)
   }
 
-  const roman = processNormal(matchLyric(params.roman).line)
+  const roman = processNormal(matchLyric(params.roman).line) || []
   for (const item of roman || []) {
     const extended = new Extended()
     extended.type = ExtendedType.Roman
     extended.content = item.content.original
-    extendeds.push([item.time, extended])
+    extendedMap.set(item.time.start, extended)
   }
+
+  const result = alignNumberArray([...lineMap.keys()], [...extendedMap.keys()])
+  for (const item of result) {
+    const line = lineMap.get(item.base)
+    if (!line) {
+      continue
+    }
+
+    if (!line.content.extended) {
+      line.content.extended = []
+    }
+
+    for (const target of item.targets) {
+      const extended = extendedMap.get(target.value)
+      if (!extended) {
+        continue
+      }
+      line.content.extended.push(extended)
+    }
+  }
+}
+
+export const processLyric = (params: ParserContentObject) => {
+  const [match, lines, type] = processMain(params)
+
+  const metas = processMeta(match.meta)
+
+  processExtended(lines, params)
 
   return {
     type,
     lines,
     metas,
-    extendeds,
   }
 }

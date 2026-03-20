@@ -54,14 +54,11 @@ export class Parser extends ParserPlugin {
       return
     }
 
-    const { type, lines, metas, extendeds } = processLyric(input)
+    const { type, lines, metas } = processLyric(input)
 
     ctx.result.type = type
     ctx.result.lines = lines
     ctx.result.metas = metas
-    ctx.runtime.extendeds = extendeds
-
-    ctx.needAlignExtended = true
   }
 }
 
