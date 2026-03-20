@@ -5,18 +5,23 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '主唱',
   '原唱',
   '翻唱',
+  '配唱',
+  '合唱',
   '唱',
-
   'Vocal',
   'Vocals',
   'Lead Vocal',
   'Lead Vocals',
   'Singer',
   'Original Singer',
+  'OriginalSinger',
   'Cover',
+  'CoverSong',
   'Sung by',
   'Performed by',
   'Performed',
+  'Singing',
+  'Choir',
 
   '客串',
   '特邀',
@@ -34,6 +39,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Backing Vocal',
   'Background Vocals',
   'Background Vocal',
+  'BackgroundVocals',
   'Chorus',
   'Harmony',
   'Harmonies',
@@ -48,8 +54,13 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '腔',
   'Voice',
   'Children Voice',
+  'ChildrenVoice',
   'Male Voice',
+  'MaleVoice',
   'Female Voice',
+  'FemaleVoice',
+  'HumanVoice',
+  'Tone',
 
   '配音',
   '念白',
@@ -68,6 +79,8 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '乐手',
   '乐师',
   'Session Musician',
+  'SessionMusician',
+  'SessionPlayer',
   'Musician',
   'Performer',
   'Player',
@@ -75,11 +88,17 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '现场乐队',
   '乐队',
   'Live Band',
+  'LiveBand',
   'Band',
+
+  '主创',
+  'Main Creators',
+  'MainCreators',
 
   '作词',
   '填词',
   '词',
+  '作',
   'Lyricist',
   'Lyrics',
   'Lyrics by',
@@ -104,6 +123,9 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Music by',
   'Comp',
 
+  '乐谱',
+  '谱',
+
   '词曲',
   '词曲创作',
   'Song by',
@@ -121,6 +143,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '制作人',
   '制作',
   '单曲制作',
+  'Production',
   'Producer',
   'Produced',
   'Produced by',
@@ -131,23 +154,30 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '执行制作人',
   '执制',
   'Executive Producer',
+  'ExecutiveProducer',
   'Exec Producer',
   'ExProd',
 
   '协力制作人',
   '共同制作',
+  '共同制作人',
+  '制作协力',
   '协力',
   'Co-Producer',
   'Co-Produced by',
   'CoProd',
   'Associate Producer',
+  'AssociateProducer',
   'Additional Production',
   'Additional Producer',
+  'Assistance',
 
   '节拍制作',
+  '节拍制作人',
   '节拍',
   'Beatmaker',
   'Beat Maker',
+  'BeatMaker',
   'Beat',
   'Beat by',
   'Beats',
@@ -166,13 +196,21 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Orchestration',
   'Orch',
 
+  '乐器',
+  '乐器独奏',
+  'Musical Instruments',
+  'MusicalInstruments',
+
   '和声编写',
   '和音编写',
   'Backing Vocals Arranger',
+  'BackingVocalsArranger',
   'Vocal Arranger',
   'Vocal Arrangement',
   'Vocal Arranged by',
   'BV Arranger',
+  'BVArranger',
+  'BGVsArranger',
 
   '工程师',
   '工程',
@@ -180,9 +218,17 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Engineered by',
   'Eng',
 
+  '音响工程师',
+  '音响',
+  '声工',
+  'Audio Engineer',
+  'AudioEngineer',
+
   '录音师',
   '录音',
+  '录制',
   'Recording Engineer',
+  'RecordingEngineer',
   'Recorded by',
   'Recorded at',
   'Recordist',
@@ -194,25 +240,34 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '分轨',
   '贴混',
   '混',
+  '杜比全景声',
   'Mixing Engineer',
+  'MixingEngineer',
   'Mixer',
   'Mixing',
   'Mixed',
   'Mixed by',
   'Mixed at',
   'Mix',
+  'Dolby Atmos',
 
   '母带工程师',
   '母带后期',
   '母带',
   '后期',
+  '后期制作',
   'Mastering Engineer',
+  'MasteringEngineer',
+  'MasterEngineer',
   'Mastering',
   'Mastered',
   'Mastered by',
   'Mastered at',
   'Master',
   'Mst',
+  'Post-production',
+  'PostProd',
+  'PostMastering',
 
   '修音师',
   '修音',
@@ -225,35 +280,52 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Tuning',
   'Tuned by',
   'Auto-Tune',
+  'Adjustment',
+  'Training',
 
   '人声编辑',
   '音频编辑',
+  '编辑',
   '剪辑',
   'Audio Editor',
+  'AudioEditor',
   'Audio Editing',
   'Vocal Editor',
+  'VocalEditor',
   'Vocal Edit',
+  'VocalEdit',
+  'Vocal',
   'Edit',
   'Edited by',
   'Editor',
+  'Cut',
 
   '重混音师',
   'Remixer',
   'Remix',
   'Remixed by',
+  'Remixedby',
 
   '声音设计师',
   '音效设计',
   '音效',
+  '声音',
+  '声设',
   'Sound Designer',
+  'SoundDesigner',
   'Sound Design',
+  'SoundDes',
   'Sound Effects',
   'SFX Designer',
+  'SFXDesigner',
+  'Sound Effects Designer',
+  'SoundEffectsDesigner',
   'SFX',
 
   '拟音师',
   '拟音',
   'Foley Artist',
+  'FoleyArtist',
   'Foley',
 
   '监制',
@@ -262,6 +334,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Supervisor',
   'Supervised by',
   'Music Director',
+  'MusicDirector',
   'Music Supervisor',
   'MD',
 
@@ -273,20 +346,36 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
 
   '艺人与产品',
   '艺人统筹',
+  '艺人',
   'Artists and Repertoire',
+  'ArtistsandRepertoire',
 
   '录音室经理',
   '录音室',
   '录音棚',
   'Studio Manager',
+  'StudioManager',
   'Studio',
 
   '助理工程师',
   '助工',
   '助理',
   'Assistant Engineer',
+  'AssistantEngineer',
   'Assistant',
   'Asst Eng',
+  'AsstEng',
+  'A.Eng',
+
+  '跟踪工程师',
+  'Tracking Engineer',
+  'TrackingEngineer',
+  'TrackingEng',
+
+  '电脑工程师',
+  '电脑',
+  'Computer Engineer',
+  'ComputerEngineer',
 
   '抄谱员',
   '抄谱',
@@ -305,28 +394,42 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '吉他技师',
   '鼓技师',
   'Guitar Tech',
+  'GuitarTech',
   'Drum Tech',
+  'DrumTech',
   'Instrument Tech',
   'Tech',
 
   '音控师',
   '调音师',
+  '调音',
   '前台工程师',
   'FOH Engineer',
+  'FOHEngineer',
   'Front of House',
+  'FrontofHouseEngineer',
   'Live Sound Engineer',
+  'LiveSoundEngineer',
   'Sound Mixer',
+  'SoundMixer',
   'Sound Engineer',
+  'SoundEngineer',
 
   '监听工程师',
   '监听',
   'Monitor Engineer',
+  'MonitorEngineer',
 
+  '舞台',
   '舞台监督',
+  '舞台总监',
+  'Stage',
   'Stage Manager',
+  'StageManager',
 
   '灯光师',
   'Lighting Designer',
+  'LightingDesigner',
   'Light Tech',
 
   '企划',
@@ -334,15 +437,24 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '项目统筹',
   '统筹',
   '项目',
+  '项目策划',
   'Planner',
   'Project Coordinator',
+  'ProjectCoordinator',
   'Coordinator',
+  'Project Planning',
+  'Project',
+  'Planning',
 
   '出品',
   '出品人',
+  '出品方',
+  '联合',
+  '联合出品方',
   '发行',
   '发布',
   '厂牌',
+
   'Publisher',
   'Published by',
   'Produced',
@@ -350,6 +462,16 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Label',
   'Distributed by',
   'Distribution',
+
+  '公司',
+  '唱片',
+  '唱片公司',
+  '制作公司',
+  'Company',
+  'Record',
+  'Record Company',
+  'Manufacturing',
+  'Manufacturing Company',
 
   '宣传',
   '推广',
@@ -369,6 +491,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '视觉',
   '设计',
   'Visual Design',
+  'VisualDesign',
   'Visual',
   'Design',
   'Designed by',
@@ -392,8 +515,11 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '美工',
   '美术',
   'Graphic Design',
+  'GraphicDesign',
   'Graphics',
   'Fine Arts',
+  'FineArts',
+  'Drawing',
   'Art',
   'Art Direction',
   'Art Director',
@@ -426,6 +552,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '艺术',
   '顾问',
   'Art Consultant',
+  'ArtConsultant',
   'Consultant',
   'Creative Director',
   'Creative Direction',
@@ -450,6 +577,7 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '承办',
   '单位',
   '业务',
+  '策监',
   'Special Thanks',
   'Thanks to',
   'Acknowledgments',
@@ -470,6 +598,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
 
   '电钢琴',
   'Electric Piano',
+  'ElectricPiano',
   'Wurlitzer',
   'Rhodes',
   'EP',
@@ -498,7 +627,11 @@ const CREATOR_RULES_INST: MatchRule[] = [
   '箱琴',
   '吉他',
   'Electric Guitar',
+  'ElectricGuitar',
   'Acoustic Guitar',
+  'AcousticGuitar',
+  'Acoustic Electric Guitar',
+  'AcousticElectricGuitar',
   'Classical Guitar',
   'Guitar',
   'Guitars',
@@ -514,8 +647,11 @@ const CREATOR_RULES_INST: MatchRule[] = [
   '低音吉他',
   '贝斯',
   'Electric Bass',
+  'ElectricBass',
   'Bass Guitar',
+  'BassGuitar',
   'Bass',
+  'E.Bss',
   'Bss',
 
   '乌德琴',
@@ -534,7 +670,9 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'Mandolin',
 
   '弦乐',
+  '弦',
   'Strings',
+  'String',
   'Str',
 
   '小提琴',
@@ -552,6 +690,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
 
   '低音提琴',
   'Double Bass',
+  'DoubleBass',
   'Contrabass',
   'Cb',
 
@@ -568,13 +707,18 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'Horns',
 
   '笛子',
+  '竹笛',
   '长笛',
   'Flute',
   'Fl',
+  'Dizi',
 
   '短笛',
   'Piccolo',
   'Picc',
+
+  '班苏里笛',
+  'Bansuri',
 
   '哨笛',
   'Flageolet',
@@ -589,6 +733,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
 
   '低音单簧管',
   'Bass Clarinet',
+  'BassClarinet',
   'B.Cl',
 
   '双簧管',
@@ -597,6 +742,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
 
   '英国管',
   'English Horn',
+  'EnglishHorn',
   'E.Hn',
 
   '巴松',
@@ -607,9 +753,12 @@ const CREATOR_RULES_INST: MatchRule[] = [
   '萨克斯',
   'Saxophone',
   'Alto Sax',
+  'AltoSaxophone',
   'Tenor Sax',
+  'TenorSaxophone',
   'Soprano Sax',
   'Baritone Sax',
+  'BaritoneSaxophone',
   'A.Sax',
   'T.Sax',
   'S.Sax',
@@ -634,6 +783,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
 
   '圆号',
   'French Horn',
+  'FrenchHorn',
   'Horn',
   'Hn',
 
@@ -642,6 +792,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'Euph',
 
   '富鲁格号',
+  '富鲁格',
   'Flugelhorn',
 
   '打击乐',
@@ -651,6 +802,7 @@ const CREATOR_RULES_INST: MatchRule[] = [
   '架子鼓',
   '鼓',
   'Drum Set',
+  'DrumSet',
   'Drums',
   'Drum',
   'Dr',
@@ -662,6 +814,9 @@ const CREATOR_RULES_INST: MatchRule[] = [
   '定音鼓',
   'Timpani',
   'Timp',
+
+  '蒂姆巴尔鼓',
+  'Timbales',
 
   '铃鼓',
   'Tambourine',
@@ -744,7 +899,9 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'Hulusi',
 
   '手风琴',
+  '六角手风琴',
   'Accordion',
+  'Concertina',
 
   '口琴',
   'Harmonica',
@@ -767,6 +924,224 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'Turntables',
   'DJ',
   'Scratching',
+
+  '克拉维奈',
+  'Clavinet',
+  'Clav',
+
+  '梅洛特隆',
+  'Mellotron',
+
+  '口风琴',
+  'Melodica',
+
+  '肩背键盘',
+  'Keytar',
+
+  '声码器',
+  'Vocoder',
+
+  '簧风琴',
+  'Harmonium',
+
+  '踏板钢弦吉他',
+  '滑棒吉他',
+  'Pedal Steel',
+  'Pedal Steel Guitar',
+  'Lap Steel',
+  'Lap Steel Guitar',
+  'Steel Guitar',
+  'Slide Guitar',
+
+  '谐振吉他',
+  'Dobro',
+  'Resonator Guitar',
+  'Resonator',
+
+  '十二弦吉他',
+  '12-String Guitar',
+
+  '布祖基',
+  'Bouzouki',
+
+  '恰朗戈',
+  'Charango',
+
+  '巴拉莱卡',
+  'Balalaika',
+
+  '德西马',
+  'Dulcimer',
+  'Hammered Dulcimer',
+  'Appalachian Dulcimer',
+
+  '齐特琴',
+  '自动竖琴',
+  'Zither',
+  'Autoharp',
+
+  '科拉琴',
+  'Kora',
+
+  '手摇琴',
+  'Hurdy-Gurdy',
+  'Hurdy Gurdy',
+
+  '键提琴',
+  'Nyckelharpa',
+
+  '拉巴卜',
+  'Rebab',
+
+  '柳琴',
+  'Liuqin',
+
+  '月琴',
+  'Yueqin',
+
+  '三弦',
+  'Sanxian',
+
+  '高胡',
+  'Gaohu',
+
+  '中胡',
+  'Zhonghu',
+
+  '板胡',
+  'Banhu',
+
+  '京胡',
+  'Jinghu',
+
+  '箜篌',
+  'Konghou',
+
+  '埙',
+  'Xun',
+
+  '大阮',
+  'Daruan',
+
+  '小阮',
+  'Xiaoruan',
+
+  '排箫',
+  '排笛',
+  'Pan Flute',
+  'Panpipes',
+
+  '筝',
+  'Koto',
+
+  '三味线',
+  'Shamisen',
+
+  '太鼓',
+  'Taiko',
+
+  '尺八',
+  'Shakuhachi',
+
+  '伽倻琴',
+  'Gayageum',
+
+  '奚琴',
+  'Haegeum',
+
+  '大笒',
+  'Daegeum',
+
+  '长鼓',
+  'Janggu',
+
+  '马头琴',
+  'Morin Khuur',
+  'Matouqin',
+
+  '迪吉里杜管',
+  'Didgeridoo',
+
+  '风笛',
+  'Bagpipes',
+  'Bagpipe',
+
+  '杜杜克',
+  'Duduk',
+
+  '陶笛',
+  'Ocarina',
+
+  '竖笛',
+  'Recorder',
+
+  '锡笛',
+  'Penny Whistle',
+
+  '卡洪',
+  '木箱鼓',
+  'Cajón',
+  'Cajon',
+
+  '非洲鼓',
+  '金贝鼓',
+  'Djembe',
+
+  '塔布拉',
+  'Tabla',
+
+  '达布卡',
+  'Darbuka',
+  'Doumbek',
+
+  '手碟',
+  'Handpan',
+  'Hang Drum',
+
+  '钢鼓',
+  'Steel Drum',
+  'Steel Pan',
+  'Steelpan',
+
+  '说话鼓',
+  'Talking Drum',
+
+  '波德兰鼓',
+  'Bodhrán',
+  'Bodhran',
+
+  '管钟',
+  '编钟',
+  'Tubular Bells',
+  'Chimes',
+
+  '牛铃',
+  'Cowbell',
+
+  '木棒',
+  'Claves',
+
+  '刮壶',
+  'Güiro',
+  'Guiro',
+
+  '木鱼',
+  'Woodblock',
+  'Wood Block',
+
+  '小鼓',
+  '军鼓',
+  'Snare Drum',
+  'Snare',
+
+  '手鼓',
+  '框鼓',
+  'Frame Drum',
+  'Hand Drum',
+
+  '班多钮',
+  'Bandoneón',
+  'Bandoneon',
 ]
 
 export const DEFAULT_CREATOR_RULES: MatchRule[] = [...CREATOR_RULES_ROLE, ...CREATOR_RULES_INST, 'PGM']
