@@ -8,11 +8,7 @@ import { PluginLoader } from '@root/plugin'
 import { ParserPlugin, ParserStage } from './plugin'
 import { ParserContext } from './plugin/context'
 
-import { AlignPlugin } from './built'
-
 export class Parser {
-  private readonly alignPlugin = new AlignPlugin()
-
   readonly options: ConfigManager<OptionsRequired, Options> = new ConfigManager(DEFAULT_OPTIONS)
 
   readonly plugin: PluginLoader<ParserPlugin> = new PluginLoader()
@@ -86,11 +82,6 @@ export class Parser {
         plugin.exec.call(plugin, context)
       } catch (e) {
         break
-      }
-
-      if (plugin.id === current.id && context.needAlignExtended) {
-        this.alignPlugin.config.update(this.options.current.align)
-        plugins.unshift(this.alignPlugin)
       }
     }
 

@@ -1,4 +1,4 @@
-import { Info, Extended, Time, LineType, Type, WordType, Line } from '@music-lyric-kit/lyric'
+import { Info, LineType, WordType, Line } from '@music-lyric-kit/lyric'
 
 import type { BaseContext, BasePlugin as _BasePlugin } from '@root/plugin'
 
@@ -10,26 +10,20 @@ export interface ParserParams {
   }
 }
 
-export interface ParserRuntime {
-  extendeds: [Time, Extended][]
-}
+export interface ParserRuntime {}
 
 export class ParserContext implements BaseContext {
   private readonly current: {
-    params: ParserParams
     result: Info
+    params: ParserParams
     runtime: ParserRuntime
-    needAlignExtended: boolean
   }
 
   constructor(params: ParserParams) {
     this.current = {
-      params,
       result: new Info(),
-      runtime: {
-        extendeds: [],
-      },
-      needAlignExtended: false,
+      params,
+      runtime: {},
     }
   }
 
@@ -43,14 +37,6 @@ export class ParserContext implements BaseContext {
 
   get runtime() {
     return this.current.runtime
-  }
-
-  get needAlignExtended() {
-    return this.current.needAlignExtended
-  }
-
-  set needAlignExtended(need: boolean) {
-    this.current.needAlignExtended = need
   }
 
   handleSort() {
