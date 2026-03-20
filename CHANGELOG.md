@@ -1,3 +1,20 @@
+## v0.8.0 (2026-03-20)
+
+### Document
+
+- update use example ([305bce3](https://github.com/music-lyric/music-lyric-kit-node/commit/305bce3))
+
+### Feature
+
+- `core`
+  - support sync line time with line words ([9a5fa6d](https://github.com/music-lyric/music-lyric-kit-node/commit/9a5fa6d))
+- `plugin-transform-agent`
+  - sync line time at the end ([d8a6ffb](https://github.com/music-lyric/music-lyric-kit-node/commit/d8a6ffb))
+  - support remove agent name in extract ([aab451e](https://github.com/music-lyric/music-lyric-kit-node/commit/aab451e))
+- `plugin-transform-pure`
+  - update default extract creator rules ([b0bb8c4](https://github.com/music-lyric/music-lyric-kit-node/commit/b0bb8c4))
+  - use lowercase rules for match ([ae617a4](https://github.com/music-lyric/music-lyric-kit-node/commit/ae617a4))
+
 ## v0.7.1 (2026-03-20)
 
 ### Bug Fix
