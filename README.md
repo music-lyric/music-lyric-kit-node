@@ -47,11 +47,18 @@ import { Parser, Plugins } from 'music-lyric-kit'
 const parser = new Parser.Client()
 
 // Format plugin
-parser.plugin.add(new Plugins.Formats.Lrc.Parser.Plugin())
+const lrc = new Plugins.Formats.Lrc.Parser()
+const ttml = new Plugins.Formats.Ttml.AmllParser()
+
+parser.plugin.add(lrc)
+parser.plugin.add(ttml)
 
 // Transform plugins
-parser.plugin.add(new Plugins.Transforms.Space.Plugin())
-parser.plugin.add(new Plugins.Transforms.Interlude.Plugin())
+const space = new Plugins.Transforms.Space.InsertPlugin()
+const stress = new Plugins.Transforms.Stress.MarkPlugin()
+
+parser.plugin.add(space)
+parser.plugin.add(stress)
 
 const input = {
   original: '[00:01.114]Hello world',
@@ -77,7 +84,7 @@ import { Generator, Plugins } from 'music-lyric-kit'
 const generator = new Generator.Client()
 
 // Format plugin
-generator.plugin.add(new Plugins.Formats.Lrc.Generator.Plugin())
+generator.plugin.add(new Plugins.Formats.Lrc.Generator())
 
 const output = generator.generate(format, { content: result })
 console.log(output)
