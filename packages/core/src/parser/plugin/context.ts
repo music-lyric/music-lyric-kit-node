@@ -60,6 +60,32 @@ export class ParserContext implements BaseContext {
     this.result.lines.sort((a, b) => a.time.start - b.time.start)
   }
 
+  handleSyncLineTime(lines?: Line[]) {
+    for (const line of lines || this.result.lines || []) {
+      if (line.type !== LineType.Normal) {
+        continue
+      }
+
+      if (line.background) {
+        this.handleSyncLineTime(line.background)
+      }
+
+      const words = line.content.words.filter((item) => item.type === WordType.Normal)
+      if (!words.length) {
+        continue
+      }
+
+      const wordStartTime = words[0]?.time?.start || 0
+      const wordEndTime = words[words.length - 1]?.time?.end || 0
+      if (wordStartTime <= 0 || wordEndTime <= 0) {
+        continue
+      }
+
+      line.time.start = wordStartTime
+      line.time.end = wordEndTime
+    }
+  }
+
   handleCleanWords(lines?: Line[]) {
     for (const line of lines || this.result.lines || []) {
       if (line.type !== LineType.Normal) {

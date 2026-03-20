@@ -94,9 +94,10 @@ export class Parser {
       }
     }
 
-    context.handleSort()
     context.handleCleanWords()
     context.handleCalcAgentIndex()
+    context.handleSyncLineTime()
+    context.handleSort()
 
     return context.result
   }
