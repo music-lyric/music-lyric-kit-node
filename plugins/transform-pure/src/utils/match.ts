@@ -51,7 +51,7 @@ export class Matcher {
 
     for (const rule of raw) {
       if (typeof rule === 'string') {
-        this.stringRules.push(rule)
+        this.stringRules.push(rule.toLowerCase())
       } else if (rule instanceof RegExp) {
         this.regexRules.push(rule)
       }
@@ -59,7 +59,7 @@ export class Matcher {
 
     if (this.options.mode === 'fuzzy' && this.stringRules.length > 0) {
       const target = this.stringRules.sort((a, b) => b.length - a.length).map((str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-      this.combinedRegex = new RegExp(`(${target.join('|')})`)
+      this.combinedRegex = new RegExp(`(${target.join('|')})`, 'i')
     }
   }
 
@@ -73,7 +73,7 @@ export class Matcher {
       return false
     }
 
-    const targetLine = line.trim()
+    const targetLine = line.trim().toLowerCase()
     if (!targetLine.length) {
       return false
     }
