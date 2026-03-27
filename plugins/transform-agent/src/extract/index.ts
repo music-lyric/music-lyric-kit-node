@@ -39,19 +39,23 @@ export class ExtractPlugin extends ParserPlugin {
     const newLines: Line[] = []
 
     const agentMap = new Map<string, Agent>()
+    for (const item of ctx.result.agents) {
+      agentMap.set(item.id, item)
+    }
 
     let currentId: string | null = null
-
     for (const line of lines) {
-      if (line.type != LineType.Normal) {
+      if (line.type !== LineType.Normal) {
+        currentId = null
         newLines.push(line)
         continue
       }
 
       const words = line.content.words
-
       const trimmed = line.content.original.trim()
+
       if (!trimmed) {
+        currentId = null
         newLines.push(line)
         continue
       }
@@ -60,6 +64,7 @@ export class ExtractPlugin extends ParserPlugin {
         if (item.type !== WordType.Normal) {
           return false
         }
+
         const text = item.content.trim()
         return text.includes('：') || text.includes(':')
       })
@@ -68,23 +73,38 @@ export class ExtractPlugin extends ParserPlugin {
         const colonWord = words[colonWordIndex] as WordNormal
         const colonText = colonWord.content.trim()
 
-        const colonIndex = Math.max(colonText.indexOf('：'), colonText.indexOf(':'))
+        const colonIndex1 = colonText.indexOf('：')
+        const colonIndex2 = colonText.indexOf(':')
+        const colonIndex = colonIndex1 !== -1 ? colonIndex1 : colonIndex2
+        if (colonIndex === -1) {
+          newLines.push(line)
+          continue
+        }
+
         const beforeColon = colonText.slice(0, colonIndex)
         const afterColon = colonText.slice(colonIndex + 1).trim()
 
-        const nameParts = words.slice(0, colonWordIndex).map((item) => (item.type === WordType.Space ? ' '.repeat(item.count) : item.content))
+        const nameParts = words.slice(0, colonWordIndex).map((item) => {
+          return item.type === WordType.Space ? ' '.repeat(item.count) : item.content
+        })
+
         if (beforeColon) {
           nameParts.push(beforeColon)
         }
+
         const name = nameParts.join('').trim()
+
+        if (!name) {
+          currentId = null
+          newLines.push(line)
+          continue
+        }
 
         if (this.config.current.replace) {
           if (afterColon) {
-            // ":abc"
             colonWord.content = afterColon
             line.content.words = words.slice(colonWordIndex)
           } else {
-            // "abc:" ?? ":"
             line.content.words = words.slice(colonWordIndex + 1)
           }
         }
@@ -97,6 +117,11 @@ export class ExtractPlugin extends ParserPlugin {
           agent.id = id
           agent.name = name
           agentMap.set(id, agent)
+        } else {
+          const exist = agentMap.get(id)!
+          if (!exist.name) {
+            exist.name = name
+          }
         }
 
         if (!line.content.words.length) {
@@ -117,7 +142,7 @@ export class ExtractPlugin extends ParserPlugin {
     }
 
     ctx.result.lines = newLines
-    ctx.result.agents = [...ctx.result.agents, ...agentMap.values()]
+    ctx.result.agents = [...agentMap.values()]
 
     ctx.handleSyncLineTime()
   }
