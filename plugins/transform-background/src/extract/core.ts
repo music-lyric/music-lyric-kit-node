@@ -1,4 +1,4 @@
-import { Line, LineNormal, LineType, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
+import { Extended, Line, LineNormal, LineType, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
 
 const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
@@ -111,6 +111,49 @@ export const isFullLine = (line: LineNormal) => {
   return isOpenBracket(startChar) && isCloseBracket(endChar)
 }
 
+const extractInLineExtended = (content: string): [string, string[]] => {
+  let main = ''
+  let current = ''
+
+  let inBracket = false
+  let lastChar = ''
+
+  const result: string[] = []
+
+  for (let i = 0; i < content.length; i++) {
+    const char = content[i]
+
+    if (isOpenBracket(char)) {
+      if (inBracket) {
+        current += char
+      } else {
+        inBracket = true
+        lastChar = char
+      }
+    } else if (isCloseBracket(char)) {
+      if (inBracket) {
+        result.push(current)
+        current = ''
+        inBracket = false
+      } else {
+        main += char
+      }
+    } else {
+      if (inBracket) {
+        current += char
+      } else {
+        main += char
+      }
+    }
+  }
+
+  // no close (
+  if (inBracket) {
+    main += lastChar + content
+  }
+
+  return [main, result]
+}
 export const extractInLine = (line: LineNormal) => {
   let hasOpen = false
   let hasClose = false
@@ -215,6 +258,7 @@ export const extractInLine = (line: LineNormal) => {
 
   line.content.words = mainWords
 
+  const backgroundLines: LineNormal[] = []
   for (const item of backgroundGroups) {
     const result = new LineNormal()
 
@@ -225,7 +269,26 @@ export const extractInLine = (line: LineNormal) => {
     }
     result.content.words = item
 
+    backgroundLines.push(result)
     addBackground(line, result)
+  }
+
+  for (const item of line.content.extended) {
+    if (!item.content.trim()) {
+      continue
+    }
+
+    const [main, backgrounds] = extractInLineExtended(item.content)
+
+    item.content = main
+    for (let i = 0; i < backgrounds.length; i++) {
+      if (i < backgroundLines.length) {
+        const target = new Extended()
+        target.type = item.type
+        target.content = backgrounds[i]
+        backgroundLines[i].content.extended.push(target)
+      }
+    }
   }
 }
 
