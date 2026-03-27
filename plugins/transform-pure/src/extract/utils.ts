@@ -3,22 +3,18 @@ export const extractCreator = (line: string): [string, string] | null => {
     return null
   }
 
-  const enColonIdx = line.indexOf(':')
-  const cnColonIdx = line.indexOf('：')
-
-  if (enColonIdx === -1 && cnColonIdx === -1) {
+  const text = line.trim()
+  if (!text) {
     return null
   }
 
-  let splitIdx = -1
-  if (enColonIdx !== -1 && cnColonIdx !== -1) {
-    splitIdx = Math.min(enColonIdx, cnColonIdx)
-  } else {
-    splitIdx = enColonIdx !== -1 ? enColonIdx : cnColonIdx
+  const match = text.match(/^(.+?)\s*[:：]\s*(.*)$/)
+  if (!match) {
+    return null
   }
 
-  const role = line.substring(0, splitIdx).trim()
-  const name = line.substring(splitIdx + 1).trim()
+  const role = match[1].trim()
+  const name = match[2].trim()
 
   if (!role) {
     return null

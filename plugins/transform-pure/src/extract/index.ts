@@ -55,7 +55,7 @@ export class ExtractCreatorPlugin extends ParserPlugin {
     const newLines: Line[] = []
 
     for (const line of lines) {
-      if (line.type != LineType.Normal) {
+      if (line.type !== LineType.Normal) {
         newLines.push(line)
         continue
       }
@@ -68,19 +68,25 @@ export class ExtractCreatorPlugin extends ParserPlugin {
 
       const [role, name] = target
       const result = this.matcher.match(removeTextSpaceAll(role))
+
       if (!result) {
         newLines.push(line)
         continue
       }
 
-      const meta = new MetaCreator()
-      meta.content.role = role
-      meta.content.name = splitNameWithRule(name, this.config.current.split)
+      if (name) {
+        const names = splitNameWithRule(name, this.config.current.split)
+        if (names.length > 0) {
+          const meta = new MetaCreator()
+          meta.content.role = role
+          meta.content.name = names
+          newMetas.push(meta)
+        }
+      }
 
       if (!this.config.current.replace) {
         newLines.push(line)
       }
-      newMetas.push(meta)
     }
 
     ctx.result.lines = newLines
