@@ -74,12 +74,31 @@ export const isFullLine = (line: LineNormal) => {
 }
 
 export const extractInLine = (line: LineNormal) => {
+  let hasOpen = false
+  let hasClose = false
+
+  for (const word of line.content.words) {
+    if (word.type === WordType.Normal) {
+      const content = word.content
+      for (let i = 0; i < content.length; i++) {
+        if (isOpenBracket(content[i])) hasOpen = true
+        if (isCloseBracket(content[i])) hasClose = true
+      }
+    }
+  }
+
+  if (!hasOpen && !hasClose) {
+    return
+  }
+
   const words = line.content.words
   const mainWords: Word[] = []
   const backgroundGroups: Word[][] = []
 
   let currentBackground: Word[] = []
   let inBracket = false
+  let lastOpenChar = ''
+  let lastOpenWord: Word | null = null
 
   for (const word of words) {
     if (word.type !== WordType.Normal) {
@@ -99,25 +118,35 @@ export const extractInLine = (line: LineNormal) => {
       const char = content[j]
 
       if (isOpenBracket(char)) {
-        if (buffer) {
-          const copy = copyWord(word) as WordNormal
-          copy.content = buffer
-          mainWords.push(copy)
-          buffer = ''
+        if (inBracket) {
+          buffer += char
+        } else {
+          if (buffer) {
+            const copy = copyWord(word) as WordNormal
+            copy.content = buffer
+            mainWords.push(copy)
+            buffer = ''
+          }
+          inBracket = true
+          lastOpenChar = char
+          lastOpenWord = word
         }
-        inBracket = true
       } else if (isCloseBracket(char)) {
-        if (buffer) {
-          const copy = copyWord(word) as WordNormal
-          copy.content = buffer
-          currentBackground.push(copy)
-          buffer = ''
+        if (inBracket) {
+          if (buffer) {
+            const copy = copyWord(word) as WordNormal
+            copy.content = buffer
+            currentBackground.push(copy)
+            buffer = ''
+          }
+          if (currentBackground.length > 0) {
+            backgroundGroups.push(currentBackground)
+            currentBackground = []
+          }
+          inBracket = false
+        } else {
+          buffer += char
         }
-        if (currentBackground.length > 0) {
-          backgroundGroups.push(currentBackground)
-          currentBackground = []
-        }
-        inBracket = false
       } else {
         buffer += char
       }
@@ -131,9 +160,19 @@ export const extractInLine = (line: LineNormal) => {
     }
   }
 
-  // no )
-  if (currentBackground.length > 0) {
-    backgroundGroups.push(currentBackground)
+  // no close (
+  if (inBracket) {
+    if (lastOpenWord) {
+      const copyOpen = copyWord(lastOpenWord) as WordNormal
+      copyOpen.content = lastOpenChar
+      mainWords.push(copyOpen)
+    }
+    mainWords.push(...currentBackground)
+    currentBackground = []
+  }
+
+  if (backgroundGroups.length === 0) {
+    return
   }
 
   line.content.words = mainWords
@@ -142,8 +181,10 @@ export const extractInLine = (line: LineNormal) => {
     const result = new LineNormal()
 
     const normals = item.filter((w) => w.type === WordType.Normal)
-    result.time.start = normals[0].time.start || 0
-    result.time.end = normals[normals.length - 1].time.end || 0
+    if (normals.length > 0) {
+      result.time.start = normals[0].time.start || 0
+      result.time.end = normals[normals.length - 1].time.end || 0
+    }
     result.content.words = item
 
     addBackground(line, result)
