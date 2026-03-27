@@ -1,3 +1,38 @@
+## v0.9.0 (2026-03-28)
+
+### Document
+
+- add zh-hant language for readme ([1086895](https://github.com/music-lyric/music-lyric-kit-node/commit/1086895))
+
+### Feature
+
+- update plugin id ([94d7ec8](https://github.com/music-lyric/music-lyric-kit-node/commit/94d7ec8))
+- `plugin-format-lrc`
+  - align extended lines ([f2f89b8](https://github.com/music-lyric/music-lyric-kit-node/commit/f2f89b8))
+- `plugin-transform-background`
+  - support extract background content from extended in extract ([c514584](https://github.com/music-lyric/music-lyric-kit-node/commit/c514584))
+  - support remove background line brackets in extract ([8a9aca0](https://github.com/music-lyric/music-lyric-kit-node/commit/8a9aca0))
+  - support cross-line background extract ([42a131b](https://github.com/music-lyric/music-lyric-kit-node/commit/42a131b))
+- `plugin-transform-pure`
+  - update default extract creator rules ([fa61790](https://github.com/music-lyric/music-lyric-kit-node/commit/fa61790))
+
+### Bug Fix
+
+- `plugin-format-ttml`
+  - parse syllable word time ([9d034c2](https://github.com/music-lyric/music-lyric-kit-node/commit/9d034c2))
+- `plugin-transform-background`
+  - skip extract for unclosed brackets ([d3a0bc9](https://github.com/music-lyric/music-lyric-kit-node/commit/d3a0bc9))
+
+### Code Refactor
+
+- `core`
+  - remove built in align plugin ([f8296a7](https://github.com/music-lyric/music-lyric-kit-node/commit/f8296a7))
+- `plugin-transform-agent`
+  - optimize extract agents ([c484146](https://github.com/music-lyric/music-lyric-kit-node/commit/c484146))
+- `plugin-transform-pure`
+  - optimize music info match in clean ([5db1646](https://github.com/music-lyric/music-lyric-kit-node/commit/5db1646))
+  - optimize discard creator lines ([54f77e8](https://github.com/music-lyric/music-lyric-kit-node/commit/54f77e8))
+
 ## v0.8.0 (2026-03-20)
 
 ### Document
