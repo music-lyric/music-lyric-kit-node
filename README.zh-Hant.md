@@ -4,7 +4,7 @@
   />
 </p>
 
-<p align="center">一个歌词工具库，支持歌词解析，生成，后处理</p>
+<p align="center">一個歌詞工具庫，支援歌詞解析、生成與後處理</p>
 
 <p align="center">
   <a href="https://www.npmjs.com/package/music-lyric-kit">
@@ -19,41 +19,41 @@
 </p>
 
 <p align="center">
-  <a href="./README.md">English</a> | 简体中文
+  <a href="./README.md">English</a> | <a href="./README.zh-Hans.md">简体中文</a> | 繁體中文
 </p>
 
 > [!WARNING]
 >
-> 本项目目前仍在开发中，部分接口尚未稳定。
+> 本專案目前仍在開發中，部分介面（API）尚未穩定。
 
 ## 特性
 
-- **格式推断** — 支持通过输入内容自动推断格式
-- **插件系统** — 内置多种插件，可以按需加载
+- **格式推斷** — 支援透過輸入內容自動推斷格式
+- **外掛系統** — 內建多種外掛（Plugin），可以按需載入
 
-## 安装
+## 安裝
 
 ```shell
 npm install music-lyric-kit
 ```
 
-## 使用
+## 使用方式
 
-### 解析歌词
+### 解析歌詞
 
 ```js
 import { Parser, Plugins } from 'music-lyric-kit'
 
 const parser = new Parser.Client()
 
-// 格式插件
+// 格式外掛
 const lrc = new Plugins.Formats.Lrc.Parser()
 const ttml = new Plugins.Formats.Ttml.AmllParser()
 
 parser.plugin.add(lrc)
 parser.plugin.add(ttml)
 
-// 转换插件
+// 轉換外掛
 const space = new Plugins.Transforms.Space.InsertPlugin()
 const stress = new Plugins.Transforms.Stress.MarkPlugin()
 
@@ -67,7 +67,7 @@ const input = {
   roman: '',
 }
 
-// 推断格式
+// 推斷格式
 const format = parser.infer({ content: input })
 
 if (format) {
@@ -76,54 +76,54 @@ if (format) {
 }
 ```
 
-### 生成歌词
+### 產生歌詞
 
 ```js
 import { Generator, Plugins } from 'music-lyric-kit'
 
 const generator = new Generator.Client()
 
-// 格式插件
+// 格式外掛
 generator.plugin.add(new Plugins.Formats.Lrc.Generator())
 
 const output = generator.generate(format, { content: result })
 console.log(output)
 ```
 
-## 包一览
+## 套件一覽
 
-### 主要
+### 主要套件
 
-| 包名                                       | 说明     |
+| 套件名稱                                   | 說明     |
 | ------------------------------------------ | -------- |
 | [music-lyric-kit](./app)                   | 主入口   |
-| [@music-lyric-kit/core](./packages/core)   | 插件系统 |
-| [@music-lyric-kit/lyric](./packages/lyric) | 数据结构 |
-| [@music-lyric-kit/utils](./packages/utils) | 工具库   |
+| [@music-lyric-kit/core](./packages/core)   | 外掛系統 |
+| [@music-lyric-kit/lyric](./packages/lyric) | 資料結構 |
+| [@music-lyric-kit/utils](./packages/utils) | 工具庫   |
 
-### 格式插件
+### 格式外掛
 
-| 插件                                                         | 说明 |
+| 外掛                                                         | 說明 |
 | ------------------------------------------------------------ | ---- |
 | [@music-lyric-kit/plugin-format-lrc](./plugins/format-lrc)   | LRC  |
 | [@music-lyric-kit/plugin-format-ttml](./plugins/format-ttml) | TTML |
 
-### 转换插件
+### 轉換外掛
 
-| 插件                                                                           | 说明     |
+| 外掛                                                                           | 說明     |
 | ------------------------------------------------------------------------------ | -------- |
-| [@music-lyric-kit/plugin-transform-space](./plugins/transform-space)           | 空格规范 |
-| [@music-lyric-kit/plugin-transform-pure](./plugins/transform-pure)             | 净化歌词 |
-| [@music-lyric-kit/plugin-transform-interlude](./plugins/transform-interlude)   | 间奏处理 |
-| [@music-lyric-kit/plugin-transform-background](./plugins/transform-background) | 背景人声 |
+| [@music-lyric-kit/plugin-transform-space](./plugins/transform-space)           | 規範空格 |
+| [@music-lyric-kit/plugin-transform-pure](./plugins/transform-pure)             | 淨化歌詞 |
+| [@music-lyric-kit/plugin-transform-interlude](./plugins/transform-interlude)   | 插入間奏 |
+| [@music-lyric-kit/plugin-transform-background](./plugins/transform-background) | 背景人聲 |
 | [@music-lyric-kit/plugin-transform-agent](./plugins/transform-agent)           | 多人合唱 |
-| [@music-lyric-kit/plugin-transform-stress](./plugins/transform-stress)         | 重音标记 |
+| [@music-lyric-kit/plugin-transform-stress](./plugins/transform-stress)         | 重音標記 |
 
-## 贡献者
+## 貢獻者
 
 [![Contributors](https://contrib.rocks/image?repo=music-lyric/music-lyric-kit-node)](https://github.com/music-lyric/music-lyric-kit-node/graphs/contributors)
 
-## 许可证
+## 授權條款
 
 [MIT](https://opensource.org/licenses/MIT)
 
