@@ -117,8 +117,8 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
         continue
       }
 
-      const rawBegin = getAttributeByName(element, 'begin', true)
-      const rawEnd = getAttributeByName(element, 'end', true)
+      const rawBegin = getAttributeByName(item, 'begin', true)
+      const rawEnd = getAttributeByName(item, 'end', true)
       if (!rawBegin || !rawEnd) {
         continue
       }
