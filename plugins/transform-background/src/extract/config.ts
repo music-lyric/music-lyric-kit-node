@@ -16,10 +16,19 @@ export interface ExtractConfig {
    * @default true
    */
   inLine?: boolean
+  /**
+   * extract in cross-line
+   * @example
+   * (test
+   * test)
+   * @default true
+   */
+  crossLine?: boolean
 }
 
 export const DEFAULT_CONFIG: ExtractConfig = {
   removeBrackets: true,
   fullLine: true,
   inLine: true,
+  crossLine: true,
 }

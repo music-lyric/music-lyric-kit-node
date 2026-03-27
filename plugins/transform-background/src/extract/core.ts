@@ -1,4 +1,4 @@
-import { LineNormal, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
+import { Line, LineNormal, LineType, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
 
 const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
@@ -53,6 +53,53 @@ export const removeBrackets = (line: LineNormal): void => {
     }
     break
   }
+}
+export const removeStartBracket = (line: LineNormal) => {
+  const words = line.content.words
+
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i]
+    if (word.type !== WordType.Normal) {
+      continue
+    }
+
+    if (isOpenBracket(word.content.charAt(0))) {
+      word.content = word.content.substring(1)
+      if (!word.content) words.splice(i, 1)
+    }
+  }
+}
+export const removeEndBracket = (line: LineNormal) => {
+  const words = line.content.words
+
+  for (let i = words.length - 1; i >= 0; i--) {
+    const word = words[i]
+    if (word.type !== WordType.Normal) {
+      continue
+    }
+
+    const lastCharIdx = word.content.length - 1
+    if (isCloseBracket(word.content.charAt(lastCharIdx))) {
+      word.content = word.content.slice(0, -1)
+      if (!word.content) words.splice(i, 1)
+    }
+  }
+}
+
+export const hasStartOpenBracket = (line: LineNormal) => {
+  const words = line.content.words.filter((w) => w.type === WordType.Normal)
+  if (!words.length) {
+    return false
+  }
+  return isOpenBracket(words[0].content.charAt(0))
+}
+export const hasEndCloseBracket = (line: LineNormal) => {
+  const words = line.content.words.filter((w) => w.type === WordType.Normal)
+  if (!words.length) {
+    return false
+  }
+  const last = words[words.length - 1]
+  return isCloseBracket(last.content.charAt(last.content.length - 1))
 }
 
 export const isFullLine = (line: LineNormal) => {
@@ -189,4 +236,45 @@ export const extractInLine = (line: LineNormal) => {
 
     addBackground(line, result)
   }
+}
+
+export const extractCrossLine = (lines: Line[]) => {
+  const result: Line[] = []
+
+  for (let i = 0; i < lines.length; i++) {
+    const current = lines[i]
+
+    const next = lines[i + 1]
+    if (!next) {
+      result.push(current)
+      continue
+    }
+
+    const prev = result[result.length - 1]
+    if (!prev) {
+      result.push(current)
+      continue
+    }
+
+    if (current.type === LineType.Normal && next.type === LineType.Normal) {
+      if (hasStartOpenBracket(current) && hasEndCloseBracket(next)) {
+        const prev = result[result.length - 1]
+        if (prev && prev.type === LineType.Normal) {
+          removeStartBracket(current as LineNormal)
+          removeEndBracket(next as LineNormal)
+
+          addBackground(prev, current)
+          addBackground(prev, next)
+
+          // skip next
+          i++
+          continue
+        }
+      }
+    }
+
+    result.push(current)
+  }
+
+  return result
 }
