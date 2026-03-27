@@ -22,11 +22,11 @@ export class ExtractCreatorPlugin extends ParserPlugin {
   }
 
   override get id() {
-    return 'TRANSFORM-EXTRACT'
+    return 'TRANSFORM-PURE-EXTRACT'
   }
 
   override get name() {
-    return 'TRANSFORM-EXTRACT'
+    return 'TRANSFORM-PURE-EXTRACT'
   }
 
   override get stage() {

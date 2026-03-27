@@ -23,11 +23,11 @@ export class CleanPlugin extends ParserPlugin {
   }
 
   override get id() {
-    return 'TRANSFORM-CLEAN'
+    return 'TRANSFORM-PURE-CLEAN'
   }
 
   override get name() {
-    return 'TRANSFORM-CLEAN'
+    return 'TRANSFORM-PURE-CLEAN'
   }
 
   override get stage() {

@@ -13,11 +13,11 @@ export class InsertPlugin extends ParserPlugin {
   override config = new ConfigManager<SpaceConfig, DeepPartial<SpaceConfig>>(DEFAULT_CONFIG)
 
   override get id() {
-    return 'TRANSFORM-INSERT-SPACE'
+    return 'TRANSFORM-SPACE-INSERT'
   }
 
   override get name() {
-    return 'TRANSFORM-INSERT-SPACE'
+    return 'TRANSFORM-SPACE-INSERT'
   }
 
   override get stage() {
