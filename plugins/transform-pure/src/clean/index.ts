@@ -11,7 +11,7 @@ import { Matcher } from '@root/utils/match'
 import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 
-import { cleanText } from './utils'
+import { processText } from './utils'
 
 export class CleanPlugin extends ParserPlugin {
   private matcher: Matcher
@@ -63,20 +63,20 @@ export class CleanPlugin extends ParserPlugin {
       }
 
       const musicInfo = ctx.params.musicInfo
-      const extra = []
+      const extra: string[] = []
 
       if (i === 0 && musicInfo && this.config.current.firstLineWithMusicInfo) {
-        const name = cleanText(musicInfo.name || '')
-        if (name) {
-          extra.push(name)
+        const names = processText(musicInfo.name || '')
+        if (names) {
+          extra.push(...names)
         }
-        const singer = musicInfo.singer?.map((item) => cleanText(item))
+        const singer = musicInfo.singer?.map((item) => processText(item)).flat()
         if (singer) {
           extra.push(...singer)
         }
       }
 
-      const clean = extra.length ? cleanText(line.content.original) : line.content.original
+      const clean = extra.length ? processText(line.content.original).join('') : line.content.original
       const result = this.matcher.match(clean, extra)
       if (!result) {
         newLines.push(line)

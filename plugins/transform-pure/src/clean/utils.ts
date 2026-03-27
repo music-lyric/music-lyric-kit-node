@@ -1,10 +1,19 @@
-import { removeTextSpaceAll } from '@music-lyric-kit/utils'
+import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 
-const CLEAN_REGEXP = /[^\u4E00-\u9FFF\u3400-\u4DBF\u3040-\u309F\u30A0-\u30FF\uAC00-\uD7AFa-zA-Z0-9\s]/g
+const PUNCTUATION_REGEXP = /[\p{P}\p{S}\p{C}]/gu
 
-export const cleanText = (text: string) => {
-  if (!text.trim()) {
-    return ''
+export const processText = (text: string): string[] => {
+  if (!text || !text.trim()) {
+    return []
   }
-  return removeTextSpaceAll(text.replace(CLEAN_REGEXP, ''))
+
+  const processed = removeTextSpaceToOne(text).replace(PUNCTUATION_REGEXP, '').trim().toLowerCase()
+  if (!processed) {
+    return []
+  }
+
+  return processed
+    .split(' ')
+    .map((item) => item.trim())
+    .filter(Boolean)
 }
