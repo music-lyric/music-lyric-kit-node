@@ -87,9 +87,11 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
 
   '现场乐队',
   '乐队',
+  '乐团',
   'Live Band',
   'LiveBand',
   'Band',
+  'Orchestra',
 
   '主创',
   'Main Creators',
@@ -97,6 +99,8 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
 
   '作词',
   '填词',
+  '中文词',
+  '英文词',
   '词',
   '作',
   'Lyricist',
@@ -122,9 +126,6 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Music',
   'Music by',
   'Comp',
-
-  '乐谱',
-  '谱',
 
   '词曲',
   '词曲创作',
@@ -377,6 +378,9 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Computer Engineer',
   'ComputerEngineer',
 
+  '乐谱',
+  '谱',
+
   '抄谱员',
   '抄谱',
   'Copyist',
@@ -388,7 +392,9 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   'Trans',
 
   '乐谱管理员',
+  '谱务',
   'Librarian',
+  'Scoring',
 
   '乐器技师',
   '吉他技师',
@@ -575,13 +581,16 @@ const CREATOR_RULES_ROLE: MatchRule[] = [
   '指导',
   '承办单位',
   '承办',
+  '承办人',
   '单位',
   '业务',
   '策监',
+  '经纪',
   'Special Thanks',
   'Thanks to',
   'Acknowledgments',
   'Credits',
+  'Contractor',
 ]
 
 const CREATOR_RULES_INST: MatchRule[] = [
@@ -675,15 +684,18 @@ const CREATOR_RULES_INST: MatchRule[] = [
   'String',
   'Str',
 
-  '小提琴',
   '提琴',
+  '小提',
+  '小提琴',
   'Violin',
   'Vln',
 
+  '中提',
   '中提琴',
   'Viola',
   'Vla',
 
+  '大提',
   '大提琴',
   'Cello',
   'Vc',
