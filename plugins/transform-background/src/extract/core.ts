@@ -27,61 +27,52 @@ export const addBackground = (line: LineNormal, background: LineNormal) => {
   }
 }
 
-export const removeBrackets = (line: LineNormal): void => {
+export const removeBrackets = (line: LineNormal, removeStart: boolean = true, removeEnd: boolean = true): void => {
   const words = line.content.words
 
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i]
-    if (word.type !== WordType.Normal) {
-      continue
+  if (removeStart) {
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i]
+      if (word.type !== WordType.Normal) {
+        continue
+      }
+
+      if (isOpenBracket(word.content.charAt(0))) {
+        word.content = word.content.substring(1)
+        if (!word.content) words.splice(i, 1)
+      }
+      break
     }
-    word.content = word.content.substring(1)
-    if (!word.content) {
-      words.splice(i, 1)
-    }
-    break
   }
 
-  for (let i = words.length - 1; i >= 0; i--) {
-    const word = words[i]
-    if (word.type !== WordType.Normal) {
-      continue
-    }
-    word.content = word.content.slice(0, -1)
-    if (!word.content) {
-      words.splice(i, 1)
-    }
-    break
-  }
-}
-export const removeStartBracket = (line: LineNormal) => {
-  const words = line.content.words
+  if (removeEnd) {
+    for (let i = words.length - 1; i >= 0; i--) {
+      const word = words[i]
+      if (word.type !== WordType.Normal) {
+        continue
+      }
 
-  for (let i = 0; i < words.length; i++) {
-    const word = words[i]
-    if (word.type !== WordType.Normal) {
-      continue
-    }
-
-    if (isOpenBracket(word.content.charAt(0))) {
-      word.content = word.content.substring(1)
-      if (!word.content) words.splice(i, 1)
+      const lastCharIdx = word.content.length - 1
+      if (isCloseBracket(word.content.charAt(lastCharIdx))) {
+        word.content = word.content.slice(0, -1)
+        if (!word.content) words.splice(i, 1)
+      }
+      break
     }
   }
-}
-export const removeEndBracket = (line: LineNormal) => {
-  const words = line.content.words
 
-  for (let i = words.length - 1; i >= 0; i--) {
-    const word = words[i]
-    if (word.type !== WordType.Normal) {
-      continue
+  for (const item of line.content.extended) {
+    if (!item.content.trim()) continue
+
+    if (removeStart && isOpenBracket(item.content.charAt(0))) {
+      item.content = item.content.substring(1)
     }
 
-    const lastCharIdx = word.content.length - 1
-    if (isCloseBracket(word.content.charAt(lastCharIdx))) {
-      word.content = word.content.slice(0, -1)
-      if (!word.content) words.splice(i, 1)
+    if (removeEnd && item.content) {
+      const lastCharIdx = item.content.length - 1
+      if (isCloseBracket(item.content.charAt(lastCharIdx))) {
+        item.content = item.content.slice(0, -1)
+      }
     }
   }
 }
@@ -260,8 +251,8 @@ export const extractCrossLine = (lines: Line[]) => {
       if (hasStartOpenBracket(current) && hasEndCloseBracket(next)) {
         const prev = result[result.length - 1]
         if (prev && prev.type === LineType.Normal) {
-          removeStartBracket(current as LineNormal)
-          removeEndBracket(next as LineNormal)
+          removeBrackets(current, true, false)
+          removeBrackets(next, false, true)
 
           addBackground(prev, current)
           addBackground(prev, next)
