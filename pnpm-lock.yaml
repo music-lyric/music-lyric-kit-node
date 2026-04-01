@@ -27,7 +27,7 @@ importers:
         specifier: ^4.5.4
         version: 4.5.4(@types/node@25.0.9)(rollup@4.55.1)(typescript@5.8.2)(vite@7.3.1(@types/node@25.0.9))
 
-  app:
+  main:
     dependencies:
       '@music-lyric-kit/core':
         specifier: workspace:*
@@ -185,7 +185,7 @@ importers:
     dependencies:
       music-lyric-kit:
         specifier: workspace:*
-        version: link:../../app
+        version: link:../../main
 
 packages:
 

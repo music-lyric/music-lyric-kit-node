@@ -2,7 +2,7 @@ packages:
   - packages/*
   - private/*
   - plugins/*
-  - app
+  - main
 
 onlyBuiltDependencies:
   - esbuild
