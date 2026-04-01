@@ -1,98 +1,26 @@
-import { Parser, Plugins } from 'music-lyric-kit'
+import { createParser } from './parser'
+import { renderResult } from './render'
+import { esc } from './utils'
+import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_SYLLABLE, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
 
-type Format = 'lrc' | 'ttml'
-
-const DEFAULT_LRC_ORIGINAL = `
-[ti: title]
-[ar: singer]
-[al: album]
-[length: 11:45]
-[00:00.114]This is Original
-`
-
-const DEFAULT_LRC_SYLLABLE = `
-[ti: title]
-[ar: singer]
-[al: album]
-[length: 11:45]
-[00:00.114]<0,114>This <114,514>is <514,999>Syllable
-`
-
-const DEFAULT_LRC_TRANSLATE = `
-[00:00.114]This is Translate
-`
-
-const DEFAULT_LRC_ROMAN = `
-[00:00.114]This is Roman
-`
-
-const DEFAULT_TTML = `<?xml version="1.0" encoding="UTF-8"?>
-<tt xmlns="http://www.w3.org/ns/ttml" xmlns:amll="http://www.example.com/ns/amll">
-  <body>
-    <div>
-      <p begin="00:00.000" end="00:05.000">This is lyric line</p>
-    </div>
-  </body>
-</tt>
-`
-
-const STORAGE_KEYS = {
-  FORMAT: 'lyric_parser_format',
-  ORIGINAL: 'lyric_parser_original',
-  SYLLABLE: 'lyric_parser_syllable',
-  TRANSLATE: 'lyric_parser_translate',
-  ROMAN: 'lyric_parser_roman',
-  TTML: 'lyric_parser_ttml',
-  SONG_NAME: 'lyric_parser_song_name',
-  SINGERS: 'lyric_parser_singers',
-}
+import type { Format } from './constants'
 
 const main = () => {
-  const parser = new Parser()
-
-  const lrc = new Plugins.Formats.Lrc.Parser()
-  parser.plugin.add(lrc)
-
-  const ttml = new Plugins.Formats.Ttml.AmllParser()
-  parser.plugin.add(ttml)
-
-  const interlude = new Plugins.Transforms.Interlude.InsertPlugin()
-  parser.plugin.add(interlude)
-
-  const background = new Plugins.Transforms.Background.ExtractPlugin()
-  parser.plugin.add(background)
-
-  const agent = new Plugins.Transforms.Agent.ExtractPlugin()
-  parser.plugin.add(agent)
-
-  const clean = new Plugins.Transforms.Pure.CleanPlugin()
-  parser.plugin.add(clean)
-
-  const extract = new Plugins.Transforms.Pure.ExtractCreatorPlugin()
-  parser.plugin.add(extract)
-
-  const space = new Plugins.Transforms.Space.InsertPlugin()
-  parser.plugin.add(space)
-
-  const stress = new Plugins.Transforms.Stress.MarkPlugin()
-  parser.plugin.add(stress)
+  const parser = createParser()
 
   const inputSongName = document.getElementById('input-song-name') as HTMLInputElement
   const inputSingers = document.getElementById('input-singers') as HTMLInputElement
   const btnParse = document.getElementById('btn-parse') as HTMLButtonElement
-  const outputResult = document.getElementById('output-result') as HTMLPreElement
+  const outputResult = document.getElementById('output-result') as HTMLDivElement
 
   const gridLrc = document.getElementById('input-grid-lrc') as HTMLDivElement
   const gridTtml = document.getElementById('input-grid-ttml') as HTMLDivElement
   const formatBtns = document.querySelectorAll<HTMLButtonElement>('.format-btn')
 
-  // LRC
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
   const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
   const inputTranslate = document.getElementById('input-translate') as HTMLTextAreaElement
   const inputRoman = document.getElementById('input-roman') as HTMLTextAreaElement
-
-  // TTML
   const inputTtml = document.getElementById('input-ttml') as HTMLTextAreaElement
 
   let currentFormat: Format = (localStorage.getItem(STORAGE_KEYS.FORMAT) as Format) || 'lrc'
@@ -134,7 +62,7 @@ const main = () => {
   const parse = (content: any) => {
     const format = parser.infer({ content })
     if (!format) {
-      outputResult.textContent = 'Could not infer lyric format from "Original Lyrics".'
+      outputResult.innerHTML = '<div class="result-empty">Could not infer lyric format.</div>'
       return
     }
 
@@ -174,22 +102,23 @@ const main = () => {
   }
 
   const handleParse = () => {
-    outputResult.textContent = 'Parsing...'
+    const badge = document.getElementById('result-type-badge')!
+    badge.style.display = 'none'
+    outputResult.innerHTML = '<div class="result-empty">Parsing...</div>'
 
     try {
       const result = currentFormat === 'lrc' ? parseLrc() : parseTtml()
 
       if (result) {
-        const content = JSON.stringify(result, null, 2)
-        console.log(`Parser result: `, JSON.parse(content))
-        outputResult.textContent = content
+        console.log(`Parser result: `, result.toJSON())
+        outputResult.innerHTML = renderResult(result)
       } else {
         console.log('Parser result is null')
-        outputResult.textContent = 'Parser returned null result.'
+        outputResult.innerHTML = '<div class="result-empty">Parser returned null result.</div>'
       }
     } catch (error: any) {
       console.error(error)
-      outputResult.textContent = `Error during parsing:\n${error.message || error}`
+      outputResult.innerHTML = `<div class="result-empty" style="color:#ff3b30">Error: ${esc(error.message || String(error))}</div>`
     }
   }
 
