@@ -32,7 +32,7 @@ const handleFindTarget = (dir) => {
 
   const name = pkg.name
   const version = pkg.version
-  const id = name.replace('@music-lyric-kit/', '')
+  const id = name === 'music-lyric-kit' ? 'main' : name.replace('@music-lyric-kit/', '')
 
   return {
     id,
@@ -55,13 +55,7 @@ const handleFindTargets = (root) => {
     .filter((item) => !!item)
 }
 
-const appRoot = join(root, 'app')
 const packagesRoot = join(root, 'packages')
 const pluginsRoot = join(root, 'plugins')
 
-const appTarget = handleFindTarget(appRoot)
-if (appTarget) {
-  appTarget.id = 'app'
-}
-
-export const targets = [...handleFindTargets(packagesRoot), ...handleFindTargets(pluginsRoot), appTarget].filter((item) => !!item)
+export const targets = [...handleFindTargets(packagesRoot), ...handleFindTargets(pluginsRoot)].filter((item) => !!item)
