@@ -27,6 +27,7 @@
   "types": "./dist/index.ecma.d.ts",
   "exports": {
     ".": {
+      "dev": "./src/index.ts",
       "types": "./dist/index.ecma.d.ts",
       "import": "./dist/index.ecma.js",
       "require": "./dist/index.comm.js"

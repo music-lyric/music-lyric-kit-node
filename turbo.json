@@ -9,9 +9,7 @@
     },
     "dev": {
       "persistent": true,
-      "cache": true,
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "cache": false
     }
   }
 }
