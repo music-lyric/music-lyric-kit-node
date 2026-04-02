@@ -1,5 +1,3 @@
-import type { ParserContentType, ParserContentObject } from './interface'
-
 import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
 import { Extended, ExtendedType, LineNormal, Type } from '@music-lyric-kit/lyric'
 
@@ -9,6 +7,14 @@ import { processLines, checkIsSyllable } from './line'
 import { processMetas } from './meta'
 
 const CHECK_REGEXP = /\[(?:\d{1,3}:)?(?:\d{1,2}:)?\d{1,2}\.\d{3}\]/
+
+export interface ParserInput {
+  original: string
+  translate?: string
+  roman?: string
+}
+
+export type ParserInputFull = string | ParserInput
 
 export class Parser extends ParserPlugin {
   override get id() {
@@ -28,9 +34,9 @@ export class Parser extends ParserPlugin {
   }
 
   private processInput(input: any) {
-    const content = input as ParserContentType
+    const content = input as ParserInputFull
 
-    const result: ParserContentObject | null =
+    const result: ParserInput | null =
       typeof content === 'string'
         ? {
             original: content,
@@ -131,5 +137,3 @@ export class Parser extends ParserPlugin {
     ctx.result.metas = metas
   }
 }
-
-export type { ParserContentType, ParserContentObject }
