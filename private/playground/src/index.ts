@@ -1,7 +1,7 @@
 import { createParser } from './parser'
 import { renderResult } from './render'
 import { esc } from './utils'
-import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_SYLLABLE, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
+import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
 
 import type { Format } from './constants'
 
@@ -18,7 +18,6 @@ const main = () => {
   const formatBtns = document.querySelectorAll<HTMLButtonElement>('.format-btn')
 
   const inputOriginal = document.getElementById('input-original') as HTMLTextAreaElement
-  const inputSyllable = document.getElementById('input-syllable') as HTMLTextAreaElement
   const inputTranslate = document.getElementById('input-translate') as HTMLTextAreaElement
   const inputRoman = document.getElementById('input-roman') as HTMLTextAreaElement
   const inputTtml = document.getElementById('input-ttml') as HTMLTextAreaElement
@@ -81,16 +80,14 @@ const main = () => {
 
   const parseLrc = () => {
     const original = inputOriginal.value
-    const syllable = inputSyllable.value
     const translate = inputTranslate.value
     const roman = inputRoman.value
 
     localStorage.setItem(STORAGE_KEYS.ORIGINAL, original)
-    localStorage.setItem(STORAGE_KEYS.SYLLABLE, syllable)
     localStorage.setItem(STORAGE_KEYS.TRANSLATE, translate)
     localStorage.setItem(STORAGE_KEYS.ROMAN, roman)
 
-    return parse({ original, syllable, translate, roman })
+    return parse({ original, translate, roman })
   }
 
   const parseTtml = () => {
@@ -126,7 +123,6 @@ const main = () => {
   inputSongName.value = localStorage.getItem(STORAGE_KEYS.SONG_NAME) ?? ''
   inputSingers.value = localStorage.getItem(STORAGE_KEYS.SINGERS) ?? ''
   inputOriginal.value = localStorage.getItem(STORAGE_KEYS.ORIGINAL) ?? DEFAULT_LRC_ORIGINAL
-  inputSyllable.value = localStorage.getItem(STORAGE_KEYS.SYLLABLE) ?? DEFAULT_LRC_SYLLABLE
   inputTranslate.value = localStorage.getItem(STORAGE_KEYS.TRANSLATE) ?? DEFAULT_LRC_TRANSLATE
   inputRoman.value = localStorage.getItem(STORAGE_KEYS.ROMAN) ?? DEFAULT_LRC_ROMAN
   inputTtml.value = localStorage.getItem(STORAGE_KEYS.TTML) ?? DEFAULT_TTML

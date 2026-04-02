@@ -10,14 +10,6 @@ export const DEFAULT_LRC_ORIGINAL = `
 [00:00.114]This is Original
 `
 
-export const DEFAULT_LRC_SYLLABLE = `
-[ti: title]
-[ar: singer]
-[al: album]
-[length: 11:45]
-[00:00.114]<0,114>This <114,514>is <514,999>Syllable
-`
-
 export const DEFAULT_LRC_TRANSLATE = `
 [00:00.114]This is Translate
 `
@@ -39,7 +31,6 @@ export const DEFAULT_TTML = `<?xml version="1.0" encoding="UTF-8"?>
 export const STORAGE_KEYS = {
   FORMAT: 'lyric_parser_format',
   ORIGINAL: 'lyric_parser_original',
-  SYLLABLE: 'lyric_parser_syllable',
   TRANSLATE: 'lyric_parser_translate',
   ROMAN: 'lyric_parser_roman',
   TTML: 'lyric_parser_ttml',
