@@ -1,3 +1,22 @@
+## v0.10.0 (2026-04-02)
+
+### Feature
+
+- `test`
+  - add preview ([213c701](https://github.com/music-lyric/music-lyric-kit-node/commit/213c701))
+
+### Bug Fix
+
+- `plugin-format-lrc`
+  - multiple extended line ​​will be overwrite ([fc0c998](https://github.com/music-lyric/music-lyric-kit-node/commit/fc0c998))
+
+### Code Refactor
+
+- remove unuse code ([29755db](https://github.com/music-lyric/music-lyric-kit-node/commit/29755db))
+- `plugin-format-lrc`
+  - optimize export type ([c2617b0](https://github.com/music-lyric/music-lyric-kit-node/commit/c2617b0))
+  - merge syllable param into original param ([81866ca](https://github.com/music-lyric/music-lyric-kit-node/commit/81866ca))
+
 ## v0.9.0 (2026-03-28)
 
 ### Document
