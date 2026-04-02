@@ -26,7 +26,7 @@ const processMain = (params: ParserContentObject): [MatchInfo, LineNormal[], Typ
 
 const processExtended = (lines: LineNormal[], params: ParserContentObject) => {
   const lineMap: Map<number, LineNormal> = new Map()
-  const extendedMap: Map<number, Extended> = new Map()
+  const extendedMap: Map<number, Extended[]> = new Map()
 
   for (const line of lines) {
     lineMap.set(line.time.start, line)
@@ -34,18 +34,22 @@ const processExtended = (lines: LineNormal[], params: ParserContentObject) => {
 
   const translate = processNormal(matchLyric(params.translate).line)
   for (const item of translate || []) {
+    const current = extendedMap.get(item.time.start) || []
     const extended = new Extended()
     extended.type = ExtendedType.Translate
     extended.content = item.content.original
-    extendedMap.set(item.time.start, extended)
+    current.push(extended)
+    extendedMap.set(item.time.start, current)
   }
 
   const roman = processNormal(matchLyric(params.roman).line) || []
   for (const item of roman || []) {
+    const current = extendedMap.get(item.time.start) || []
     const extended = new Extended()
     extended.type = ExtendedType.Roman
     extended.content = item.content.original
-    extendedMap.set(item.time.start, extended)
+    current.push(extended)
+    extendedMap.set(item.time.start, current)
   }
 
   const result = alignNumberArray([...lineMap.keys()], [...extendedMap.keys()])
@@ -64,7 +68,7 @@ const processExtended = (lines: LineNormal[], params: ParserContentObject) => {
       if (!extended) {
         continue
       }
-      line.content.extended.push(extended)
+      line.content.extended.push(...extended)
     }
   }
 }
