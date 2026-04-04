@@ -7,6 +7,7 @@ export const createClient = () => {
   client.plugin.add(new Plugins.Formats.Ttml.AmllParser())
   client.plugin.add(new Plugins.Transforms.Interlude.InsertPlugin())
   client.plugin.add(new Plugins.Transforms.Background.ExtractPlugin())
+  client.plugin.add(new Plugins.Transforms.Background.CleanPlugin())
   client.plugin.add(new Plugins.Transforms.Agent.ExtractPlugin())
   client.plugin.add(new Plugins.Transforms.Pure.CleanPlugin())
   client.plugin.add(new Plugins.Transforms.Pure.ExtractCreatorPlugin())
