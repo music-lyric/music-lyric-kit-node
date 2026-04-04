@@ -141,7 +141,9 @@ export function alignElements<T, R>(
 }
 
 export const insertSpaceToLine = (line: LineNormalContent, types?: InsertTextSpaceTypes[]): LineNormalContent => {
-  if (!line || !line.words || line.words.length === 0) return line
+  if (!line || !line.words || line.words.length === 0) {
+    return line
+  }
 
   const full = line.original
   const processed = insertSpace(full, types)
@@ -171,4 +173,16 @@ export const insertSpaceToLine = (line: LineNormalContent, types?: InsertTextSpa
   newLine.words = newWords
 
   return newLine
+}
+
+export const insertSpaceToExtended = (line: LineNormalContent, types?: InsertTextSpaceTypes[]): LineNormalContent => {
+  if (!line.extended.length) {
+    return line
+  }
+
+  for (const item of line.extended) {
+    item.content = insertSpace(item.content, types)
+  }
+
+  return line
 }
