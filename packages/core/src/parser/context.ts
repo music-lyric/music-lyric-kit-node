@@ -40,11 +40,19 @@ export class ParserContext implements BaseContext {
   }
 
   handleSort() {
-    const result = this.result as any
-    if (!Array.isArray(result?.lines)) {
+    if (!this.result?.lines.length) {
       return
     }
-    result.lines.sort((a: any, b: any) => a.time.start - b.time.start)
+    this.result.lines.sort((a: any, b: any) => a.time.start - b.time.start)
+    for (const line of this.result.lines) {
+      if (line.type !== LineType.Normal) {
+        continue
+      }
+      if (!line.background?.length) {
+        continue
+      }
+      line.background.sort((a: any, b: any) => a.time.start - b.time.start)
+    }
   }
 
   handleSyncLineTime(lines?: Line[]) {
