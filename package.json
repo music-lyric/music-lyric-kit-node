@@ -9,9 +9,9 @@
     "dev": "turbo watch dev",
     "build": "turbo run build",
     "build:force": "turbo run build --force",
-    "change-log:build": "node scripts/change-log/build.ts",
-    "change-log:match": "node scripts/change-log/match.ts",
-    "publish": "node scripts/publish.ts"
+    "change-log:build": "tsx scripts/change-log/build.ts",
+    "change-log:match": "tsx scripts/change-log/match.ts",
+    "publish": "tsx scripts/publish.ts"
   },
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
   "bugs": {
@@ -22,11 +22,12 @@
     "url": "https://github.com/music-lyric/music-lyric-kit-node.git"
   },
   "engines": {
-    "node": ">24.12.0"
+    "node": ">=24.12.0"
   },
   "packageManager": "pnpm@10.25.0",
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "tsx": "^4.21.0",
     "turbo": "^2.7.1",
     "typescript": "5.8.2",
     "vite": "^7.3.0",

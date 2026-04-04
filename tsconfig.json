@@ -6,7 +6,6 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "removeComments": false,
-    "resolveJsonModule": true,
     "strict": true,
     "target": "esnext"
   },
