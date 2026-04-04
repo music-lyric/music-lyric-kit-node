@@ -1,12 +1,25 @@
-// @ts-check
-
 import { exec } from 'node:child_process'
 
-/**
- * @param {string} command
- * @returns {Promise<string>}
- */
-export const runGitCommand = (command) => {
+export interface CommitHash {
+  short: string
+  full: string
+}
+
+export interface ParsedCommit {
+  type: string
+  scope: string | null
+  message: string
+}
+
+export interface CommitInfo extends ParsedCommit {
+  hash: CommitHash
+  author: string
+  date: string
+  subject: string
+  body: string
+}
+
+export const runGitCommand = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
       if (error) {
@@ -22,11 +35,7 @@ export const runGitCommand = (command) => {
 
 const COMMIT_MESSAGE_REGEXP = /^(feat|fix|chore|docs|revert|refactor|test|release)(\([a-zA-Z0-9-_]+\))?:\s(.*)$/
 
-/**
- * @param {string} message
- * @returns {any | null}
- */
-export const parseCommitMessage = (message) => {
+export const parseCommitMessage = (message: string): ParsedCommit | null => {
   const match = message?.match(COMMIT_MESSAGE_REGEXP)
   if (!match) {
     return null
@@ -39,7 +48,7 @@ export const parseCommitMessage = (message) => {
   }
 }
 
-export const getRepoInfo = async () => {
+export const getRepoInfo = async (): Promise<{ owner: string; name: string } | null> => {
   try {
     const remoteUrl = await runGitCommand('git remote get-url origin')
     if (!remoteUrl) {
@@ -69,11 +78,8 @@ export const getRepoInfo = async () => {
 
 const COMMIT_BLOCK_REGEXP = /---block---\s*([\s\S]*?)\s*---block---/g
 
-/**
- * @param {string} text
- */
-const parseCommitBlocks = (text) => {
-  const commits = []
+const parseCommitBlocks = (text: string): CommitInfo[] => {
+  const commits: CommitInfo[] = []
 
   let match
   while ((match = COMMIT_BLOCK_REGEXP.exec(text)) !== null) {
@@ -89,7 +95,7 @@ const parseCommitBlocks = (text) => {
       continue
     }
 
-    const commit = {
+    const commit: CommitInfo = {
       hash: {
         short: shortHash,
         full: fullHash,
@@ -107,11 +113,7 @@ const parseCommitBlocks = (text) => {
   return commits
 }
 
-/**
- * @param {string} start
- * @param {string} end
- */
-export const getCommitInfo = async (start, end = 'HEAD') => {
+export const getCommitInfo = async (start: string, end: string = 'HEAD'): Promise<CommitInfo[]> => {
   try {
     const range = !start && end ? `${end}` : start || end ? `${start}..${end}` : ''
     const command = `git log ${range} --pretty=format:"---block---%n %h%n %H%n %an%n %ad%n %s%n %b%n ---block---%n" --date=short`
@@ -129,7 +131,7 @@ export const getCommitInfo = async (start, end = 'HEAD') => {
   }
 }
 
-export const getLatestTag = async () => {
+export const getLatestTag = async (): Promise<string | null> => {
   try {
     const command = 'git describe --tags --abbrev=0'
 
@@ -145,7 +147,7 @@ export const getLatestTag = async () => {
   }
 }
 
-export const getAllTags = async () => {
+export const getAllTags = async (): Promise<string[]> => {
   try {
     const command = 'git tag'
 

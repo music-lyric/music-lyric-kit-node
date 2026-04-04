@@ -1,13 +1,13 @@
-// @ts-check
+import type { CommitInfo } from './utils/git'
 
 import { parseArgs } from 'node:util'
 import { join } from 'node:path'
 import { writeFileSync } from 'node:fs'
 
-import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant.js'
+import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { root, rootVersion } from '../target.js'
-import { getRepoInfo, getCommitInfo, getAllTags, buildContents, buildHeader, formatResult } from './utils/index.js'
+import { root, rootVersion } from '../target'
+import { getRepoInfo, getCommitInfo, getAllTags, buildContents, buildHeader, formatResult } from './utils'
 
 const { values: args } = parseArgs({
   allowPositionals: true,
@@ -23,19 +23,17 @@ const { values: args } = parseArgs({
   },
 })
 
-/**
- * @param {string} start
- * @param {string} end
- * @param {any} repo
- * @param {boolean} showHead
- */
-const handleBuild = async (start, end, repo, showHead = true) => {
+interface VersionEntry {
+  head: CommitInfo | null
+  list: CommitInfo[]
+}
+
+const handleBuild = async (start: string, end: string, repo: { owner: string; name: string }, showHead: boolean = true): Promise<string> => {
   const commits = await getCommitInfo(start, end)
 
   let key = `v${rootVersion}`
 
-  /** @type any */
-  const wait = {}
+  const wait: Record<string, VersionEntry> = {}
 
   for (const item of commits) {
     if (item.type === 'release') {
@@ -61,8 +59,7 @@ const handleBuild = async (start, end, repo, showHead = true) => {
     wait[key].list.push(item)
   }
 
-  /** @type string[] */
-  const result = []
+  const result: string[] = []
 
   for (const version in wait) {
     const content = wait[version]
@@ -87,8 +84,8 @@ const main = async () => {
     throw new Error('get repo info failed.')
   }
 
-  let result
-  let file
+  let result: string
+  let file: string
 
   if (args.current) {
     const [latest, old] = await getAllTags()

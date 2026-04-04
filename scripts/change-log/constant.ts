@@ -1,5 +1,3 @@
-// @ts-check
-
 export const CHANGE_LOG_FILE = 'CHANGELOG.md'
 
 export const CURRENT_CHANGE_LOG_FILE = 'CURRENT_CHANGELOG.md'

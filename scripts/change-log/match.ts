@@ -1,12 +1,10 @@
-// @ts-check
-
 import { parseArgs } from 'node:util'
 import { readFileSync, writeFileSync } from 'node:fs'
 
-import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant.js'
+import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { rootVersion } from '../target.js'
-import { getLatestTag } from './utils/git.js'
+import { rootVersion } from '../target'
+import { getLatestTag } from './utils/git'
 
 const { values: args } = parseArgs({
   allowPositionals: true,
@@ -22,13 +20,7 @@ const { values: args } = parseArgs({
   },
 })
 
-/**
- * @param {string} content
- * @param {string} version
- * @param {boolean} includeHeader
- * @returns {string}
- */
-const handleMatchChangeLogByVersion = (content, version, includeHeader = false) => {
+const handleMatchChangeLogByVersion = (content: string, version: string, includeHeader: boolean = false): string => {
   const target = version.replace(/^v/i, '').replace(/\./g, '\\.')
 
   const regex = new RegExp(`(##\\s*v${target}.*)[\\r\\n]+([\\s\\S]*?)(?=##\\s*v|$)`)

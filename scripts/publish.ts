@@ -1,10 +1,8 @@
-// @ts-check
-
-import { exec } from './utils.js'
-import { rootVersion, targets } from './target.js'
+import { exec } from './utils'
+import { rootVersion, targets } from './target'
 
 const main = async () => {
-  let releaseTag = null
+  let releaseTag: string | null = null
   if (rootVersion.includes('alpha')) {
     releaseTag = 'alpha'
   } else if (rootVersion.includes('beta')) {

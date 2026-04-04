@@ -1,10 +1,10 @@
-// @ts-check
+import type { CommitInfo } from './git'
 
-import { formatDate } from '../../utils.js'
+import { formatDate } from '../../utils'
 
 const ALLOW_TYPES = ['feat', 'fix', 'revert', 'docs', 'refactor']
 
-const TYPE_TITLE_MAP = {
+const TYPE_TITLE_MAP: Record<string, string> = {
   feat: 'Feature',
   fix: 'Bug Fix',
   docs: 'Document',
@@ -15,10 +15,7 @@ const TYPE_TITLE_MAP = {
 
 const BREAKING_CHANGE_REGEXP = /^breaking:\s*(.*)/i
 
-/**
- * @param {string} text
- */
-const extractBreakingChangeInfo = (text) => {
+const extractBreakingChangeInfo = (text: string): string[] => {
   if (!text) {
     return []
   }
@@ -28,7 +25,7 @@ const extractBreakingChangeInfo = (text) => {
     return []
   }
 
-  const result = []
+  const result: string[] = []
   for (const line of trimed.split('\n') || []) {
     const trimed = line.trim()
     if (!trimed) {
@@ -51,36 +48,24 @@ const extractBreakingChangeInfo = (text) => {
   return result
 }
 
-/**
- * @param {string} version
- * @param {*} info
- */
-export const buildHeader = (version, info) => {
-  const { date } = info || {}
-
+export const buildHeader = (version: string, info: CommitInfo | null): string => {
+  const date = info?.date
   const now = formatDate(new Date())
 
   return `## ${version} (${date || now})`
 }
 
-/**
- * @param {string} type
- */
-const buildTypeHeader = (type) => {
-  // @ts-expect-error
+const buildTypeHeader = (type: string): string => {
   const title = TYPE_TITLE_MAP[type]
   return `### ${title}`
 }
 
-/**
- * @param {string[]} changes
- */
-const buildBreakingChange = (changes) => {
+const buildBreakingChange = (changes: string[]): string[] | null => {
   if (!changes || !changes.length) {
     return null
   }
 
-  const result = []
+  const result: string[] = []
 
   const header = buildTypeHeader('breaking')
   result.push('\n')
@@ -94,109 +79,21 @@ const buildBreakingChange = (changes) => {
   return result
 }
 
-/**
- *
- * @param {any[]} infos
- * @param {any} repo
- */
-const buildScopeContent = (infos, repo) => {
-  /** @type {Map<string, any[]>} */
-  const typeMap = new Map()
-
-  for (const info of infos) {
-    const type = info.type
-
-    const current = typeMap.get(type)
-    if (current) {
-      current.push(info)
-      continue
-    }
-
-    typeMap.set(type, [info])
-  }
-
-  /** @type string[] */
-  const result = []
-  /** @type string[] */
-  const breaking = []
-
-  /**
-   *
-   * @param {string} type
-   */
-  const buildTypeHeader = (type) => {
-    // @ts-expect-error
-    const title = TYPE_TITLE_MAP[type]
-    return `- ${title}`
-  }
-
-  /**
-   *
-   * @param {any} commit
-   * @param {any} repo
-   */
-  const buildBody = (commit, repo) => {
-    const { hash, message } = commit
-    return `  - ${message} ([${hash.short}](https://github.com/${repo.owner}/${repo.name}/commit/${hash.short}))`
-  }
-
-  /**
-   * @param {any[]} commits
-   */
-  const processCommits = (commits) => {
-    for (const commit of commits) {
-      const body = buildBody(commit, repo)
-      result.push(body)
-      const breakingChange = extractBreakingChangeInfo(commit.body)
-      if (breakingChange) {
-        breaking.push(...breakingChange)
-      }
-    }
-  }
-
-  for (const [key, value] of typeMap.entries()) {
-    result.push('\n')
-    result.push(buildTypeHeader(key))
-
-    processCommits(value)
-  }
-
-  return result
+interface RepoInfo {
+  owner: string
+  name: string
 }
 
-/**
- *
- * @param {string} scope
- */
-const buildScopeHeader = (scope) => {
-  return '- `' + scope + '`'
-}
-
-/**
- *
- * @param {any} commit
- * @param {any} repo
- */
-const buildBody = (commit, repo, isCommon = false) => {
+const buildBody = (commit: CommitInfo, repo: RepoInfo, isCommon: boolean = false): string => {
   const { hash, message } = commit
   return `${isCommon ? '' : '  '}- ${message} ([${hash.short}](https://github.com/${repo.owner}/${repo.name}/commit/${hash.short}))`
 }
 
-/**
- * @param {*} data
- * @param {*} repo
- */
-const buildTypeContents = (data, repo) => {
-  /** @type {string[]} */
-  const result = []
-  /** @type {string[]} */
-  const breaking = []
+const buildTypeContents = (data: Map<string, CommitInfo[]>, repo: RepoInfo): string[] => {
+  const result: string[] = []
+  const breaking: string[] = []
 
-  /**
-   * @param {any[]} commits
-   * @param {boolean} isCommon
-   */
-  const processCommits = (commits, isCommon = false) => {
+  const processCommits = (commits: CommitInfo[], isCommon: boolean = false) => {
     for (const commit of commits) {
       const body = buildBody(commit, repo, isCommon)
       result.push(body)
@@ -220,6 +117,7 @@ const buildTypeContents = (data, repo) => {
     if (!value) {
       continue
     }
+    const buildScopeHeader = (scope: string) => '- `' + scope + '`'
     result.push(buildScopeHeader(key))
     processCommits(value)
   }
@@ -232,15 +130,10 @@ const buildTypeContents = (data, repo) => {
   return result
 }
 
-/**
- * @param {*[]} infos
- * @param {*} repo
- */
-export const buildContents = (infos, repo) => {
-  /** @type {string[]} */
-  const result = []
+export const buildContents = (infos: CommitInfo[], repo: RepoInfo): string[] => {
+  const result: string[] = []
 
-  const typeMap = new Map()
+  const typeMap = new Map<string, Map<string, CommitInfo[]>>()
 
   for (const info of infos) {
     const type = info.type
@@ -249,7 +142,7 @@ export const buildContents = (infos, repo) => {
     }
 
     const scope = info.scope || 'common'
-    const scopeMap = typeMap.get(type) || new Map()
+    const scopeMap = typeMap.get(type) || new Map<string, CommitInfo[]>()
 
     const current = scopeMap.get(scope)
     if (current) {
