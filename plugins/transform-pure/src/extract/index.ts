@@ -3,7 +3,7 @@ import type { Line, Meta } from '@music-lyric-kit/lyric'
 import type { ExtractCreatorConfig } from './config'
 
 import { DEFAULT_CREATOR_CONFIG } from './config'
-import { DEFAULT_CREATOR_RULES } from './constants'
+import { DEFAULT_CREATOR_RULES_FULL } from './constants'
 
 import { ConfigManager, removeTextSpaceAll } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
@@ -31,7 +31,7 @@ export class ExtractCreatorPlugin extends ParserPlugin {
 
   constructor() {
     super()
-    this.matcher = new Matcher(this.config.current.match, DEFAULT_CREATOR_RULES)
+    this.matcher = new Matcher(this.config.current.match, DEFAULT_CREATOR_RULES_FULL)
     this.config.on((opt) => {
       this.matcher.update(opt.match)
     })
