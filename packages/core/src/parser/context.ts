@@ -1,4 +1,4 @@
-import { Info, LineType, WordType, Line } from '@music-lyric-kit/lyric'
+import { Info, LineType, WordType, Line, LineNormal, WordNormal } from '@music-lyric-kit/lyric'
 
 import type { BaseContext } from '@root/plugin'
 
@@ -39,58 +39,83 @@ export class ParserContext implements BaseContext {
     return this.current.runtime
   }
 
-  handleSort() {
-    if (!this.result?.lines.length) {
+  /**
+   * Sort all lines and their background lines by start time in ascending order.
+   */
+  sort() {
+    const lines = this.result?.lines
+    if (!lines?.length) {
       return
     }
-    this.result.lines.sort((a: any, b: any) => a.time.start - b.time.start)
-    for (const line of this.result.lines) {
-      if (line.type !== LineType.Normal) {
+
+    const compare = (a: Line, b: Line) => a.time.start - b.time.start
+    lines.sort(compare)
+
+    for (let i = 0, len = lines.length; i < len; i++) {
+      const line = lines[i]
+      if (line.type !== LineType.Normal || !line.background?.length) {
         continue
       }
-      if (!line.background?.length) {
-        continue
-      }
-      line.background.sort((a: any, b: any) => a.time.start - b.time.start)
+      line.background.sort(compare)
     }
   }
 
-  handleSyncLineTime(lines?: Line[]) {
-    const result = this.result as any
+  /**
+   * Sync each line's start/end time to match the time range of its first and last normal word.
+   */
+  syncLineTime(lines?: Line[]) {
+    const result = this.result
     for (const line of lines || result?.lines || []) {
       if (line.type !== LineType.Normal) {
         continue
       }
 
       if (line.background) {
-        this.handleSyncLineTime(line.background)
+        this.syncLineTime(line.background)
       }
 
-      const words = line.content.words.filter((item: any) => item.type === WordType.Normal)
-      if (!words.length) {
+      const words = line.content.words
+
+      let first: WordNormal | null = null
+      let last: WordNormal | null = null
+      for (let i = 0, len = words.length; i < len; i++) {
+        const word = words[i]
+        if (word.type !== WordType.Normal) {
+          continue
+        }
+        if (!first) {
+          first = word
+        }
+        last = word
+      }
+
+      if (!first || !last) {
         continue
       }
 
-      const wordStartTime = words[0]?.time?.start || 0
-      const wordEndTime = words[words.length - 1]?.time?.end || 0
-      if (wordStartTime <= 0 || wordEndTime <= 0) {
+      const startTime = first.time?.start || 0
+      const endTime = last.time?.end || 0
+      if (startTime <= 0 || endTime <= 0) {
         continue
       }
 
-      line.time.start = wordStartTime
-      line.time.end = wordEndTime
+      line.time.start = startTime
+      line.time.end = endTime
     }
   }
 
-  handleCleanWords(lines?: Line[]) {
-    const result = this.result as any
+  /**
+   * Remove leading and trailing space words from each line's word list.
+   */
+  cleanWord(lines?: Line[]) {
+    const result = this.result
     for (const line of lines || result?.lines || []) {
       if (line.type !== LineType.Normal) {
         continue
       }
 
       if (line.background) {
-        this.handleCleanWords(line.background)
+        this.cleanWord(line.background)
       }
 
       const words = line.content.words
@@ -98,23 +123,31 @@ export class ParserContext implements BaseContext {
         continue
       }
 
-      if (words[words.length - 1].type === WordType.Space) {
+      while (words.length > 0 && words[words.length - 1].type === WordType.Space) {
         words.pop()
       }
-      if (words.length > 0 && words[0].type === WordType.Space) {
-        words.shift()
+
+      let startCount = 0
+      while (startCount < words.length && words[startCount].type === WordType.Space) {
+        startCount++
+      }
+      if (startCount > 0) {
+        words.splice(0, startCount)
       }
     }
   }
 
-  handleCalcAgentIndex() {
-    const result = this.result as any
+  /**
+   * Calculate global index, block index for each line's agent, and total line count for each agent.
+   */
+  calcAgentIndex() {
+    const result = this.result
     if (!Array.isArray(result?.lines) || !Array.isArray(result?.agents)) {
       return
     }
 
-    const globalIndex: Record<string, number> = {}
-    const idIndex: Record<string, number> = {}
+    const globalIndex = new Map<string, number>()
+    const idIndex = new Map<string, number>()
 
     let id: string | null = null
     let blockIndex = 0
@@ -126,10 +159,9 @@ export class ParserContext implements BaseContext {
 
       const current = line.agent.id
 
-      if (!globalIndex[current]) {
-        globalIndex[current] = 0
-      }
-      line.agent.index.global = globalIndex[current]++
+      const gi = globalIndex.get(current) ?? 0
+      line.agent.index.global = gi
+      globalIndex.set(current, gi + 1)
 
       if (current !== id) {
         blockIndex = 0
@@ -137,14 +169,11 @@ export class ParserContext implements BaseContext {
       }
       line.agent.index.block = blockIndex++
 
-      if (!idIndex[current]) {
-        idIndex[current] = 0
-      }
-      idIndex[current]++
+      idIndex.set(current, (idIndex.get(current) ?? 0) + 1)
     }
 
     for (const agent of result.agents) {
-      agent.count = idIndex[agent.id] ?? 0
+      agent.count = idIndex.get(agent.id) ?? 0
     }
   }
 }

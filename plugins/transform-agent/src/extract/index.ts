@@ -139,7 +139,7 @@ export class ExtractPlugin extends ParserPlugin {
     ctx.result.lines = newLines
     ctx.result.agents = [...agentMap.values()]
 
-    ctx.handleSyncLineTime()
+    ctx.syncLineTime()
   }
 }
 
