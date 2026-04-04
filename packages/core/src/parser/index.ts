@@ -92,8 +92,9 @@ export class Parser {
 
     context.cleanWord()
     context.calcAgentIndex()
-    context.syncLineTime()
+    context.syncLineTimeWithWord()
     context.sort()
+    context.syncLineTimeWithBackground()
 
     return context.result
   }

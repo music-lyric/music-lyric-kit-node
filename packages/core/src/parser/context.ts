@@ -63,15 +63,15 @@ export class ParserContext implements BaseContext {
   /**
    * Sync each line's start/end time to match the time range of its first and last normal word.
    */
-  syncLineTime(lines?: Line[]) {
+  syncLineTimeWithWord(lines?: Line[]) {
     const result = this.result
-    for (const line of lines || result?.lines || []) {
+    for (const line of lines || result.lines || []) {
       if (line.type !== LineType.Normal) {
         continue
       }
 
       if (line.background) {
-        this.syncLineTime(line.background)
+        this.syncLineTimeWithWord(line.background)
       }
 
       const words = line.content.words
@@ -101,6 +101,28 @@ export class ParserContext implements BaseContext {
 
       line.time.start = startTime
       line.time.end = endTime
+    }
+  }
+
+  /**
+   * Extend each line end time to cover the end time of its last background line, ensuring the line duration fully encompasses all background content.
+   */
+  syncLineTimeWithBackground() {
+    for (const line of this.result.lines) {
+      if (line.type !== LineType.Normal) {
+        continue
+      }
+
+      if (!line.background?.length) {
+        continue
+      }
+
+      const last = line.background[line.background.length - 1]
+      if (!last) {
+        continue
+      }
+
+      line.time.end = Math.max(line.time.end, last.time.end)
     }
   }
 
