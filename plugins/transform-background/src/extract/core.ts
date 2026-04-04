@@ -311,9 +311,14 @@ export const extractCrossLine = (lines: Line[]) => {
     }
 
     if (current.type === LineType.Normal && next.type === LineType.Normal) {
+      // Skip if current line has complete brackets
+      if (hasStartOpenBracket(current) && hasEndCloseBracket(current)) {
+        result.push(current)
+        continue
+      }
+
       if (hasStartOpenBracket(current) && hasEndCloseBracket(next)) {
-        const prev = result[result.length - 1]
-        if (prev && prev.type === LineType.Normal) {
+        if (prev.type === LineType.Normal) {
           removeBrackets(current, true, false)
           removeBrackets(next, false, true)
 
