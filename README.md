@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  English | <a href="./README.zh-Hans.md">简体中文</a> | <a href="./README.zh-Hant.md">繁體中文</a>
+  English | <a href="./README.zh-CN.md">简体中文</a> | <a href="./README.zh-TW.md">繁體中文</a>
 </p>
 
 > [!WARNING]
@@ -30,6 +30,7 @@
 
 - **Format inference** — Auto-detect lyric format from input content
 - **Plugin system** — Built-in plugins, load on demand
+- **Pipeline API** — Fluent chainable API for full control over processing order
 
 ## Install
 
@@ -39,32 +40,63 @@ npm install music-lyric-kit
 
 ## Usage
 
-### Parse
+### Pipeline
+
+The pipeline provides a fluent, chainable interface that gives you full control over the processing order.
+
+```js
+import { createParserPipeline } from 'music-lyric-kit'
+
+const input = {
+  content: '[00:01.114]Hello world',
+}
+
+const { format, result } = createParserPipeline(input)
+  .infer()
+  .parse()
+  .backgroundExtract()
+  .agentExtract()
+  .pureExtract()
+  .pureClean()
+  .backgroundClean()
+  .interludeInsert()
+  .spaceInsert()
+  .stressMark()
+  .final()
+
+console.log(format, result)
+```
+
+Each transform method accepts an optional options parameter to customize behavior. If omitted, plugin defaults are used.
+
+```js
+const { result } = createParserPipeline(input)
+  .infer()
+  .parse()
+  .interludeInsert({ checkTime: { first: 3000, normal: 8000 } })
+  .spaceInsert({ original: true, extended: false })
+  .final()
+```
+
+### Plugin
+
+For more granular control, you can use the `Parser` class with plugins directly.
 
 ```js
 import { Parser, Plugins } from 'music-lyric-kit'
 
-const parser = new Parser.Client()
+const parser = new Parser()
 
-// Format plugin
-const lrc = new Plugins.Formats.Lrc.Parser()
-const ttml = new Plugins.Formats.Ttml.AmllParser()
-
-parser.plugin.add(lrc)
-parser.plugin.add(ttml)
+// Format plugins
+parser.plugin.add(new Plugins.Formats.Lrc.Parser())
+parser.plugin.add(new Plugins.Formats.Ttml.AmllParser())
 
 // Transform plugins
-const space = new Plugins.Transforms.Space.InsertPlugin()
-const stress = new Plugins.Transforms.Stress.MarkPlugin()
-
-parser.plugin.add(space)
-parser.plugin.add(stress)
+parser.plugin.add(new Plugins.Transforms.Space.InsertPlugin())
+parser.plugin.add(new Plugins.Transforms.Stress.MarkPlugin())
 
 const input = {
   original: '[00:01.114]Hello world',
-  syllable: '',
-  translate: '',
-  roman: '',
 }
 
 // Infer format
@@ -76,17 +108,16 @@ if (format) {
 }
 ```
 
-### Generate
+### Generator
 
 ```js
 import { Generator, Plugins } from 'music-lyric-kit'
 
-const generator = new Generator.Client()
+const generator = new Generator()
 
-// Format plugin
 generator.plugin.add(new Plugins.Formats.Lrc.Generator())
 
-const output = generator.generate(format, { content: result })
+const output = generator.generate('lrc', { content: result })
 console.log(output)
 ```
 
@@ -96,7 +127,7 @@ console.log(output)
 
 | Package                                    | Description     |
 | ------------------------------------------ | --------------- |
-| [music-lyric-kit](./app)                   | Main entry      |
+| [music-lyric-kit](./packages/main)         | Main entry      |
 | [@music-lyric-kit/core](./packages/core)   | Plugin system   |
 | [@music-lyric-kit/lyric](./packages/lyric) | Data structures |
 | [@music-lyric-kit/utils](./packages/utils) | Utilities       |
