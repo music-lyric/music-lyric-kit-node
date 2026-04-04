@@ -81,11 +81,15 @@ export class Parser {
         if (!result) {
           continue
         }
-      } catch {}
+      } catch (e: any) {
+        console.warn(`plugin check failed id=${plugin.id} err=${e?.message}`)
+        continue
+      }
 
       try {
         plugin.exec.call(plugin, context)
-      } catch (e) {
+      } catch (e: any) {
+        console.warn(`plugin call failed id=${plugin.id} err=${e?.message}`)
         break
       }
     }
