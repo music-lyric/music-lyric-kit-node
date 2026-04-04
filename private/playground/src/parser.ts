@@ -1,17 +1,17 @@
 import { Parser, Plugins } from 'music-lyric-kit'
 
-export const createParser = () => {
-  const parser = new Parser()
+export const createClient = () => {
+  const client = new Parser()
 
-  parser.plugin.add(new Plugins.Formats.Lrc.Parser())
-  parser.plugin.add(new Plugins.Formats.Ttml.AmllParser())
-  parser.plugin.add(new Plugins.Transforms.Interlude.InsertPlugin())
-  parser.plugin.add(new Plugins.Transforms.Background.ExtractPlugin())
-  parser.plugin.add(new Plugins.Transforms.Agent.ExtractPlugin())
-  parser.plugin.add(new Plugins.Transforms.Pure.CleanPlugin())
-  parser.plugin.add(new Plugins.Transforms.Pure.ExtractCreatorPlugin())
-  parser.plugin.add(new Plugins.Transforms.Space.InsertPlugin())
-  parser.plugin.add(new Plugins.Transforms.Stress.MarkPlugin())
+  client.plugin.add(new Plugins.Formats.Lrc.Parser())
+  client.plugin.add(new Plugins.Formats.Ttml.AmllParser())
+  client.plugin.add(new Plugins.Transforms.Interlude.InsertPlugin())
+  client.plugin.add(new Plugins.Transforms.Background.ExtractPlugin())
+  client.plugin.add(new Plugins.Transforms.Agent.ExtractPlugin())
+  client.plugin.add(new Plugins.Transforms.Pure.CleanPlugin())
+  client.plugin.add(new Plugins.Transforms.Pure.ExtractCreatorPlugin())
+  client.plugin.add(new Plugins.Transforms.Space.InsertPlugin())
+  client.plugin.add(new Plugins.Transforms.Stress.MarkPlugin())
 
-  return parser
+  return client
 }

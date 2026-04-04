@@ -5,8 +5,7 @@ import type { ExtractConfig } from './config'
 import { DEFAULT_CONFIG } from './config'
 
 import { ConfigManager } from '@music-lyric-kit/utils'
-
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 
 import { addBackground, extractCrossLine, extractInLine, isFullLine, removeBrackets } from './core'
@@ -18,12 +17,8 @@ export class ExtractPlugin extends ParserPlugin {
     return 'TRANSFORM-BACKGROUND-EXTRACT'
   }
 
-  override get name() {
-    return 'TRANSFORM-BACKGROUND-EXTRACT'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   override check(ctx: ParserContext) {

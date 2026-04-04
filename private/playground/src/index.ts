@@ -1,12 +1,13 @@
-import { createParser } from './parser'
+import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
+
+import { createClient } from './parser'
 import { renderResult } from './render'
 import { esc } from './utils'
-import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
 
 import type { Format } from './constants'
 
 const main = () => {
-  const parser = createParser()
+  const client = createClient()
 
   const inputSongName = document.getElementById('input-song-name') as HTMLInputElement
   const inputSingers = document.getElementById('input-singers') as HTMLInputElement
@@ -59,7 +60,7 @@ const main = () => {
   }
 
   const parse = (content: any) => {
-    const format = parser.infer({ content })
+    const format = client.infer({ content })
     if (!format) {
       outputResult.innerHTML = '<div class="result-empty">Could not infer lyric format.</div>'
       return
@@ -68,7 +69,7 @@ const main = () => {
     console.log(`Inferred format: ${format}`)
 
     const start = performance.now()
-    const result = parser.parse(format, {
+    const result = client.parse(format, {
       content,
       musicInfo: parseMusicInfo(),
     })

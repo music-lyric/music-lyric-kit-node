@@ -1,25 +1,28 @@
-import type { Options, OptionsRequired } from './options'
-import type { GeneratorParams } from './plugin/context'
+import type { DeepPartial } from '@music-lyric-kit/utils'
+import type { GeneratorOptions } from './options'
+import type { GeneratorParams, GeneratorResult } from './context'
 
-import { ConfigManager } from '@music-lyric-kit/utils'
 import { DEFAULT_OPTIONS } from './options'
 
-import { PluginLoader } from '@root/plugin'
-import { GeneratorPlugin, GeneratorStage } from './plugin'
-import { GeneratorContext } from './plugin/context'
+import { Info } from '@music-lyric-kit/lyric'
+import { ConfigManager } from '@music-lyric-kit/utils'
+import { BasePlugin, PluginLoader, PluginStage } from '@root/plugin'
+import { GeneratorContext } from './context'
+
+export abstract class GeneratorPlugin extends BasePlugin<GeneratorContext> {}
 
 export class Generator {
-  readonly options: ConfigManager<OptionsRequired, Options> = new ConfigManager(DEFAULT_OPTIONS)
+  readonly options: ConfigManager<GeneratorOptions, DeepPartial<GeneratorOptions>> = new ConfigManager(DEFAULT_OPTIONS)
 
   readonly plugin: PluginLoader<GeneratorPlugin> = new PluginLoader()
 
-  constructor(options: Options = {}) {
+  constructor(options: GeneratorOptions = {}) {
     this.options.update(options)
   }
 
-  generate(format: string, params: GeneratorParams) {
-    const handlers = this.plugin.filterByStage(GeneratorStage.Generate)
-    const current = handlers.find((item) => item.format === format)
+  generate(format: string, params: GeneratorParams): GeneratorResult {
+    const processors = this.plugin.filterByStage(PluginStage.Process)
+    const current = processors.find((item) => item.format === format)
 
     if (!current) {
       throw new Error('format not found')
@@ -29,18 +32,19 @@ export class Generator {
       throw new Error('bad format plugin')
     }
 
-    const context = new GeneratorContext(params)
+    const init = new Info()
+    const context = new GeneratorContext(params, init)
 
     const plugins: GeneratorPlugin[] = []
 
     // before
-    plugins.push(...this.plugin.filterByStage(GeneratorStage.Before, true))
-    // parser
+    plugins.push(...this.plugin.filterByStage(PluginStage.Pre, true))
+    // process
     plugins.push(current)
     // transform
-    plugins.push(...this.plugin.filterByStage(GeneratorStage.Transform, true))
+    plugins.push(...this.plugin.filterByStage(PluginStage.Transform, true))
     // after all
-    plugins.push(...this.plugin.filterByStage(GeneratorStage.After, true))
+    plugins.push(...this.plugin.filterByStage(PluginStage.Post, true))
 
     while (plugins.length > 0) {
       const plugin = plugins.shift()
@@ -67,6 +71,6 @@ export class Generator {
   }
 }
 
-export type { GeneratorParams, GeneratorContext }
+export { GeneratorContext }
 
-export { GeneratorStage, GeneratorPlugin }
+export type { GeneratorParams, GeneratorResult, GeneratorOptions }

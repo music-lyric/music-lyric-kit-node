@@ -4,7 +4,7 @@ import type { InsertConfig } from './config'
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Line, LineInterlude } from '@music-lyric-kit/lyric'
 
 export class InsertPlugin extends ParserPlugin {
@@ -18,12 +18,8 @@ export class InsertPlugin extends ParserPlugin {
     return 'TRANSFORM-INTERLUDE-INSERT'
   }
 
-  override get name() {
-    return 'TRANSFORM-INTERLUDE-INSERT'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   override check(ctx: ParserContext) {

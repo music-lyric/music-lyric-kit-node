@@ -1,26 +1,30 @@
-import type { Options, OptionsRequired } from './options'
-import type { ParserParams, ParserRuntime } from './plugin/context'
+import type { DeepPartial } from '@music-lyric-kit/utils'
+import type { ParserOptions } from './options'
+import type { ParserParams, ParserResult } from './context'
 
-import { ConfigManager } from '@music-lyric-kit/utils'
 import { DEFAULT_OPTIONS } from './options'
 
-import { PluginLoader } from '@root/plugin'
-import { ParserPlugin, ParserStage } from './plugin'
-import { ParserContext } from './plugin/context'
+import { Info } from '@music-lyric-kit/lyric'
+import { ConfigManager } from '@music-lyric-kit/utils'
+import { BasePlugin, PluginLoader, PluginStage } from '@root/plugin'
+import { ParserContext } from './context'
+
+export abstract class ParserPlugin extends BasePlugin<ParserContext> {}
 
 export class Parser {
-  readonly options: ConfigManager<OptionsRequired, Options> = new ConfigManager(DEFAULT_OPTIONS)
+  readonly options: ConfigManager<ParserOptions, DeepPartial<ParserOptions>> = new ConfigManager(DEFAULT_OPTIONS)
 
   readonly plugin: PluginLoader<ParserPlugin> = new PluginLoader()
 
-  constructor(options: Options = {}) {
+  constructor(options: ParserOptions = {}) {
     this.options.update(options)
   }
 
   infer(params: ParserParams) {
-    const context = new ParserContext(params)
+    const init = new Info()
+    const context = new ParserContext(params, init)
 
-    const plugins = this.plugin.filterByStage(ParserStage.Parse) as ParserPlugin[]
+    const plugins = this.plugin.filterByStage(PluginStage.Process) as ParserPlugin[]
 
     for (const plugin of plugins) {
       if (typeof plugin !== 'object') {
@@ -39,9 +43,9 @@ export class Parser {
     return null
   }
 
-  parse(format: string, params: ParserParams) {
-    const parsers = this.plugin.filterByStage(ParserStage.Parse)
-    const current = parsers.find((item) => item.format === format)
+  parse(format: string, params: ParserParams): ParserResult {
+    const processors = this.plugin.filterByStage(PluginStage.Process)
+    const current = processors.find((item) => item.format === format)
 
     if (!current) {
       throw new Error('format not found')
@@ -51,18 +55,19 @@ export class Parser {
       throw new Error('bad format plugin')
     }
 
-    const context = new ParserContext(params)
+    const init = new Info()
+    const context = new ParserContext(params, init)
 
     const plugins: ParserPlugin[] = []
 
     // before
-    plugins.push(...this.plugin.filterByStage(ParserStage.Before, true))
-    // parser
+    plugins.push(...this.plugin.filterByStage(PluginStage.Pre, true))
+    // process
     plugins.push(current)
     // transform
-    plugins.push(...this.plugin.filterByStage(ParserStage.Transform, true))
+    plugins.push(...this.plugin.filterByStage(PluginStage.Transform, true))
     // after all
-    plugins.push(...this.plugin.filterByStage(ParserStage.After, true))
+    plugins.push(...this.plugin.filterByStage(PluginStage.Post, true))
 
     while (plugins.length > 0) {
       const plugin = plugins.shift()
@@ -94,6 +99,6 @@ export class Parser {
   }
 }
 
-export type { ParserParams, ParserContext, ParserRuntime }
+export { ParserContext }
 
-export { ParserStage, ParserPlugin }
+export type { ParserParams, ParserResult, ParserOptions }

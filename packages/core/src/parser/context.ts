@@ -1,6 +1,8 @@
 import { Info, LineType, WordType, Line } from '@music-lyric-kit/lyric'
 
-import type { BaseContext, BasePlugin as _BasePlugin } from '@root/plugin'
+import type { BaseContext } from '@root/plugin'
+
+export type ParserResult = Info
 
 export interface ParserParams {
   content: any
@@ -10,44 +12,44 @@ export interface ParserParams {
   }
 }
 
-export interface ParserRuntime {}
-
 export class ParserContext implements BaseContext {
   private readonly current: {
-    result: Info
     params: ParserParams
-    runtime: ParserRuntime
+    result: ParserResult
+    runtime: Record<string, any>
   }
 
-  constructor(params: ParserParams) {
+  constructor(params: ParserParams, init: ParserResult) {
     this.current = {
-      result: new Info(),
       params,
+      result: init,
       runtime: {},
     }
   }
 
-  get params() {
+  get params(): ParserParams {
     return this.current.params
   }
 
-  get result() {
+  get result(): ParserResult {
     return this.current.result
   }
 
-  get runtime() {
+  get runtime(): Record<string, any> {
     return this.current.runtime
   }
 
   handleSort() {
-    if (!Array.isArray(this.result?.lines)) {
+    const result = this.result as any
+    if (!Array.isArray(result?.lines)) {
       return
     }
-    this.result.lines.sort((a, b) => a.time.start - b.time.start)
+    result.lines.sort((a: any, b: any) => a.time.start - b.time.start)
   }
 
   handleSyncLineTime(lines?: Line[]) {
-    for (const line of lines || this.result.lines || []) {
+    const result = this.result as any
+    for (const line of lines || result?.lines || []) {
       if (line.type !== LineType.Normal) {
         continue
       }
@@ -56,7 +58,7 @@ export class ParserContext implements BaseContext {
         this.handleSyncLineTime(line.background)
       }
 
-      const words = line.content.words.filter((item) => item.type === WordType.Normal)
+      const words = line.content.words.filter((item: any) => item.type === WordType.Normal)
       if (!words.length) {
         continue
       }
@@ -73,7 +75,8 @@ export class ParserContext implements BaseContext {
   }
 
   handleCleanWords(lines?: Line[]) {
-    for (const line of lines || this.result.lines || []) {
+    const result = this.result as any
+    for (const line of lines || result?.lines || []) {
       if (line.type !== LineType.Normal) {
         continue
       }
@@ -97,13 +100,18 @@ export class ParserContext implements BaseContext {
   }
 
   handleCalcAgentIndex() {
+    const result = this.result as any
+    if (!Array.isArray(result?.lines) || !Array.isArray(result?.agents)) {
+      return
+    }
+
     const globalIndex: Record<string, number> = {}
     const idIndex: Record<string, number> = {}
 
     let id: string | null = null
     let blockIndex = 0
 
-    for (const line of this.result.lines) {
+    for (const line of result.lines) {
       if (line.type !== LineType.Normal || !line.agent) {
         continue
       }
@@ -127,7 +135,7 @@ export class ParserContext implements BaseContext {
       idIndex[current]++
     }
 
-    for (const agent of this.result.agents) {
+    for (const agent of result.agents) {
       agent.count = idIndex[agent.id] ?? 0
     }
   }

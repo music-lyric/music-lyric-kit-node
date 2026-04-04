@@ -1,6 +1,4 @@
-import type { GeneratorResult } from './interface'
-
-import { GeneratorPlugin, GeneratorStage, GeneratorContext } from '@music-lyric-kit/core'
+import { GeneratorContext, GeneratorPlugin, PluginStage } from '@music-lyric-kit/core'
 
 import { exportLines } from './line'
 import { exportMeta } from './meta'
@@ -10,12 +8,8 @@ export class Generator extends GeneratorPlugin {
     return 'LRC-GENERATOR'
   }
 
-  override get name() {
-    return 'LRC-GENERATOR'
-  }
-
   override get stage() {
-    return GeneratorStage.Generate
+    return PluginStage.Process
   }
 
   override get format() {
@@ -34,14 +28,11 @@ export class Generator extends GeneratorPlugin {
     const targetOriginal = [meta.join('\n'), '\n', '\n', original.join('\n')]
     const targetSyllable = [meta.join('\n'), '\n', '\n', syllable.join('\n')]
 
-    const result: GeneratorResult = {
+    ctx.result = {
       original: targetOriginal.join('').trim(),
       syllable: targetSyllable.join('\n').trim(),
       translate: translate.join('\n').trim(),
       roman: roman.join('\n').trim(),
     }
-    ctx.result = result
   }
 }
-
-export type { GeneratorResult }

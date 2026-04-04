@@ -1,4 +1,4 @@
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserContext, ParserPlugin, PluginStage } from '@music-lyric-kit/core'
 import { Extended, ExtendedType, LineNormal, Type } from '@music-lyric-kit/lyric'
 
 import { alignNumberArray } from '@music-lyric-kit/utils'
@@ -21,12 +21,8 @@ export class Parser extends ParserPlugin {
     return 'LRC-PARSER'
   }
 
-  override get name() {
-    return 'LRC-PARSER'
-  }
-
   override get stage() {
-    return ParserStage.Parse
+    return PluginStage.Process
   }
 
   override get format() {

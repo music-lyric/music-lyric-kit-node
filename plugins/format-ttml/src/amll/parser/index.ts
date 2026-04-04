@@ -1,4 +1,4 @@
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 
 import { Xml } from '@music-lyric-kit/utils'
 import { Type } from '@music-lyric-kit/lyric'
@@ -18,12 +18,8 @@ export class AmllParser extends ParserPlugin {
     return 'TTML-AMLL-PARSER'
   }
 
-  override get name() {
-    return 'TTML-AMLL-PARSER'
-  }
-
   override get stage() {
-    return ParserStage.Parse
+    return PluginStage.Process
   }
 
   override get format() {

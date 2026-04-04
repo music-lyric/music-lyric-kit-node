@@ -8,7 +8,7 @@ import { DEFAULT_RULES } from './constants'
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
 
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 
 import { processText } from './utils'
@@ -26,12 +26,8 @@ export class CleanPlugin extends ParserPlugin {
     return 'TRANSFORM-PURE-CLEAN'
   }
 
-  override get name() {
-    return 'TRANSFORM-PURE-CLEAN'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   constructor() {

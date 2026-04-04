@@ -4,7 +4,7 @@ import type { MarkConfig } from './config'
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineNormal, LineType, WordType } from '@music-lyric-kit/lyric'
 
 export class MarkPlugin extends ParserPlugin {
@@ -14,12 +14,8 @@ export class MarkPlugin extends ParserPlugin {
     return 'TRANSFORM-STRESS-MARK'
   }
 
-  override get name() {
-    return 'TRANSFORM-STRESS-MARK'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   override check(ctx: ParserContext) {

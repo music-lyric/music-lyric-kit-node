@@ -5,7 +5,7 @@ import type { SpaceConfig } from './config'
 import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 import { insertSpaceToLine } from './core'
 
@@ -16,12 +16,8 @@ export class InsertPlugin extends ParserPlugin {
     return 'TRANSFORM-SPACE-INSERT'
   }
 
-  override get name() {
-    return 'TRANSFORM-SPACE-INSERT'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   override check(ctx: ParserContext) {

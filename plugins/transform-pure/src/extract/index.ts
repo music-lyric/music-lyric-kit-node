@@ -8,7 +8,7 @@ import { DEFAULT_CREATOR_RULES } from './constants'
 import { ConfigManager, removeTextSpaceAll } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
 
-import { ParserPlugin, ParserStage, ParserContext } from '@music-lyric-kit/core'
+import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType, MetaCreator } from '@music-lyric-kit/lyric'
 import { extractCreator, splitNameWithRule } from './utils'
 
@@ -25,12 +25,8 @@ export class ExtractCreatorPlugin extends ParserPlugin {
     return 'TRANSFORM-PURE-EXTRACT'
   }
 
-  override get name() {
-    return 'TRANSFORM-PURE-EXTRACT'
-  }
-
   override get stage() {
-    return ParserStage.Transform
+    return PluginStage.Transform
   }
 
   constructor() {

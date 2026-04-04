@@ -1,7 +1,3 @@
-import type { DeepRequired } from '@music-lyric-kit/utils'
+export interface ParserOptions {}
 
-export interface Options {}
-
-export type OptionsRequired = DeepRequired<Options>
-
-export const DEFAULT_OPTIONS: OptionsRequired = {}
+export const DEFAULT_OPTIONS: ParserOptions = {}
