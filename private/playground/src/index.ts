@@ -1,5 +1,6 @@
 import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from './constants'
 
+import { createParserPipeline } from 'music-lyric-kit'
 import { createClient } from './parser'
 import { renderResult } from './render'
 import { esc } from './utils'
@@ -59,7 +60,41 @@ const main = () => {
     return songName || singers.length > 0 ? { name: songName, singer: singers } : undefined
   }
 
+  const parseWithPipeLine = (content: any) => {
+    console.log('use pipe line')
+
+    const pipeline = createParserPipeline({ content })
+
+    const start = performance.now()
+    pipeline.infer()
+    pipeline.parse()
+    pipeline.pureClean()
+    pipeline.pureExtract()
+    pipeline.agentExtract()
+    pipeline.backgroundExtract()
+    pipeline.backgroundClean()
+    pipeline.interludeInsert()
+    pipeline.spaceInsert()
+    pipeline.stressMark()
+    const end = performance.now()
+
+    const result = pipeline.final()
+
+    const format = result.format
+    if (!format) {
+      outputResult.innerHTML = '<div class="result-empty">Could not infer lyric format.</div>'
+      return
+    }
+
+    console.log(`Inferred format: ${format}`)
+    console.log(`Parser use time: ${end - start}ms`)
+
+    return result.result
+  }
+
   const parse = (content: any) => {
+    console.log('use clinet')
+
     const format = client.infer({ content })
     if (!format) {
       outputResult.innerHTML = '<div class="result-empty">Could not infer lyric format.</div>'
@@ -88,7 +123,7 @@ const main = () => {
     localStorage.setItem(STORAGE_KEYS.TRANSLATE, translate)
     localStorage.setItem(STORAGE_KEYS.ROMAN, roman)
 
-    return parse({ original, translate, roman })
+    return parseWithPipeLine({ original, translate, roman })
   }
 
   const parseTtml = () => {
@@ -96,7 +131,7 @@ const main = () => {
 
     localStorage.setItem(STORAGE_KEYS.TTML, content)
 
-    return parse(content)
+    return parseWithPipeLine(content)
   }
 
   const handleParse = () => {

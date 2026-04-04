@@ -11,9 +11,6 @@ importers:
       '@types/node':
         specifier: ^25.0.3
         version: 25.0.9
-      moment:
-        specifier: ^2.30.1
-        version: 2.30.1
       turbo:
         specifier: ^2.7.1
         version: 2.7.5
@@ -48,35 +45,38 @@ importers:
   packages/main:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../lyric
       '@music-lyric-kit/plugin-format-lrc':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/format-lrc
       '@music-lyric-kit/plugin-format-ttml':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/format-ttml
       '@music-lyric-kit/plugin-transform-agent':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-agent
       '@music-lyric-kit/plugin-transform-background':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-background
       '@music-lyric-kit/plugin-transform-interlude':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-interlude
       '@music-lyric-kit/plugin-transform-pure':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-pure
       '@music-lyric-kit/plugin-transform-space':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-space
       '@music-lyric-kit/plugin-transform-stress':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../plugins/transform-stress
+      '@music-lyric-kit/utils':
+        specifier: workspace:^
+        version: link:../utils
 
   packages/utils:
     dependencies:
@@ -97,7 +97,7 @@ importers:
         specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/format-ttml:
@@ -109,79 +109,79 @@ importers:
         specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-agent:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-background:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-interlude:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-pure:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-space:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   plugins/transform-stress:
     dependencies:
       '@music-lyric-kit/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/core
       '@music-lyric-kit/lyric':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/lyric
       '@music-lyric-kit/utils':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../../packages/utils
 
   private/playground:
@@ -765,9 +765,6 @@ packages:
 
   mlly@1.8.0:
     resolution: {integrity: sha512-l8D9ODSRWLe2KHJSifWGwBqpTZXIXTeo8mlKjY+E2HAakaTeNpqAyBZ8GSqLzHgw4XmHmC8whvpjJNMbFZN7/g==}
-
-  moment@2.30.1:
-    resolution: {integrity: sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==}
 
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
@@ -1467,8 +1464,6 @@ snapshots:
       pathe: 2.0.3
       pkg-types: 1.3.1
       ufo: 1.6.3
-
-  moment@2.30.1: {}
 
   ms@2.1.3: {}
 
