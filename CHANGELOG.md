@@ -1,3 +1,43 @@
+## v0.11.0 (2026-04-05)
+
+### Document
+
+- update readme ([f2603c8](https://github.com/music-lyric/music-lyric-kit-node/commit/f2603c8))
+
+### Feature
+
+- `core`
+  - support use pipeline to parse lyric ([619d251](https://github.com/music-lyric/music-lyric-kit-node/commit/619d251))
+  - print log when plugin throw error ([6a90880](https://github.com/music-lyric/music-lyric-kit-node/commit/6a90880))
+  - support sync line end time with background line ([671b636](https://github.com/music-lyric/music-lyric-kit-node/commit/671b636))
+  - support sort background line ([150931f](https://github.com/music-lyric/music-lyric-kit-node/commit/150931f))
+- `playground`
+  - add plugins ([baca594](https://github.com/music-lyric/music-lyric-kit-node/commit/baca594))
+- `plugin-transform-background`
+  - add clean plugin ([52f72e6](https://github.com/music-lyric/music-lyric-kit-node/commit/52f72e6))
+- `plugin-transform-pure`
+  - update default extract creator rules ([b2b01eb](https://github.com/music-lyric/music-lyric-kit-node/commit/b2b01eb))
+- `plugin-transform-space`
+  - support processing extended line ([fa53f55](https://github.com/music-lyric/music-lyric-kit-node/commit/fa53f55))
+
+### Bug Fix
+
+- dependencies workspace version ([1234336](https://github.com/music-lyric/music-lyric-kit-node/commit/1234336))
+- `plugin-transform-agent`
+  - incorrect util tool name ([93a2f55](https://github.com/music-lyric/music-lyric-kit-node/commit/93a2f55))
+- `plugin-transform-background`
+  - skip extract cross line when line has complete bracket ([2882c7e](https://github.com/music-lyric/music-lyric-kit-node/commit/2882c7e))
+
+### Code Refactor
+
+- plugin system ([4cb1a0e](https://github.com/music-lyric/music-lyric-kit-node/commit/4cb1a0e))
+- `core`
+  - optimize util tools performance ([4e62921](https://github.com/music-lyric/music-lyric-kit-node/commit/4e62921))
+- `plugin-transform-background`
+  - remove clean brackets ([adec870](https://github.com/music-lyric/music-lyric-kit-node/commit/adec870))
+- `plugin-transform-pure`
+  - optimize default creator match rule in extract ([7b6803a](https://github.com/music-lyric/music-lyric-kit-node/commit/7b6803a))
+
 ## v0.10.0 (2026-04-02)
 
 ### Feature

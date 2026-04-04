@@ -1,6 +1,6 @@
 {
   "name": "music-lyric-kit",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "author": "folltoshe",
   "type": "module",
   "description": "Lyric toolkit for parsing, generating and processing",
