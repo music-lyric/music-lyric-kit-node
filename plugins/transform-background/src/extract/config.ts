@@ -1,10 +1,5 @@
 export interface ExtractConfig {
   /**
-   * remove rackets
-   * @default true
-   */
-  removeBrackets: boolean
-  /**
    * extract full line
    * @example (this is lyric)
    * @default true
@@ -27,7 +22,6 @@ export interface ExtractConfig {
 }
 
 export const DEFAULT_CONFIG: ExtractConfig = {
-  removeBrackets: true,
   fullLine: true,
   inLine: true,
   crossLine: true,

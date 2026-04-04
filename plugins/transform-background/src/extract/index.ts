@@ -8,7 +8,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 
-import { addBackground, extractCrossLine, extractInLine, isFullLine, removeBrackets } from './core'
+import { addBackground, extractCrossLine, extractInLine, isFullLine } from './core'
 
 export class ExtractPlugin extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
@@ -45,9 +45,6 @@ export class ExtractPlugin extends ParserPlugin {
       if (this.config.current.fullLine && isFullLine(line)) {
         const prev = result.length > 0 ? result[result.length - 1] : null
         if (prev && prev.type === LineType.Normal) {
-          if (this.config.current.removeBrackets) {
-            removeBrackets(line)
-          }
           addBackground(prev, line)
           continue
         }
