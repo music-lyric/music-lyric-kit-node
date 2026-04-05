@@ -191,7 +191,7 @@ importers:
     dependencies:
       music-lyric-kit:
         specifier: workspace:*
-        version: link:../..
+        version: link:../../packages/main
 
 packages:
 
