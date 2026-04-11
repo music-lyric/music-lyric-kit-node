@@ -3,7 +3,7 @@ import { readFileSync, writeFileSync } from 'node:fs'
 
 import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { rootVersion } from '../target'
+import { mainVersion } from '../target'
 import { getLatestTag } from './utils/git'
 
 const { values: args } = parseArgs({
@@ -37,7 +37,7 @@ const handleMatchChangeLogByVersion = (content: string, version: string, include
 
 const main = async () => {
   const latestTag = await getLatestTag()
-  const version = args.version || latestTag || rootVersion
+  const version = args.version || latestTag || mainVersion
   if (!version) {
     return
   }

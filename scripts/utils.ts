@@ -22,15 +22,14 @@ export const exec = (command: string, args: string[], options?: SpawnOptions) =>
       reject(error)
     })
 
-    child.on('exit', (code) => {
+    child.on('close', (code) => {
       const ok = code === 0
       const stderr = Buffer.concat(stderrChunks).toString().trim()
       const stdout = Buffer.concat(stdoutChunks).toString().trim()
-
       if (ok) {
         resolve({ ok, code, stderr, stdout })
       } else {
-        reject(new Error(`Failed to execute command=${command} args=${args.join(' ')} err=${stderr}`))
+        reject(new Error(`failed to execute command=${command} args=${args.join(' ')}\nerr=${stderr || 'exit code ' + code}`))
       }
     })
   })
@@ -45,3 +44,5 @@ export const formatDate = (date: string | number | Date, format: string = 'YYYY-
 
   return format.replace('YYYY', String(year)).replace('MM', month).replace('DD', day)
 }
+
+export const sleep = (time: number) => new Promise((resolve) => setTimeout(resolve, time))

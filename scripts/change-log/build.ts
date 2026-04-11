@@ -6,7 +6,7 @@ import { writeFileSync } from 'node:fs'
 
 import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { root, rootVersion } from '../target'
+import { root, mainVersion } from '../target'
 import { getRepoInfo, getCommitInfo, getAllTags, buildContents, buildHeader, formatResult } from './utils'
 
 const { values: args } = parseArgs({
@@ -31,7 +31,7 @@ interface VersionEntry {
 const handleBuild = async (start: string, end: string, repo: { owner: string; name: string }, showHead: boolean = true): Promise<string> => {
   const commits = await getCommitInfo(start, end)
 
-  let key = `v${rootVersion}`
+  let key = `v${mainVersion}`
 
   const wait: Record<string, VersionEntry> = {}
 
