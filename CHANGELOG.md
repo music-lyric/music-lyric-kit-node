@@ -1,3 +1,10 @@
+## v0.11.2 (2026-05-03)
+
+### Bug Fix
+
+- `plugin-format-ttml`
+  - the end spaces not add to words ([60993cb](https://github.com/music-lyric/music-lyric-kit-node/commit/60993cb))
+
 ## v0.11.1 (2026-05-03)
 
 ### Bug Fix
