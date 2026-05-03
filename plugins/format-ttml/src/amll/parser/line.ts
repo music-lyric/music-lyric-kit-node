@@ -1,10 +1,26 @@
 import type { Word } from '@music-lyric-kit/lyric'
-import { AgentLine, Extended, ExtendedType, LineNormal, WordNormal, WordSpace } from '@music-lyric-kit/lyric'
+import { AgentLine, Extended, ExtendedType, LineNormal, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
 
 import { parseTime, Xml } from '@music-lyric-kit/utils'
 import { findElementsByLocalName, getChildElementByLocal, getAttributeByName, getTextContent, processTextToWords } from '@root/utils'
 
 const ALL_EXTRA_ROLE = ['x-bg', 'x-translation', 'x-roman']
+
+const calcEndSpaceCount = (content: string) => {
+  let count = 0
+  for (let i = content.length - 1; i >= 0 && content[i] === ' '; i--) {
+    count++
+  }
+  return count
+}
+
+const calcStartSpaceCount = (content: string) => {
+  let count = 0
+  for (let i = 0; i < content.length && content[i] === ' '; i++) {
+    count++
+  }
+  return count
+}
 
 const processLineAgent = (element: Xml.XmlElement) => {
   const raw = getAttributeByName(element, 'agent', true)
@@ -117,6 +133,11 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
         continue
       }
 
+      const trimed = text.trim()
+      if (!trimed) {
+        continue
+      }
+
       const rawBegin = getAttributeByName(item, 'begin', true)
       const rawEnd = getAttributeByName(item, 'end', true)
       if (!rawBegin || !rawEnd) {
@@ -129,11 +150,35 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
         continue
       }
 
+      const target: Word[] = []
+
+      const prev = words[words.length - 1]
+      if (text.startsWith(' ') && prev?.type !== WordType.Space) {
+        const count = calcStartSpaceCount(text)
+        const prev = words[words.length - 1]
+        if (prev?.type === WordType.Space) {
+          prev.count += count
+        } else {
+          const space = new WordSpace()
+          space.count = count
+          target.push(space)
+        }
+      }
+
       const normal = new WordNormal()
-      normal.content = text
+      normal.content = trimed
       normal.time.start = begin
       normal.time.end = end
-      words.push(normal)
+      target.push(normal)
+
+      if (text.endsWith(' ')) {
+        const count = calcEndSpaceCount(text)
+        const space = new WordSpace()
+        space.count = count
+        words.push(space)
+      }
+
+      words.push(...target)
     }
   }
 
