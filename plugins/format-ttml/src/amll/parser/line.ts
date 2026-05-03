@@ -175,7 +175,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
         const count = calcEndSpaceCount(text)
         const space = new WordSpace()
         space.count = count
-        words.push(space)
+        target.push(space)
       }
 
       words.push(...target)
