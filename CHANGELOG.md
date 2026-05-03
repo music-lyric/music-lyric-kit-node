@@ -1,3 +1,14 @@
+## v0.11.1 (2026-05-03)
+
+### Bug Fix
+
+- `main`
+  - unable to infer format in pipie line ([88c08ff](https://github.com/music-lyric/music-lyric-kit-node/commit/88c08ff))
+- `playground`
+  - dependencies ([6211167](https://github.com/music-lyric/music-lyric-kit-node/commit/6211167))
+- `plugin-format-ttml`
+  - the spaces in the line were not parsed correctly ([e112edf](https://github.com/music-lyric/music-lyric-kit-node/commit/e112edf))
+
 ## v0.11.0 (2026-04-05)
 
 ### Document
