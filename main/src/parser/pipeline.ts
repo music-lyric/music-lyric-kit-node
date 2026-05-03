@@ -98,8 +98,8 @@ export class ParserPipeline {
         const result = plugin.check(this.context)
         if (result) {
           this.format = plugin.format
+          break
         }
-        break
       } catch {
         continue
       }
