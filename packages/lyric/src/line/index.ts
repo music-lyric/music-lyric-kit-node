@@ -38,7 +38,7 @@ export class LineNormalContent {
   get original(): string {
     return this.words
       .map((word) => {
-        return word.type === WordType.Normal ? word.content : new Array(word.count).fill(' ').join('')
+        return word.type === WordType.Normal ? word.content : ' '.repeat(word.count)
       })
       .join('')
   }
