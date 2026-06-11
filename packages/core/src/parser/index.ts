@@ -24,12 +24,9 @@ export class Parser {
     const init = new Info()
     const context = new ParserContext(params, init)
 
-    const plugins = this.plugin.filterByStage(PluginStage.Process) as ParserPlugin[]
+    const plugins = this.plugin.filterByStage(PluginStage.Process, true) as ParserPlugin[]
 
     for (const plugin of plugins) {
-      if (typeof plugin !== 'object') {
-        continue
-      }
       try {
         const result = plugin.check.call(plugin, context)
         if (result === true) {
@@ -49,10 +46,6 @@ export class Parser {
 
     if (!current) {
       throw new Error('format not found')
-    }
-
-    if (typeof current !== 'object') {
-      throw new Error('bad format plugin')
     }
 
     const init = new Info()
