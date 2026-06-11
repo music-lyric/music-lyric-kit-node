@@ -2,10 +2,11 @@ import { spawn, type SpawnOptions } from 'node:child_process'
 
 export const exec = (command: string, args: string[], options?: SpawnOptions) => {
   return new Promise<{ ok: boolean; code: number | null; stderr: string; stdout: string }>((resolve, reject) => {
-    const child = spawn(command, args, {
+    const useShell = process.platform === 'win32'
+    const child = spawn(command, useShell ? args.map((arg) => (/\s/.test(arg) ? `"${arg}"` : arg)) : args, {
       stdio: ['ignore', 'pipe', 'pipe'],
       ...options,
-      shell: process.platform === 'win32',
+      shell: useShell,
     })
 
     const stderrChunks: Buffer[] = []

@@ -10,6 +10,10 @@ const main = async () => {
   }
 
   for (const target of targets) {
+    if (target.private) {
+      continue
+    }
+
     try {
       console.log(`publish id=${target.id}`)
 

@@ -6,6 +6,7 @@ export interface Target {
   name: string
   version: string
   root: string
+  private: boolean
 }
 
 export const root = process.cwd()
@@ -24,15 +25,12 @@ const handleFindTarget = (dir: string): Target | null => {
   }
 
   const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'))
-  if (pkg.private) {
-    return null
-  }
 
-  const name: string = pkg.name
+  const name: string = pkg.name || ''
   const version: string = pkg.version
   const id = name === 'music-lyric-kit' ? 'main' : name.replace('@music-lyric-kit/', '')
 
-  return { id, name, version, root: dir }
+  return { id, name, version, root: dir, private: !!pkg.private }
 }
 
 const handleFindTargets = (root: string): Target[] => {
@@ -43,12 +41,24 @@ const handleFindTargets = (root: string): Target[] => {
 
 const mainRoot = join(root, 'main')
 const mainPackge = handleFindTarget(mainRoot)
-
 if (!mainPackge) {
   console.log('main package not found')
   process.exit(1)
 }
 
+const rootPackage = handleFindTarget(root)
+if (!rootPackage) {
+  console.log('root package not found')
+  process.exit(1)
+}
+
+export const rootVersion = rootPackage.version
+
 export const mainVersion = mainPackge.version
 
-export const targets: Target[] = [...handleFindTargets(join(root, 'packages')), ...handleFindTargets(join(root, 'plugins')), mainPackge]
+export const targets: Target[] = [
+  ...handleFindTargets(join(root, 'packages')),
+  ...handleFindTargets(join(root, 'plugins')),
+  ...handleFindTargets(join(root, 'private')),
+  mainPackge,
+]
