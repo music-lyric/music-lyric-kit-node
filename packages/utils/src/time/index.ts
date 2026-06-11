@@ -121,6 +121,5 @@ export const formatTime = (time: number | Date, format: string = 'mm:ss.SSS') =>
  * @param content time, e.g. 1:14:514
  */
 export const checkTime = (content: string) => {
-  if (!content?.trim()) return false
-  return TIME_REGEXP.test(content)
+  return parseTime(content) !== null
 }
