@@ -5,3 +5,5 @@ export { get as getObject, set as setObject } from 'lodash-es'
 export { merge as mergeObject } from 'lodash-es'
 
 export * from './freeze'
+
+export * from './compare'

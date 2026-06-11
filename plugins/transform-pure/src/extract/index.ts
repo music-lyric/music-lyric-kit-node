@@ -32,7 +32,7 @@ export class ExtractCreatorPlugin extends ParserPlugin {
   constructor() {
     super()
     this.matcher = new Matcher(this.config.current.match, DEFAULT_CREATOR_RULES_FULL)
-    this.config.on((opt) => {
+    this.config.event.add('update', (keys, opt) => {
       this.matcher.update(opt.match)
     })
   }
