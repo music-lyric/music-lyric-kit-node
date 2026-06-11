@@ -19,22 +19,25 @@ export interface CommitInfo extends ParsedCommit {
   body: string
 }
 
+/**
+ * Run a git command and resolve with its stdout.
+ */
 export const runGitCommand = (command: string): Promise<string> => {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
+    exec(command, { maxBuffer: 64 * 1024 * 1024 }, (error, stdout, stderr) => {
       if (error) {
-        reject(`Error: ${error.message}`)
-      }
-      if (stderr) {
-        reject(`stderr: ${stderr}`)
+        return reject(new Error(`failed: ${command}\n${error.message}${stderr ? `\nstderr: ${stderr}` : ''}`))
       }
       resolve(stdout)
     })
   })
 }
 
-const COMMIT_MESSAGE_REGEXP = /^(feat|fix|chore|docs|revert|refactor|test|release)(\([a-zA-Z0-9-_]+\))?:\s(.*)$/
+const COMMIT_MESSAGE_REGEXP = /^(feat|fix|perf|chore|docs|revert|refactor|test|release)(\([a-zA-Z0-9-_]+\))?:\s(.*)$/
 
+/**
+ * Parse a commit subject into type, scope and message.
+ */
 export const parseCommitMessage = (message: string): ParsedCommit | null => {
   const match = message?.match(COMMIT_MESSAGE_REGEXP)
   if (!match) {
@@ -48,6 +51,9 @@ export const parseCommitMessage = (message: string): ParsedCommit | null => {
   }
 }
 
+/**
+ * Resolve the GitHub repo owner and name from the origin remote url.
+ */
 export const getRepoInfo = async (): Promise<{ owner: string; name: string } | null> => {
   try {
     const remoteUrl = await runGitCommand('git remote get-url origin')
@@ -76,61 +82,63 @@ export const getRepoInfo = async (): Promise<{ owner: string; name: string } | n
   }
 }
 
-const COMMIT_BLOCK_REGEXP = /---block---\s*([\s\S]*?)\s*---block---/g
-
-const parseCommitBlocks = (text: string): CommitInfo[] => {
+/**
+ * Parse the NUL-separated git log output into commit records.
+ */
+const parseCommitRecords = (text: string): CommitInfo[] => {
   const commits: CommitInfo[] = []
 
-  let match
-  while ((match = COMMIT_BLOCK_REGEXP.exec(text)) !== null) {
-    const block = match[1].trim()
+  // -z separates commits with NUL and %n separates fields, body is collected via rest spread
+  const records = text.split('\0').filter((r) => r.length > 0)
 
-    const lines = block.split('\n').map((line) => line.trim())
-
+  for (const record of records) {
+    const lines = record.split('\n')
     const [shortHash, fullHash, author, date, subject, ...bodyLines] = lines
-    const body = bodyLines?.join('\n').trim()
-
-    const result = parseCommitMessage(subject)
-    if (!result) {
+    if (!shortHash || !subject) {
       continue
     }
 
-    const commit: CommitInfo = {
-      hash: {
-        short: shortHash,
-        full: fullHash,
-      },
-      author,
-      date,
-      subject,
-      body,
-      ...result,
+    const parsed = parseCommitMessage(subject)
+    if (!parsed) {
+      continue
     }
 
-    commits.push(commit)
+    commits.push({
+      hash: { short: shortHash, full: fullHash ?? '' },
+      author: author ?? '',
+      date: date ?? '',
+      subject,
+      body: bodyLines.join('\n').trim(),
+      ...parsed,
+    })
   }
 
   return commits
 }
 
+/**
+ * Get commit info for the given range.
+ */
 export const getCommitInfo = async (start: string, end: string = 'HEAD'): Promise<CommitInfo[]> => {
   try {
     const range = !start && end ? `${end}` : start || end ? `${start}..${end}` : ''
-    const command = `git log ${range} --pretty=format:"---block---%n %h%n %H%n %an%n %ad%n %s%n %b%n ---block---%n" --date=short`
+    const command = `git log ${range} -z --pretty=format:"%h%n%H%n%an%n%ad%n%s%n%b" --date=short`
 
     const result = await runGitCommand(command)
-    const trimed = result?.trim()
-    if (!trimed) {
+    if (!result?.length) {
       return []
     }
 
-    return parseCommitBlocks(trimed).filter((item) => !!item)
+    return parseCommitRecords(result)
   } catch (err) {
     console.error('Error getting commit info:', err)
     return []
   }
 }
 
+/**
+ * Get the most recent tag.
+ */
 export const getLatestTag = async (): Promise<string | null> => {
   try {
     const command = 'git describe --tags --abbrev=0'
@@ -147,19 +155,20 @@ export const getLatestTag = async (): Promise<string | null> => {
   }
 }
 
+/**
+ * Get all tags sorted by version number in descending order.
+ */
 export const getAllTags = async (): Promise<string[]> => {
   try {
-    const command = 'git tag'
+    // Sort by version number (descending), so v0.10.0 correctly outranks v0.9.0.
+    const command = 'git tag --sort=-version:refname'
 
     const result = await runGitCommand(command)
     if (!result) {
       return []
     }
 
-    return result
-      .split('\n')
-      .filter((item) => !!item)
-      .reverse()
+    return result.split('\n').filter((item) => !!item)
   } catch (err) {
     console.error('Error getting tags:', err)
     return []

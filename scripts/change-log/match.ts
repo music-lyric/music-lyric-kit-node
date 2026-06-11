@@ -1,9 +1,10 @@
 import { parseArgs } from 'node:util'
+import { join } from 'node:path'
 import { readFileSync, writeFileSync } from 'node:fs'
 
 import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { mainVersion } from '../target'
+import { root, mainVersion } from '../target'
 import { getLatestTag } from './utils/git'
 
 const { values: args } = parseArgs({
@@ -20,6 +21,9 @@ const { values: args } = parseArgs({
   },
 })
 
+/**
+ * Extract the section of the given version from the full changelog.
+ */
 const handleMatchChangeLogByVersion = (content: string, version: string, includeHeader: boolean = false): string => {
   const target = version.replace(/^v/i, '').replace(/\./g, '\\.')
 
@@ -35,6 +39,9 @@ const handleMatchChangeLogByVersion = (content: string, version: string, include
   return includeHeader ? `${header.trim()}\n\n${body.trim()}` : body.trim()
 }
 
+/**
+ * Extract the target version's changelog into the current changelog file.
+ */
 const main = async () => {
   const latestTag = await getLatestTag()
   const version = args.version || latestTag || mainVersion
@@ -42,13 +49,13 @@ const main = async () => {
     return
   }
 
-  const data = readFileSync(CHANGE_LOG_FILE, { encoding: 'utf-8' }).toString()
+  const data = readFileSync(join(root, CHANGE_LOG_FILE), { encoding: 'utf-8' })
   if (!data) {
     return
   }
 
   const result = handleMatchChangeLogByVersion(data, version, args.includeHeader)
-  writeFileSync(CURRENT_CHANGE_LOG_FILE, result, { encoding: 'utf-8' })
+  writeFileSync(join(root, CURRENT_CHANGE_LOG_FILE), result, { encoding: 'utf-8' })
 }
 
 main()

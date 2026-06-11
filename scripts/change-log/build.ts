@@ -6,7 +6,7 @@ import { writeFileSync } from 'node:fs'
 
 import { CHANGE_LOG_FILE, CURRENT_CHANGE_LOG_FILE } from './constant'
 
-import { root, mainVersion } from '../target'
+import { root, rootVersion } from '../target'
 import { getRepoInfo, getCommitInfo, getAllTags, buildContents, buildHeader, formatResult } from './utils'
 
 const { values: args } = parseArgs({
@@ -28,19 +28,24 @@ interface VersionEntry {
   list: CommitInfo[]
 }
 
+/**
+ * Group commits in the given range by version and build the changelog text.
+ */
 const handleBuild = async (start: string, end: string, repo: { owner: string; name: string }, showHead: boolean = true): Promise<string> => {
   const commits = await getCommitInfo(start, end)
 
-  let key = `v${mainVersion}`
+  let key = `v${rootVersion}`
 
   const wait: Record<string, VersionEntry> = {}
 
   for (const item of commits) {
     if (item.type === 'release') {
       key = item.message
+      // preserve already collected commits when the key exists, to avoid overwriting
+      const existing = wait[key]
       wait[key] = {
         head: item,
-        list: [],
+        list: existing?.list ?? [],
       }
       continue
     }
@@ -78,6 +83,9 @@ const handleBuild = async (start: string, end: string, repo: { owner: string; na
   return formatResult(result.join('\n'))
 }
 
+/**
+ * Build the full or current changelog and write it to a file.
+ */
 const main = async () => {
   const repo = await getRepoInfo()
   if (!repo) {
