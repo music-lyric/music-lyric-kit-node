@@ -1,3 +1,8 @@
+/**
+ * Generate a random hex string.
+ * Uses crypto.getRandomValues when available, otherwise falls back to Math.random.
+ * @param length number of random bytes to generate, the returned string length is length * 2.
+ */
 export const createRandomHex = (length: number = 8) => {
   const bytes = new Uint8Array(length)
 
