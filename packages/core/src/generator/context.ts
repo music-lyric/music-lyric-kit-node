@@ -30,6 +30,6 @@ export class GeneratorContext implements BaseContext {
   }
 
   set result(value: GeneratorResult) {
-    this.result = value
+    this.current.result = value
   }
 }
