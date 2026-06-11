@@ -1,6 +1,6 @@
 {
   "name": "@music-lyric-kit/core",
-  "version": "0.7.0",
+  "version": "0.11.2",
   "author": "folltoshe",
   "type": "module",
   "description": "Music Lyric Kit - Core",
@@ -32,7 +32,7 @@
     "dist"
   ],
   "dependencies": {
-    "@music-lyric-kit/lyric": "workspace:^",
-    "@music-lyric-kit/utils": "workspace:^"
+    "@music-lyric-kit/lyric": "workspace:*",
+    "@music-lyric-kit/utils": "workspace:*"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@music-lyric-kit/plugin-format-ttml",
-  "version": "0.1.6",
+  "version": "0.11.2",
   "author": "folltoshe",
   "type": "module",
   "description": "Music Lyric Kit - Ttml Format Plugin",
@@ -32,8 +32,8 @@
     "dist"
   ],
   "dependencies": {
-    "@music-lyric-kit/core": "workspace:^",
-    "@music-lyric-kit/lyric": "workspace:^",
-    "@music-lyric-kit/utils": "workspace:^"
+    "@music-lyric-kit/core": "workspace:*",
+    "@music-lyric-kit/lyric": "workspace:*",
+    "@music-lyric-kit/utils": "workspace:*"
   }
 }

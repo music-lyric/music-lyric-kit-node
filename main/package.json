@@ -37,16 +37,16 @@
     "dist"
   ],
   "dependencies": {
-    "@music-lyric-kit/core": "workspace:^",
-    "@music-lyric-kit/lyric": "workspace:^",
-    "@music-lyric-kit/utils": "workspace:^",
-    "@music-lyric-kit/plugin-format-lrc": "workspace:^",
-    "@music-lyric-kit/plugin-format-ttml": "workspace:^",
-    "@music-lyric-kit/plugin-transform-interlude": "workspace:^",
-    "@music-lyric-kit/plugin-transform-background": "workspace:^",
-    "@music-lyric-kit/plugin-transform-space": "workspace:^",
-    "@music-lyric-kit/plugin-transform-pure": "workspace:^",
-    "@music-lyric-kit/plugin-transform-agent": "workspace:^",
-    "@music-lyric-kit/plugin-transform-stress": "workspace:^"
+    "@music-lyric-kit/core": "workspace:*",
+    "@music-lyric-kit/lyric": "workspace:*",
+    "@music-lyric-kit/utils": "workspace:*",
+    "@music-lyric-kit/plugin-format-lrc": "workspace:*",
+    "@music-lyric-kit/plugin-format-ttml": "workspace:*",
+    "@music-lyric-kit/plugin-transform-interlude": "workspace:*",
+    "@music-lyric-kit/plugin-transform-background": "workspace:*",
+    "@music-lyric-kit/plugin-transform-space": "workspace:*",
+    "@music-lyric-kit/plugin-transform-pure": "workspace:*",
+    "@music-lyric-kit/plugin-transform-agent": "workspace:*",
+    "@music-lyric-kit/plugin-transform-stress": "workspace:*"
   }
 }
