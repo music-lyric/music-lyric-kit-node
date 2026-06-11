@@ -15,7 +15,7 @@ export interface AlignNumberArrayResult {
 export const alignNumberArray = (base: number[], target: number[], fuzzyThreshold: number = 0) => {
   const result: AlignNumberArrayResult[] = []
 
-  const pending: number[] = [...target]
+  let pending: number[] = [...target]
 
   for (let i = 0; i < base.length; i++) {
     const baseValue = base[i]
@@ -25,7 +25,7 @@ export const alignNumberArray = (base: number[], target: number[], fuzzyThreshol
     for (let j = 0; j < pending.length; j++) {
       const diff = Math.abs(pending[j] - baseValue)
 
-      if (diff === 0 || diff <= fuzzyThreshold) {
+      if (diff <= fuzzyThreshold) {
         matched.push({
           value: pending[j],
           diff,
@@ -35,11 +35,7 @@ export const alignNumberArray = (base: number[], target: number[], fuzzyThreshol
 
     if (matched.length > 0) {
       const matchedSet = new Set(matched.map((m) => m.value))
-      for (let k = pending.length - 1; k >= 0; k--) {
-        if (matchedSet.has(pending[k])) {
-          pending.splice(k, 1)
-        }
-      }
+      pending = pending.filter((value) => !matchedSet.has(value))
     }
 
     result.push({
