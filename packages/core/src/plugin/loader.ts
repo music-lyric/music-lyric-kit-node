@@ -3,6 +3,17 @@ import { BasePlugin } from './base'
 export class PluginLoader<T extends BasePlugin> {
   private current: Map<string, T> = new Map()
 
+  private cache: Map<unknown, T[]> = new Map()
+  private sortedCache: Map<unknown, T[]> = new Map()
+
+  /**
+   * Invalidate the stage grouping caches after any mutation.
+   */
+  private invalidate() {
+    this.cache.clear()
+    this.sortedCache.clear()
+  }
+
   get(id: string) {
     return this.current.get(id)
   }
@@ -19,6 +30,7 @@ export class PluginLoader<T extends BasePlugin> {
     }
 
     this.current.set(id, plugin)
+    this.invalidate()
   }
 
   delete(id: string): boolean
@@ -29,10 +41,15 @@ export class PluginLoader<T extends BasePlugin> {
       return false
     }
 
-    return this.current.delete(id)
+    const deleted = this.current.delete(id)
+    if (deleted) {
+      this.invalidate()
+    }
+    return deleted
   }
 
   clear() {
+    this.invalidate()
     return this.current.clear()
   }
 
@@ -41,11 +58,30 @@ export class PluginLoader<T extends BasePlugin> {
   }
 
   filterByStage<S>(stage: S, sort: boolean = false): T[] {
-    const values = [...this.current.values()]
-    const target = values.filter((item) => item.stage === stage)
+    if (sort) {
+      const cached = this.sortedCache.get(stage)
+      if (cached) {
+        return cached
+      }
+    } else {
+      const cached = this.cache.get(stage)
+      if (cached) {
+        return cached
+      }
+    }
+
+    const target: T[] = []
+    for (const item of this.current.values()) {
+      if (item.stage === stage) {
+        target.push(item)
+      }
+    }
 
     if (sort) {
-      return target.sort((a, b) => (Number(a.priority) || 100) - (Number(b.priority) || 100))
+      target.sort((a, b) => (Number(a.priority) || 100) - (Number(b.priority) || 100))
+      this.sortedCache.set(stage, target)
+    } else {
+      this.cache.set(stage, target)
     }
 
     return target
