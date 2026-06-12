@@ -14,7 +14,7 @@ export enum MetaType {
   // song creators
   Creator = 'Creator',
   // unknown
-  UnKnown = 'UnKnown',
+  Unknown = 'Unknown',
 }
 
 abstract class MetaBase {
@@ -68,10 +68,10 @@ export class MetaCreator extends MetaBase {
   }
 }
 
-export class MetaUnKnown extends MetaBase {
-  override readonly type = MetaType.UnKnown
+export class MetaUnknown extends MetaBase {
+  override readonly type = MetaType.Unknown
 
   override content: any = ''
 }
 
-export type Meta = MetaOffset | MetaDuration | MetaTitle | MetaSinger | MetaAlbum | MetaCreator | MetaUnKnown
+export type Meta = MetaOffset | MetaDuration | MetaTitle | MetaSinger | MetaAlbum | MetaCreator | MetaUnknown

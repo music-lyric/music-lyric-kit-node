@@ -1,11 +1,11 @@
 export enum ExtendedType {
-  UnKnown = 'UnKnown',
+  Unknown = 'Unknown',
   Translate = 'Translate',
   Roman = 'Roman',
 }
 
 export class Extended {
-  type: ExtendedType = ExtendedType.UnKnown
+  type: ExtendedType = ExtendedType.Unknown
 
   content: string = ''
 }

@@ -2,11 +2,11 @@ import type { Meta } from '../meta'
 import type { Line } from '../line'
 import type { Agent } from '../agent'
 
-const Version = '0.5.1' as const
+const Version = '0.6.0' as const
 
 enum InfoType {
   // parse lyric failed
-  Incorrect = 'Incorrect',
+  Invalid = 'Invalid',
   // normal lyric (line by line)
   Normal = 'Normal',
   // syllable lyric
@@ -22,7 +22,7 @@ enum InfoType {
 class Info {
   readonly version = Version
 
-  type: InfoType = InfoType.Incorrect
+  type: InfoType = InfoType.Invalid
 
   metas: Meta[] = []
 
