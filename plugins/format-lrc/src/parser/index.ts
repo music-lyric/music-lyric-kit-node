@@ -6,7 +6,7 @@ import { matchLyric } from './utils'
 import { processLines, checkIsSyllable } from './line'
 import { processMetas } from './meta'
 
-const CHECK_REGEXP = /\[(?:\d{1,3}:)?(?:\d{1,2}:)?\d{1,2}\.\d{3}\]/
+const CHECK_REGEXP = /\[(?:\d+:)?(?:\d+:)?\d+\.\d+\]/
 
 export interface ParserInput {
   original: string
