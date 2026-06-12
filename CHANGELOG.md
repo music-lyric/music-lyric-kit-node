@@ -1,18 +1,55 @@
+## v0.12.0 (2026-06-12)
+
+### Document
+
+- `utils`
+  - note random hex length is byte count ([de63239](https://github.com/music-lyric/music-lyric-kit-node/commit/de63239))
+
+### Fix
+
+- `core`
+  - sort process plugins by priority in infer ([22fbed3](https://github.com/music-lyric/music-lyric-kit-node/commit/22fbed3))
+  - calc agent index after sorting lines for correct order ([db94b68](https://github.com/music-lyric/music-lyric-kit-node/commit/db94b68))
+  - assign generator result to backing field to avoid setter recursion ([104667f](https://github.com/music-lyric/music-lyric-kit-node/commit/104667f))
+- `plugin-format-lrc`
+  - relax timestamp digit length validation to prevent match failures ([55a9fd4](https://github.com/music-lyric/music-lyric-kit-node/commit/55a9fd4))
+- `utils`
+  - align time validation ([362ef18](https://github.com/music-lyric/music-lyric-kit-node/commit/362ef18))
+
+### Performance
+
+- `core`
+  - cache plugin stage grouping ([24f8e29](https://github.com/music-lyric/music-lyric-kit-node/commit/24f8e29))
+- `lyric`
+  - use string repeat for space words in original getter ([8779e0f](https://github.com/music-lyric/music-lyric-kit-node/commit/8779e0f))
+- `utils`
+  - rebuild pending with filter in align numbers ([9dafe1d](https://github.com/music-lyric/music-lyric-kit-node/commit/9dafe1d))
+
+### Refactor
+
+- rename exports ([20e1106](https://github.com/music-lyric/music-lyric-kit-node/commit/20e1106))
+- `lyric`
+  - add dedicated background line type to block nesting ([4071dc4](https://github.com/music-lyric/music-lyric-kit-node/commit/4071dc4))
+  - rename data model values ([c6e5298](https://github.com/music-lyric/music-lyric-kit-node/commit/c6e5298))
+  - rename data models for naming consistency ([855c4c1](https://github.com/music-lyric/music-lyric-kit-node/commit/855c4c1))
+  - replace constant getters with readonly fields ([7203313](https://github.com/music-lyric/music-lyric-kit-node/commit/7203313))
+  - export single lyric namespace and reorganize modules ([c4cc893](https://github.com/music-lyric/music-lyric-kit-node/commit/c4cc893))
+- `utils`
+  - config manager ([94af942](https://github.com/music-lyric/music-lyric-kit-node/commit/94af942))
+
 ## v0.11.2 (2026-05-03)
 
-### Bug Fix
+### Fix
 
 - `plugin-format-ttml`
   - the end spaces not add to words ([60993cb](https://github.com/music-lyric/music-lyric-kit-node/commit/60993cb))
 
 ## v0.11.1 (2026-05-03)
 
-### Bug Fix
+### Fix
 
 - `main`
   - unable to infer format in pipie line ([88c08ff](https://github.com/music-lyric/music-lyric-kit-node/commit/88c08ff))
-- `playground`
-  - dependencies ([6211167](https://github.com/music-lyric/music-lyric-kit-node/commit/6211167))
 - `plugin-format-ttml`
   - the spaces in the line were not parsed correctly ([e112edf](https://github.com/music-lyric/music-lyric-kit-node/commit/e112edf))
 
@@ -29,8 +66,6 @@
   - print log when plugin throw error ([6a90880](https://github.com/music-lyric/music-lyric-kit-node/commit/6a90880))
   - support sync line end time with background line ([671b636](https://github.com/music-lyric/music-lyric-kit-node/commit/671b636))
   - support sort background line ([150931f](https://github.com/music-lyric/music-lyric-kit-node/commit/150931f))
-- `playground`
-  - add plugins ([baca594](https://github.com/music-lyric/music-lyric-kit-node/commit/baca594))
 - `plugin-transform-background`
   - add clean plugin ([52f72e6](https://github.com/music-lyric/music-lyric-kit-node/commit/52f72e6))
 - `plugin-transform-pure`
@@ -38,7 +73,7 @@
 - `plugin-transform-space`
   - support processing extended line ([fa53f55](https://github.com/music-lyric/music-lyric-kit-node/commit/fa53f55))
 
-### Bug Fix
+### Fix
 
 - dependencies workspace version ([1234336](https://github.com/music-lyric/music-lyric-kit-node/commit/1234336))
 - `plugin-transform-agent`
@@ -46,7 +81,7 @@
 - `plugin-transform-background`
   - skip extract cross line when line has complete bracket ([2882c7e](https://github.com/music-lyric/music-lyric-kit-node/commit/2882c7e))
 
-### Code Refactor
+### Refactor
 
 - plugin system ([4cb1a0e](https://github.com/music-lyric/music-lyric-kit-node/commit/4cb1a0e))
 - `core`
@@ -63,12 +98,12 @@
 - `test`
   - add preview ([213c701](https://github.com/music-lyric/music-lyric-kit-node/commit/213c701))
 
-### Bug Fix
+### Fix
 
 - `plugin-format-lrc`
   - multiple extended line ​​will be overwrite ([fc0c998](https://github.com/music-lyric/music-lyric-kit-node/commit/fc0c998))
 
-### Code Refactor
+### Refactor
 
 - remove unuse code ([29755db](https://github.com/music-lyric/music-lyric-kit-node/commit/29755db))
 - `plugin-format-lrc`
@@ -93,14 +128,14 @@
 - `plugin-transform-pure`
   - update default extract creator rules ([fa61790](https://github.com/music-lyric/music-lyric-kit-node/commit/fa61790))
 
-### Bug Fix
+### Fix
 
 - `plugin-format-ttml`
   - parse syllable word time ([9d034c2](https://github.com/music-lyric/music-lyric-kit-node/commit/9d034c2))
 - `plugin-transform-background`
   - skip extract for unclosed brackets ([d3a0bc9](https://github.com/music-lyric/music-lyric-kit-node/commit/d3a0bc9))
 
-### Code Refactor
+### Refactor
 
 - `core`
   - remove built in align plugin ([f8296a7](https://github.com/music-lyric/music-lyric-kit-node/commit/f8296a7))
@@ -129,7 +164,7 @@
 
 ## v0.7.1 (2026-03-20)
 
-### Bug Fix
+### Fix
 
 - `plugin-transform-agent`
   - bad version ([1fcae9c](https://github.com/music-lyric/music-lyric-kit-node/commit/1fcae9c))
@@ -160,14 +195,14 @@
 - `utils`
   - add xml util tools ([600025c](https://github.com/music-lyric/music-lyric-kit-node/commit/600025c))
 
-### Bug Fix
+### Fix
 
 - `lyric`
   - word extended content ([1764bd4](https://github.com/music-lyric/music-lyric-kit-node/commit/1764bd4))
 - `plugin-transform-agent`
   - existing agents not being added to result ([b31b11f](https://github.com/music-lyric/music-lyric-kit-node/commit/b31b11f))
 
-### Code Refactor
+### Refactor
 
 - `app`
   - export content name ([9160b2a](https://github.com/music-lyric/music-lyric-kit-node/commit/9160b2a))
@@ -194,7 +229,7 @@
 - `utils`
   - parse time support more formats ([ac2e2d9](https://github.com/music-lyric/music-lyric-kit-node/commit/ac2e2d9))
 
-### Code Refactor
+### Refactor
 
 - `core`
   - optimize code ([fdb68ac](https://github.com/music-lyric/music-lyric-kit-node/commit/fdb68ac))
@@ -214,7 +249,7 @@
 - `utils`
   - add event listener support to config manager ([2b0403d](https://github.com/music-lyric/music-lyric-kit-node/commit/2b0403d))
 
-### Code Refactor
+### Refactor
 
 - `plugin-transform-space`
   - optimize code ([cacc43c](https://github.com/music-lyric/music-lyric-kit-node/commit/cacc43c))
@@ -247,16 +282,16 @@
 - `utils`
   - add config manager ([71935dc](https://github.com/music-lyric/music-lyric-kit-node/commit/71935dc))
 
-### Bug Fix
+### Fix
 
 - `core`
   - type error ([e94d9d9](https://github.com/music-lyric/music-lyric-kit-node/commit/e94d9d9))
 
-### Code Refactor
+### Refactor
 
 - plugin system ([630a1dd](https://github.com/music-lyric/music-lyric-kit-node/commit/630a1dd))
 
-### Breaking Change
+### Breaking
 
 - plugin interface has been changed
 
@@ -283,12 +318,12 @@
 - `lyric`
   - change info version to getter ([457c38a](https://github.com/music-lyric/music-lyric-kit-node/commit/457c38a))
 
-### Bug Fix
+### Fix
 
 - `app`
   - export content ([59766f3](https://github.com/music-lyric/music-lyric-kit-node/commit/59766f3))
 
-### Code Refactor
+### Refactor
 
 - `lyric`
   - remove default export ([4153b71](https://github.com/music-lyric/music-lyric-kit-node/commit/4153b71))
@@ -332,14 +367,14 @@
   - add number align tools ([817179a](https://github.com/music-lyric/music-lyric-kit-node/commit/817179a))
   - add tools ([beca636](https://github.com/music-lyric/music-lyric-kit-node/commit/beca636))
 
-### Bug Fix
+### Fix
 
 - dependencies resolve failed when build ([2a49d51](https://github.com/music-lyric/music-lyric-kit-node/commit/2a49d51))
 - `lyric`
   - line type getter return error type ([ac3ed22](https://github.com/music-lyric/music-lyric-kit-node/commit/ac3ed22))
   - export type ([78f7672](https://github.com/music-lyric/music-lyric-kit-node/commit/78f7672))
 
-### Code Refactor
+### Refactor
 
 - `core`
   - export content ([8e78f8d](https://github.com/music-lyric/music-lyric-kit-node/commit/8e78f8d))
