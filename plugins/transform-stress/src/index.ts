@@ -7,7 +7,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineNormal, LineType, WordType } from '@music-lyric-kit/lyric'
 
-export class MarkPlugin extends ParserPlugin {
+export class Mark extends ParserPlugin {
   override config = new ConfigManager<MarkConfig, DeepPartial<MarkConfig>>(DEFAULT_CONFIG)
 
   override get id() {

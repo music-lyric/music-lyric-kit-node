@@ -7,7 +7,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Line, LineInterlude } from '@music-lyric-kit/lyric'
 
-export class InsertPlugin extends ParserPlugin {
+export class Insert extends ParserPlugin {
   override config = new ConfigManager<InsertConfig, DeepPartial<InsertConfig>>(DEFAULT_CONFIG)
 
   override get priority() {

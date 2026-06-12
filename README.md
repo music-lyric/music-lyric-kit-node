@@ -83,17 +83,17 @@ const { result } = createParserPipeline(input)
 For more granular control, you can use the `Parser` class with plugins directly.
 
 ```js
-import { Parser, Plugins } from 'music-lyric-kit'
+import { Parser, Format, Transform } from 'music-lyric-kit'
 
 const parser = new Parser()
 
 // Format plugins
-parser.plugin.add(new Plugins.Formats.Lrc.Parser())
-parser.plugin.add(new Plugins.Formats.Ttml.AmllParser())
+parser.plugin.add(new Format.Lrc.Parser())
+parser.plugin.add(new Format.Ttml.AmllParser())
 
 // Transform plugins
-parser.plugin.add(new Plugins.Transforms.Space.InsertPlugin())
-parser.plugin.add(new Plugins.Transforms.Stress.MarkPlugin())
+parser.plugin.add(new Transform.Space.Insert())
+parser.plugin.add(new Transform.Stress.Mark())
 
 const input = {
   original: '[00:01.114]Hello world',
@@ -111,11 +111,11 @@ if (format) {
 ### Generator
 
 ```js
-import { Generator, Plugins } from 'music-lyric-kit'
+import { Generator, Format } from 'music-lyric-kit'
 
 const generator = new Generator()
 
-generator.plugin.add(new Plugins.Formats.Lrc.Generator())
+generator.plugin.add(new Format.Lrc.Generator())
 
 const output = generator.generate('lrc', { content: result })
 console.log(output)

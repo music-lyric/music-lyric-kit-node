@@ -1,5 +1,5 @@
-import * as Formats from './format'
+import * as Format from './format'
 
-import * as Transforms from './transform'
+import * as Transform from './transform'
 
-export { Formats, Transforms }
+export { Format, Transform }

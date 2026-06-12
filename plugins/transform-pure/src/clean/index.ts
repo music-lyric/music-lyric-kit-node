@@ -13,7 +13,7 @@ import { LineType } from '@music-lyric-kit/lyric'
 
 import { processText } from './utils'
 
-export class CleanPlugin extends ParserPlugin {
+export class Clean extends ParserPlugin {
   private matcher: Matcher
 
   override config = new ConfigManager<CleanConfig, DeepPartial<CleanConfig>>(DEFAULT_CONFIG)

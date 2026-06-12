@@ -3,7 +3,7 @@ import { LineType } from '@music-lyric-kit/lyric'
 
 import { removeBrackets } from './core'
 
-export class CleanPlugin extends ParserPlugin {
+export class Clean extends ParserPlugin {
   override get id() {
     return 'TRANSFORM-BACKGROUND-CLEAN'
   }

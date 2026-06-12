@@ -12,8 +12,8 @@ npm install @music-lyric-kit/plugin-transform-agent
 
 ```js
 import { Parser } from '@music-lyric-kit/core'
-import { ExtractPlugin } from '@music-lyric-kit/plugin-transform-agent'
+import { Extract } from '@music-lyric-kit/plugin-transform-agent'
 
 const parser = new Parser.Client()
-parser.plugin.add(new ExtractPlugin())
+parser.plugin.add(new Extract())
 ```

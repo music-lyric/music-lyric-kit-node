@@ -12,9 +12,9 @@ npm install @music-lyric-kit/plugin-transform-pure
 
 ```js
 import { Parser } from '@music-lyric-kit/core'
-import { CleanPlugin, ExtractCreatorPlugin } from '@music-lyric-kit/plugin-transform-pure'
+import { Clean, ExtractCreator } from '@music-lyric-kit/plugin-transform-pure'
 
 const parser = new Parser.Client()
-parser.plugin.add(new CleanPlugin())
-parser.plugin.add(new ExtractCreatorPlugin())
+parser.plugin.add(new Clean())
+parser.plugin.add(new ExtractCreator())
 ```

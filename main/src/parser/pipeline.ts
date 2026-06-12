@@ -3,7 +3,7 @@ import type { ParserParams } from '@music-lyric-kit/core'
 import { Info } from '@music-lyric-kit/lyric'
 import { ParserContext, ParserPlugin } from '@music-lyric-kit/core'
 
-import { Formats, Transforms } from '@root/plugin'
+import { Format, Transform } from '@root/plugin'
 
 export interface ParserPipelineInput {
   format?: string
@@ -16,28 +16,28 @@ export interface ParserPipelineResult {
   result: Info
 }
 
-const BuiltInFormats = [new Formats.Lrc.Parser(), new Formats.Ttml.AmllParser()]
+const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser()]
 
 const BuiltInPlugins = {
   agent: {
-    extract: new Transforms.Agent.ExtractPlugin(),
+    extract: new Transform.Agent.Extract(),
   },
   background: {
-    extract: new Transforms.Background.ExtractPlugin(),
-    clean: new Transforms.Background.CleanPlugin(),
+    extract: new Transform.Background.Extract(),
+    clean: new Transform.Background.Clean(),
   },
   pure: {
-    extract: new Transforms.Pure.ExtractCreatorPlugin(),
-    clean: new Transforms.Pure.CleanPlugin(),
+    extract: new Transform.Pure.ExtractCreator(),
+    clean: new Transform.Pure.Clean(),
   },
   space: {
-    insert: new Transforms.Space.InsertPlugin(),
+    insert: new Transform.Space.Insert(),
   },
   interlude: {
-    insert: new Transforms.Interlude.InsertPlugin(),
+    insert: new Transform.Interlude.Insert(),
   },
   stress: {
-    mark: new Transforms.Stress.MarkPlugin(),
+    mark: new Transform.Stress.Mark(),
   },
 }
 
@@ -128,7 +128,7 @@ export class ParserPipeline {
     return this
   }
 
-  backgroundExtract(options?: Transforms.Background.ExtractConfig): this {
+  backgroundExtract(options?: Transform.Background.ExtractConfig): this {
     this.handleApplyConfig(BuiltInPlugins.background.extract, options)
     this.handleExecPlugin(BuiltInPlugins.background.extract)
     return this
@@ -139,37 +139,37 @@ export class ParserPipeline {
     return this
   }
 
-  agentExtract(options?: Transforms.Agent.ExtractConfig): this {
+  agentExtract(options?: Transform.Agent.ExtractConfig): this {
     this.handleApplyConfig(BuiltInPlugins.agent.extract, options)
     this.handleExecPlugin(BuiltInPlugins.agent.extract)
     return this
   }
 
-  pureExtract(options?: Transforms.Pure.ExtractCreatorConfig): this {
+  pureExtract(options?: Transform.Pure.ExtractCreatorConfig): this {
     this.handleApplyConfig(BuiltInPlugins.pure.extract, options)
     this.handleExecPlugin(BuiltInPlugins.pure.extract)
     return this
   }
 
-  pureClean(options?: Transforms.Pure.CleanConfig): this {
+  pureClean(options?: Transform.Pure.CleanConfig): this {
     this.handleApplyConfig(BuiltInPlugins.pure.clean, options)
     this.handleExecPlugin(BuiltInPlugins.pure.clean)
     return this
   }
 
-  interludeInsert(options?: Transforms.Interlude.InsertConfig): this {
+  interludeInsert(options?: Transform.Interlude.InsertConfig): this {
     this.handleApplyConfig(BuiltInPlugins.interlude.insert, options)
     this.handleExecPlugin(BuiltInPlugins.interlude.insert)
     return this
   }
 
-  spaceInsert(options?: Transforms.Space.SpaceConfig): this {
+  spaceInsert(options?: Transform.Space.SpaceConfig): this {
     this.handleApplyConfig(BuiltInPlugins.space.insert, options)
     this.handleExecPlugin(BuiltInPlugins.space.insert)
     return this
   }
 
-  stressMark(options?: Transforms.Stress.MarkConfig): this {
+  stressMark(options?: Transform.Stress.MarkConfig): this {
     this.handleApplyConfig(BuiltInPlugins.stress.mark, options)
     this.handleExecPlugin(BuiltInPlugins.stress.mark)
     return this

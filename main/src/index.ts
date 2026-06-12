@@ -1,8 +1,7 @@
 import * as Lyric from '@music-lyric-kit/lyric'
 export { Lyric }
 
-import * as Plugins from './plugin'
-export { Plugins }
+export { Format, Transform } from './plugin'
 
 export * from './parser'
 

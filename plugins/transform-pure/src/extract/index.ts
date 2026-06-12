@@ -12,7 +12,7 @@ import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType, MetaCreator } from '@music-lyric-kit/lyric'
 import { extractCreator, splitNameWithRule } from './utils'
 
-export class ExtractCreatorPlugin extends ParserPlugin {
+export class ExtractCreator extends ParserPlugin {
   private matcher: Matcher
 
   override config = new ConfigManager<ExtractCreatorConfig, DeepPartial<ExtractCreatorConfig>>(DEFAULT_CREATOR_CONFIG)

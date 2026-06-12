@@ -10,7 +10,7 @@ import { LineType, Agent, AgentLine, WordType } from '@music-lyric-kit/lyric'
 
 import { createHash } from './utils'
 
-export class ExtractPlugin extends ParserPlugin {
+export class Extract extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
 
   override get id() {

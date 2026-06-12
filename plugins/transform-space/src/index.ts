@@ -8,7 +8,7 @@ import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { LineType } from '@music-lyric-kit/lyric'
 import { insertSpaceToExtended, insertSpaceToLine } from './core'
 
-export class InsertPlugin extends ParserPlugin {
+export class Insert extends ParserPlugin {
   override config = new ConfigManager<SpaceConfig, DeepPartial<SpaceConfig>>(DEFAULT_CONFIG)
 
   override get id() {

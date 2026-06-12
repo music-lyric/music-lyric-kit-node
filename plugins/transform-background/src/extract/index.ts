@@ -10,7 +10,7 @@ import { LineType } from '@music-lyric-kit/lyric'
 
 import { addBackground, extractCrossLine, extractInLine, isFullLine } from './core'
 
-export class ExtractPlugin extends ParserPlugin {
+export class Extract extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
 
   override get id() {
