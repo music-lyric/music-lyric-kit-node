@@ -19,7 +19,7 @@ const copyWord = (word: Lyric.Word) => {
   }
 }
 
-export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNormal) => {
+export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNormalBackground) => {
   if (!line.background) {
     line.background = [background]
   } else {
@@ -208,9 +208,9 @@ export const extractInLine = (line: Lyric.LineNormal) => {
 
   line.content.words = mainWords
 
-  const backgroundLines: Lyric.LineNormal[] = []
+  const backgroundLines: Lyric.LineNormalBackground[] = []
   for (const item of backgroundGroups) {
-    const result = new Lyric.LineNormal()
+    const result = new Lyric.LineNormalBackground()
 
     const normals = item.filter((w) => w.type === Lyric.WordType.Normal)
     if (normals.length > 0) {

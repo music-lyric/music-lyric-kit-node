@@ -42,18 +42,22 @@ export class LineNormalContent {
   }
 }
 
-export class LineNormal {
-  id: string = createRandomHex(4).toUpperCase()
-
+abstract class LineNormalBase {
   readonly type = LineType.Normal
+
+  id: string = createRandomHex(4).toUpperCase()
 
   time: Time = new Time()
 
   content: LineNormalContent = new LineNormalContent()
 
   agent?: LineAgent
+}
 
-  background?: LineNormal[]
+export class LineNormalBackground extends LineNormalBase {}
+
+export class LineNormal extends LineNormalBase {
+  background?: LineNormalBackground[]
 }
 
 export type Line = LineInterlude | LineNormal
