@@ -1,5 +1,5 @@
 import { ParserContext, ParserPlugin, PluginStage } from '@music-lyric-kit/core'
-import { Extended, ExtendedType, LineNormal, Type } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { alignNumberArray } from '@music-lyric-kit/utils'
 import { matchLyric } from './utils'
@@ -44,9 +44,9 @@ export class Parser extends ParserPlugin {
     return result
   }
 
-  private processExtended(lines: LineNormal[], inputTranslate: string, inputRoman: string) {
-    const lineMap: Map<number, LineNormal> = new Map()
-    const extendedMap: Map<number, Extended[]> = new Map()
+  private processExtended(lines: Lyric.LineNormal[], inputTranslate: string, inputRoman: string) {
+    const lineMap: Map<number, Lyric.LineNormal> = new Map()
+    const extendedMap: Map<number, Lyric.Extended[]> = new Map()
 
     for (const line of lines) {
       lineMap.set(line.time.start, line)
@@ -55,8 +55,8 @@ export class Parser extends ParserPlugin {
     const translate = processLines(matchLyric(inputTranslate).line, true)
     for (const item of translate) {
       const current = extendedMap.get(item.time.start) || []
-      const extended = new Extended()
-      extended.type = ExtendedType.Translate
+      const extended = new Lyric.Extended()
+      extended.type = Lyric.ExtendedType.Translate
       extended.content = item.content.original
       current.push(extended)
       extendedMap.set(item.time.start, current)
@@ -65,8 +65,8 @@ export class Parser extends ParserPlugin {
     const roman = processLines(matchLyric(inputRoman).line, true) || []
     for (const item of roman) {
       const current = extendedMap.get(item.time.start) || []
-      const extended = new Extended()
-      extended.type = ExtendedType.Roman
+      const extended = new Lyric.Extended()
+      extended.type = Lyric.ExtendedType.Roman
       extended.content = item.content.original
       current.push(extended)
       extendedMap.set(item.time.start, current)
@@ -116,7 +116,7 @@ export class Parser extends ParserPlugin {
 
     const lines = processLines(match.line)
     if (!lines.length) {
-      ctx.result.type = Type.Empty
+      ctx.result.type = Lyric.Type.Empty
       return
     }
 
@@ -124,9 +124,9 @@ export class Parser extends ParserPlugin {
 
     ctx.result.lines = lines
     if (checkIsSyllable(match.line)) {
-      ctx.result.type = Type.Syllable
+      ctx.result.type = Lyric.Type.Syllable
     } else {
-      ctx.result.type = Type.Normal
+      ctx.result.type = Lyric.Type.Normal
     }
 
     const metas = processMetas(match.meta)

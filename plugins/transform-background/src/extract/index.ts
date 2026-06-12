@@ -1,12 +1,11 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { Line } from '@music-lyric-kit/lyric'
 import type { ExtractConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
 
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { addBackground, extractCrossLine, extractInLine, isFullLine } from './core'
 
@@ -31,20 +30,20 @@ export class Extract extends ParserPlugin {
       return
     }
 
-    const result: Line[] = []
+    const result: Lyric.Line[] = []
 
     const processed = this.config.current.crossLine ? extractCrossLine(lines) : lines
     for (let i = 0; i < processed.length; i++) {
       const line = processed[i]
 
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         result.push(line)
         continue
       }
 
       if (this.config.current.fullLine && isFullLine(line)) {
         const prev = result.length > 0 ? result[result.length - 1] : null
-        if (prev && prev.type === LineType.Normal) {
+        if (prev && prev.type === Lyric.LineType.Normal) {
           addBackground(prev, line)
           continue
         }

@@ -4,7 +4,7 @@ import type { GeneratorParams, GeneratorResult } from './context'
 
 import { DEFAULT_OPTIONS } from './options'
 
-import { Info } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { BasePlugin, PluginLoader, PluginStage } from '@root/plugin'
 import { GeneratorContext } from './context'
@@ -32,7 +32,7 @@ export class Generator {
       throw new Error('bad format plugin')
     }
 
-    const init = new Info()
+    const init = new Lyric.Info()
     const context = new GeneratorContext(params, init)
 
     const plugins: GeneratorPlugin[] = []

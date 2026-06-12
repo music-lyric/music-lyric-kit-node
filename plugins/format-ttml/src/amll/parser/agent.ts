@@ -1,4 +1,4 @@
-import { Agent } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { Xml } from '@music-lyric-kit/utils'
 import { findElementsByLocalName, getAttributeByName } from '@root/utils'
@@ -11,7 +11,7 @@ const processAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  const agent = new Agent()
+  const agent = new Lyric.Agent()
   agent.id = id
 
   return agent
@@ -23,7 +23,7 @@ export const processAgents = (root: Xml.XmlElement) => {
     return []
   }
 
-  const result: Agent[] = []
+  const result: Lyric.Agent[] = []
   const elements = findElementsByLocalName(data, 'agent')
 
   for (const element of elements) {

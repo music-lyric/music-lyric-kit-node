@@ -1,33 +1,32 @@
-import type { Meta } from '@music-lyric-kit/lyric'
 import type { MatchItem } from './utils'
 
-import { MetaOffset, MetaDuration, MetaTitle, MetaSinger, MetaAlbum } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { parseTime } from '@music-lyric-kit/utils'
 
-const processItem = (key: string, value: string): Meta | null => {
+const processItem = (key: string, value: string): Lyric.Meta | null => {
   switch (key) {
     case 'offset':
-      const offset = new MetaOffset()
+      const offset = new Lyric.MetaOffset()
       offset.content = Number(value) || 0
       return offset
     case 'length':
     case 'duration':
-      const duration = new MetaDuration()
+      const duration = new Lyric.MetaDuration()
       duration.content = parseTime(value) || 0
       return duration
     case 'ti':
     case 'title':
-      const title = new MetaTitle()
+      const title = new Lyric.MetaTitle()
       title.content = value.trim()
       return title
     case 'ar':
     case 'artist':
-      const singer = new MetaSinger()
+      const singer = new Lyric.MetaSinger()
       singer.content = value.trim()
       return singer
     case 'al':
     case 'album':
-      const album = new MetaAlbum()
+      const album = new Lyric.MetaAlbum()
       album.content = value.trim()
       return album
   }
@@ -37,7 +36,7 @@ const processItem = (key: string, value: string): Meta | null => {
 const LYRIC_META_REGEXP = /^\s*\[\s*([A-Za-z0-9_-]+)\s*:\s*([^\]]*)\s*\]\s*$/
 
 export const processMetas = (metas: MatchItem[]) => {
-  const result: Meta[] = []
+  const result: Lyric.Meta[] = []
 
   for (const meta of metas) {
     if (!meta.tag) {

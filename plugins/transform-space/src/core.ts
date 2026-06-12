@@ -1,6 +1,6 @@
 import type { InsertTextSpaceTypes } from './constants'
 
-import { LineNormalContent, Word, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { INSERT_TEXT_SPACE_TYPES, INSERT_TEXT_SPACE_TYPES_VALUE } from './constants'
 
 const CJK_RANGE = '\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff' as const
@@ -140,7 +140,7 @@ export function alignElements<T, R>(
   return result
 }
 
-export const insertSpaceToLine = (line: LineNormalContent, types?: InsertTextSpaceTypes[]): LineNormalContent => {
+export const insertSpaceToLine = (line: Lyric.LineNormalContent, types?: InsertTextSpaceTypes[]): Lyric.LineNormalContent => {
   if (!line || !line.words || line.words.length === 0) {
     return line
   }
@@ -148,18 +148,18 @@ export const insertSpaceToLine = (line: LineNormalContent, types?: InsertTextSpa
   const full = line.original
   const processed = insertSpace(full, types)
 
-  const normalWords = line.words.filter((w) => w.type === WordType.Normal) as WordNormal[]
+  const normalWords = line.words.filter((w) => w.type === Lyric.WordType.Normal) as Lyric.WordNormal[]
 
-  const newWords = alignElements<WordNormal, Word>(
+  const newWords = alignElements<Lyric.WordNormal, Lyric.Word>(
     normalWords,
     processed,
     (count) => {
-      const space = new WordSpace()
+      const space = new Lyric.WordSpace()
       space.count = count
       return space
     },
     (originalWord, matchedText) => {
-      const normal = new WordNormal()
+      const normal = new Lyric.WordNormal()
       normal.time = originalWord.time
       normal.extended = originalWord.extended
       normal.content = matchedText
@@ -168,14 +168,14 @@ export const insertSpaceToLine = (line: LineNormalContent, types?: InsertTextSpa
     (w) => w.content.replace(/\s/g, ''),
   )
 
-  const newLine = new LineNormalContent()
+  const newLine = new Lyric.LineNormalContent()
   newLine.extended = line.extended
   newLine.words = newWords
 
   return newLine
 }
 
-export const insertSpaceToExtended = (line: LineNormalContent, types?: InsertTextSpaceTypes[]): LineNormalContent => {
+export const insertSpaceToExtended = (line: Lyric.LineNormalContent, types?: InsertTextSpaceTypes[]): Lyric.LineNormalContent => {
   if (!line.extended.length) {
     return line
   }

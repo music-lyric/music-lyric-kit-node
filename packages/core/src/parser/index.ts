@@ -4,7 +4,7 @@ import type { ParserParams, ParserResult } from './context'
 
 import { DEFAULT_OPTIONS } from './options'
 
-import { Info } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { BasePlugin, PluginLoader, PluginStage } from '@root/plugin'
 import { ParserContext } from './context'
@@ -21,7 +21,7 @@ export class Parser {
   }
 
   infer(params: ParserParams) {
-    const init = new Info()
+    const init = new Lyric.Info()
     const context = new ParserContext(params, init)
 
     const plugins = this.plugin.filterByStage(PluginStage.Process, true) as ParserPlugin[]
@@ -48,7 +48,7 @@ export class Parser {
       throw new Error('format not found')
     }
 
-    const init = new Info()
+    const init = new Lyric.Info()
     const context = new ParserContext(params, init)
 
     const plugins: ParserPlugin[] = []

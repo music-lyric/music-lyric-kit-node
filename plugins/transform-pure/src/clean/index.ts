@@ -1,5 +1,4 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { Line } from '@music-lyric-kit/lyric'
 import type { CleanConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
@@ -9,7 +8,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { processText } from './utils'
 
@@ -49,11 +48,11 @@ export class Clean extends ParserPlugin {
       return
     }
 
-    const newLines: Line[] = []
+    const newLines: Lyric.Line[] = []
 
     for (let i = 0; i < linesLength; i++) {
       const line = lines[i]
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         newLines.push(line)
         continue
       }

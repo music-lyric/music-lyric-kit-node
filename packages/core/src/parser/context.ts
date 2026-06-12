@@ -1,8 +1,8 @@
-import { Info, LineType, WordType, Line, LineNormal, WordNormal } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import type { BaseContext } from '@root/plugin'
 
-export type ParserResult = Info
+export type ParserResult = Lyric.Info
 
 export interface ParserParams {
   content: any
@@ -48,12 +48,12 @@ export class ParserContext implements BaseContext {
       return
     }
 
-    const compare = (a: Line, b: Line) => a.time.start - b.time.start
+    const compare = (a: Lyric.Line, b: Lyric.Line) => a.time.start - b.time.start
     lines.sort(compare)
 
     for (let i = 0, len = lines.length; i < len; i++) {
       const line = lines[i]
-      if (line.type !== LineType.Normal || !line.background?.length) {
+      if (line.type !== Lyric.LineType.Normal || !line.background?.length) {
         continue
       }
       line.background.sort(compare)
@@ -63,10 +63,10 @@ export class ParserContext implements BaseContext {
   /**
    * Sync each line's start/end time to match the time range of its first and last normal word.
    */
-  syncLineTimeWithWord(lines?: Line[]) {
+  syncLineTimeWithWord(lines?: Lyric.Line[]) {
     const result = this.result
     for (const line of lines || result.lines || []) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
 
@@ -76,11 +76,11 @@ export class ParserContext implements BaseContext {
 
       const words = line.content.words
 
-      let first: WordNormal | null = null
-      let last: WordNormal | null = null
+      let first: Lyric.WordNormal | null = null
+      let last: Lyric.WordNormal | null = null
       for (let i = 0, len = words.length; i < len; i++) {
         const word = words[i]
-        if (word.type !== WordType.Normal) {
+        if (word.type !== Lyric.WordType.Normal) {
           continue
         }
         if (!first) {
@@ -109,7 +109,7 @@ export class ParserContext implements BaseContext {
    */
   syncLineTimeWithBackground() {
     for (const line of this.result.lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
 
@@ -129,10 +129,10 @@ export class ParserContext implements BaseContext {
   /**
    * Remove leading and trailing space words from each line's word list.
    */
-  cleanWord(lines?: Line[]) {
+  cleanWord(lines?: Lyric.Line[]) {
     const result = this.result
     for (const line of lines || result?.lines || []) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
 
@@ -145,12 +145,12 @@ export class ParserContext implements BaseContext {
         continue
       }
 
-      while (words.length > 0 && words[words.length - 1].type === WordType.Space) {
+      while (words.length > 0 && words[words.length - 1].type === Lyric.WordType.Space) {
         words.pop()
       }
 
       let startCount = 0
-      while (startCount < words.length && words[startCount].type === WordType.Space) {
+      while (startCount < words.length && words[startCount].type === Lyric.WordType.Space) {
         startCount++
       }
       if (startCount > 0) {
@@ -175,7 +175,7 @@ export class ParserContext implements BaseContext {
     let blockIndex = 0
 
     for (const line of result.lines) {
-      if (line.type !== LineType.Normal || !line.agent) {
+      if (line.type !== Lyric.LineType.Normal || !line.agent) {
         continue
       }
 

@@ -1,7 +1,6 @@
 import type { MatchItem } from './utils'
-import type { Word } from '@music-lyric-kit/lyric'
 
-import { LineNormal, WordNormal, WordSpace, WordType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 import { parseTagTime, processTextToWords } from './utils'
 
@@ -11,12 +10,12 @@ const TIME_TAG_2 = /<([0-9]+),([0-9]+)\>/
 const SYLLABLE_CHECK_REGXP = /<[^>]+>/
 
 const processNormal = (lines: MatchItem[]) => {
-  const result: LineNormal[] = []
+  const result: Lyric.LineNormal[] = []
   for (const line of lines) {
     const time = parseTagTime(line.tag) || 0
     const text = line.content.trim()
 
-    const item = new LineNormal()
+    const item = new Lyric.LineNormal()
     item.time.start = time
     item.content.words = processTextToWords(text)
 
@@ -34,7 +33,7 @@ const processNormal = (lines: MatchItem[]) => {
 }
 
 const processSyllableLine = (line: MatchItem) => {
-  const words: Word[] = []
+  const words: Lyric.Word[] = []
 
   const lineTime = parseTagTime(line.tag)
   if (lineTime === null) {
@@ -70,8 +69,8 @@ const processSyllableLine = (line: MatchItem) => {
         continue
       }
       const current = words[words.length - 1]
-      if (!current || current.type !== WordType.Space) {
-        const item = new WordSpace()
+      if (!current || current.type !== Lyric.WordType.Space) {
+        const item = new Lyric.WordSpace()
         item.count = 1
         words.push(item)
       }
@@ -81,23 +80,23 @@ const processSyllableLine = (line: MatchItem) => {
       continue
     }
 
-    const item = new WordNormal()
+    const item = new Lyric.WordNormal()
     item.time.start = time
     item.time.end = time + duration
     item.content = removeTextSpaceToOne(content)
     words.push(item)
 
     if (content.endsWith(' ')) {
-      const item = new WordSpace()
+      const item = new Lyric.WordSpace()
       item.count = 1
       words.push(item)
     }
   }
 
-  const start = words.find((item) => item.type === WordType.Normal)?.time.start ?? lineTime
-  const duration = words.map((v) => (v.type === WordType.Normal ? v.time.duration : 0)).reduce((a, b) => a + b, 0)
+  const start = words.find((item) => item.type === Lyric.WordType.Normal)?.time.start ?? lineTime
+  const duration = words.map((v) => (v.type === Lyric.WordType.Normal ? v.time.duration : 0)).reduce((a, b) => a + b, 0)
 
-  const target = new LineNormal()
+  const target = new Lyric.LineNormal()
   target.time.start = start
   target.time.end = start + duration
   target.content.words = words
@@ -106,7 +105,7 @@ const processSyllableLine = (line: MatchItem) => {
 }
 
 const processSyllable = (lines: MatchItem[]) => {
-  const result: LineNormal[] = []
+  const result: Lyric.LineNormal[] = []
   for (const line of lines) {
     const item = processSyllableLine(line)
     if (!item) continue

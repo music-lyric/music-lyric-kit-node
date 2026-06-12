@@ -1,16 +1,16 @@
-import { LineNormal, WordType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
-export const removeBrackets = (line: LineNormal, removeStart: boolean = true, removeEnd: boolean = true): void => {
+export const removeBrackets = (line: Lyric.LineNormal, removeStart: boolean = true, removeEnd: boolean = true): void => {
   const words = line.content.words
 
   if (removeStart) {
     for (let i = 0; i < words.length; i++) {
       const word = words[i]
-      if (word.type !== WordType.Normal) {
+      if (word.type !== Lyric.WordType.Normal) {
         continue
       }
 
@@ -25,7 +25,7 @@ export const removeBrackets = (line: LineNormal, removeStart: boolean = true, re
   if (removeEnd) {
     for (let i = words.length - 1; i >= 0; i--) {
       const word = words[i]
-      if (word.type !== WordType.Normal) {
+      if (word.type !== Lyric.WordType.Normal) {
         continue
       }
 

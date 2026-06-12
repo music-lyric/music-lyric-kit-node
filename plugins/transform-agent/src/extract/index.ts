@@ -1,12 +1,11 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { Line, WordNormal } from '@music-lyric-kit/lyric'
 import type { ExtractConfig } from './config'
 
 import { DEFAULT_CONFIG } from './config'
 
 import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType, Agent, AgentLine, WordType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { createHash } from './utils'
 
@@ -31,16 +30,16 @@ export class Extract extends ParserPlugin {
       return
     }
 
-    const newLines: Line[] = []
+    const newLines: Lyric.Line[] = []
 
-    const agentMap = new Map<string, Agent>()
+    const agentMap = new Map<string, Lyric.Agent>()
     for (const item of ctx.result.agents) {
       agentMap.set(item.id, item)
     }
 
     let currentId: string | null = null
     for (const line of lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         currentId = null
         newLines.push(line)
         continue
@@ -56,7 +55,7 @@ export class Extract extends ParserPlugin {
       }
 
       const colonWordIndex = words.findIndex((item) => {
-        if (item.type !== WordType.Normal) {
+        if (item.type !== Lyric.WordType.Normal) {
           return false
         }
 
@@ -65,7 +64,7 @@ export class Extract extends ParserPlugin {
       })
 
       if (colonWordIndex !== -1) {
-        const colonWord = words[colonWordIndex] as WordNormal
+        const colonWord = words[colonWordIndex] as Lyric.WordNormal
         const colonText = colonWord.content.trim()
 
         const colonIndex1 = colonText.indexOf('：')
@@ -80,7 +79,7 @@ export class Extract extends ParserPlugin {
         const afterColon = colonText.slice(colonIndex + 1).trim()
 
         const nameParts = words.slice(0, colonWordIndex).map((item) => {
-          return item.type === WordType.Space ? ' '.repeat(item.count) : item.content
+          return item.type === Lyric.WordType.Space ? ' '.repeat(item.count) : item.content
         })
 
         if (beforeColon) {
@@ -108,7 +107,7 @@ export class Extract extends ParserPlugin {
         currentId = id
 
         if (!agentMap.has(id)) {
-          const agent = new Agent()
+          const agent = new Lyric.Agent()
           agent.id = id
           agent.name = name
           agentMap.set(id, agent)
@@ -129,7 +128,7 @@ export class Extract extends ParserPlugin {
         }
       }
 
-      const agent = new AgentLine()
+      const agent = new Lyric.AgentLine()
       agent.id = currentId
 
       line.agent = agent

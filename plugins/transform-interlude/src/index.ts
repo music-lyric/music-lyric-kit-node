@@ -5,7 +5,7 @@ import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { Line, LineInterlude } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 export class Insert extends ParserPlugin {
   override config = new ConfigManager<InsertConfig, DeepPartial<InsertConfig>>(DEFAULT_CONFIG)
@@ -36,14 +36,14 @@ export class Insert extends ParserPlugin {
 
     const { first: firstThreshold, normal: normalThreshold } = this.config.current.checkTime
 
-    const newLines: Line[] = []
+    const newLines: Lyric.Line[] = []
 
     const firstLine = lines[0]
     if (firstLine.time.start > firstThreshold) {
       const start = 500
       const end = firstLine.time.start
       if (end > start) {
-        const interlude = new LineInterlude()
+        const interlude = new Lyric.LineInterlude()
         interlude.time.start = start
         interlude.time.end = end
         newLines.push(interlude)
@@ -60,7 +60,7 @@ export class Insert extends ParserPlugin {
       const duration = next.time.start - start
 
       if (duration > normalThreshold) {
-        const interlude = new LineInterlude()
+        const interlude = new Lyric.LineInterlude()
         interlude.time.start = start
         interlude.time.end = next.time.start
         newLines.push(interlude)

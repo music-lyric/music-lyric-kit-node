@@ -1,5 +1,4 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
-import type { Line, Meta } from '@music-lyric-kit/lyric'
 import type { ExtractCreatorConfig } from './config'
 
 import { DEFAULT_CREATOR_CONFIG } from './config'
@@ -9,7 +8,7 @@ import { ConfigManager, removeTextSpaceAll } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType, MetaCreator } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { extractCreator, splitNameWithRule } from './utils'
 
 export class ExtractCreator extends ParserPlugin {
@@ -47,11 +46,11 @@ export class ExtractCreator extends ParserPlugin {
       return
     }
 
-    const newMetas: Meta[] = [...ctx.result.metas]
-    const newLines: Line[] = []
+    const newMetas: Lyric.Meta[] = [...ctx.result.metas]
+    const newLines: Lyric.Line[] = []
 
     for (const line of lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         newLines.push(line)
         continue
       }
@@ -73,7 +72,7 @@ export class ExtractCreator extends ParserPlugin {
       if (name) {
         const names = splitNameWithRule(name, this.config.current.split)
         if (names.length > 0) {
-          const meta = new MetaCreator()
+          const meta = new Lyric.MetaCreator()
           meta.content.role = role
           meta.content.name = names
           newMetas.push(meta)

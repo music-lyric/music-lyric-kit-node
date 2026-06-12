@@ -1,7 +1,7 @@
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 
 import { Xml } from '@music-lyric-kit/utils'
-import { Type } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { checkIsSyllable } from '@root/utils'
 
@@ -45,7 +45,7 @@ export class AmllParser extends ParserPlugin {
 
     const lines = processLines(root)
     const isSyllable = checkIsSyllable(lines[0])
-    ctx.result.type = isSyllable ? Type.Syllable : Type.Normal
+    ctx.result.type = isSyllable ? Lyric.Type.Syllable : Lyric.Type.Normal
     ctx.result.lines = lines
 
     const metas = processMetas(root)

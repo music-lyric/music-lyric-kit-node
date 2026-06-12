@@ -1,11 +1,11 @@
-import { Info } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import type { BaseContext } from '@root/plugin'
 
 export type GeneratorResult = string | Object | Uint8Array
 
 export interface GeneratorParams {
-  content: Info
+  content: Lyric.Info
 }
 
 export class GeneratorContext implements BaseContext {

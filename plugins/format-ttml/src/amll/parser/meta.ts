@@ -1,5 +1,4 @@
-import type { Meta } from '@music-lyric-kit/lyric'
-import { MetaAlbum, MetaSinger, MetaTitle } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { Xml } from '@music-lyric-kit/utils'
 import { findElementsByLocalName, getAttributeByName } from '@root/utils'
@@ -14,15 +13,15 @@ const processMeta = (element: Xml.XmlElement) => {
 
   switch (key) {
     case 'musicName':
-      const title = new MetaTitle()
+      const title = new Lyric.MetaTitle()
       title.content = value.trim()
       return title
     case 'artists':
-      const singer = new MetaSinger()
+      const singer = new Lyric.MetaSinger()
       singer.content = value.trim()
       return singer
     case 'album':
-      const album = new MetaAlbum()
+      const album = new Lyric.MetaAlbum()
       album.content = value.trim()
       return album
   }
@@ -34,7 +33,7 @@ export const processMetas = (root: Xml.XmlElement) => {
     return []
   }
 
-  const result: Meta[] = []
+  const result: Lyric.Meta[] = []
   const elements = findElementsByLocalName(data, 'meta')
 
   for (const element of elements) {

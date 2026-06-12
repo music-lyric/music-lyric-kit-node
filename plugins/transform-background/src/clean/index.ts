@@ -1,5 +1,5 @@
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 import { removeBrackets } from './core'
 
@@ -23,7 +23,7 @@ export class Clean extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
 

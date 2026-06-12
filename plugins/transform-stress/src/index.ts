@@ -5,7 +5,7 @@ import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineNormal, LineType, WordType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 
 export class Mark extends ParserPlugin {
   override config = new ConfigManager<MarkConfig, DeepPartial<MarkConfig>>(DEFAULT_CONFIG)
@@ -30,9 +30,9 @@ export class Mark extends ParserPlugin {
       return
     }
 
-    const handleMark = (line: LineNormal) => {
+    const handleMark = (line: Lyric.LineNormal) => {
       for (const word of line.content.words) {
-        if (word.type !== WordType.Normal) {
+        if (word.type !== Lyric.WordType.Normal) {
           continue
         }
         if (word.time.duration > this.config.current.checkTime) {
@@ -42,7 +42,7 @@ export class Mark extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
 

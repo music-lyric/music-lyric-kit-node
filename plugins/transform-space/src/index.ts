@@ -5,7 +5,7 @@ import { DEFAULT_CONFIG } from './config'
 import { ConfigManager } from '@music-lyric-kit/utils'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { LineType } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { insertSpaceToExtended, insertSpaceToLine } from './core'
 
 export class Insert extends ParserPlugin {
@@ -36,7 +36,7 @@ export class Insert extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (line.type !== LineType.Normal) {
+      if (line.type !== Lyric.LineType.Normal) {
         continue
       }
       if (enableOriginal) {

@@ -1,6 +1,6 @@
 import type { ParserParams } from '@music-lyric-kit/core'
 
-import { Info } from '@music-lyric-kit/lyric'
+import { Lyric } from '@music-lyric-kit/lyric'
 import { ParserContext, ParserPlugin } from '@music-lyric-kit/core'
 
 import { Format, Transform } from '@root/plugin'
@@ -13,7 +13,7 @@ export interface ParserPipelineInput {
 
 export interface ParserPipelineResult {
   format: string
-  result: Info
+  result: Lyric.Info
 }
 
 const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser()]
@@ -52,7 +52,7 @@ export class ParserPipeline {
     this.input = input
     this.format = this.input.format || ''
 
-    const init = new Info()
+    const init = new Lyric.Info()
     this.context = new ParserContext({ content: this.input.content, musicInfo: this.input.musicInfo }, init)
   }
 
