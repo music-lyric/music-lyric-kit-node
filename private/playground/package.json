@@ -7,18 +7,25 @@
   "description": "Music Lyric Kit - Playground",
   "license": "MIT",
   "scripts": {
-    "dev": "vite dev"
+    "dev": "vite dev",
+    "build": "vite build"
   },
-  "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
+  "homepage": "https://github.com/music-lyric-kit/music-lyric-kit-node#readme",
   "bugs": {
-    "url": "https://github.com/music-lyric/music-lyric-kit-node/issues"
+    "url": "https://github.com/music-lyric-kit/music-lyric-kit-node/issues"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/music-lyric/music-lyric-kit-node.git",
+    "url": "https://github.com/music-lyric-kit/music-lyric-kit-node.git",
     "directory": "private/playground"
   },
   "dependencies": {
-    "music-lyric-kit": "workspace:*"
+    "music-lyric-kit": "workspace:*",
+    "vue": "^3.5.34"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.6",
+    "sass": "^1.86.0",
+    "vue-tsc": "^3.2.8"
   }
 }

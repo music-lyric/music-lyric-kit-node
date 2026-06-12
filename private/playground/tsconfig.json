@@ -3,7 +3,9 @@
   "compilerOptions": {
     "paths": {
       "@root/*": ["./src/*"]
-    }
+    },
+    "types": ["vite/client"],
+    "resolveJsonModule": true
   },
-  "include": ["./src/**/*.ts", "./test/**/*.ts"]
+  "include": ["./src/**/*.ts", "./src/**/*.vue", "./src/**/*.json"]
 }

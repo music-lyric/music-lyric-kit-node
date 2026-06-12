@@ -3,67 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Music Lyric Parser</title>
-    <link rel="stylesheet" href="./style/index.css" />
-    <script type="module" src="./index.ts"></script>
+    <title>Music Lyric Kit Playground</title>
   </head>
   <body>
-    <div class="main-container">
-      <h1>Music Lyric Parser</h1>
-
-      <div class="music-info">
-        <div class="info-group">
-          <label for="input-song-name">Song Name</label>
-          <input id="input-song-name" type="text" placeholder="Enter song name..." />
-        </div>
-        <div class="info-group">
-          <label for="input-singers">Singers</label>
-          <input id="input-singers" type="text" placeholder="Enter singers (comma separated)..." />
-          <small>Separate multiple singers with commas</small>
-        </div>
-      </div>
-
-      <div class="format-selector">
-        <label>Format</label>
-        <div class="format-options">
-          <button class="format-btn active" data-format="lrc">LRC</button>
-          <button class="format-btn" data-format="ttml">TTML</button>
-        </div>
-      </div>
-
-      <div class="input-grid" id="input-grid-lrc">
-        <div class="input-group">
-          <label for="input-original">Original</label>
-          <textarea id="input-original" placeholder="Paste original here..."></textarea>
-        </div>
-        <div class="input-group">
-          <label for="input-translate">Translation</label>
-          <textarea id="input-translate" placeholder="Paste translation here..."></textarea>
-        </div>
-        <div class="input-group">
-          <label for="input-roman">Romanization</label>
-          <textarea id="input-roman" placeholder="Paste romanization here..."></textarea>
-        </div>
-      </div>
-
-      <div class="input-grid single" id="input-grid-ttml" style="display: none">
-        <div class="input-group">
-          <label for="input-ttml">TTML Content</label>
-          <textarea id="input-ttml" placeholder="Paste TTML XML content here..."></textarea>
-        </div>
-      </div>
-
-      <div class="action-area">
-        <button id="btn-parse">Parse Lyrics</button>
-      </div>
-
-      <div class="result-container">
-        <div class="result-header">
-          <h2>Parse Result</h2>
-          <span class="result-type-badge" id="result-type-badge"></span>
-        </div>
-        <div id="output-result"></div>
-      </div>
-    </div>
+    <div id="app"></div>
+    <script type="module" src="./main.ts"></script>
   </body>
 </html>

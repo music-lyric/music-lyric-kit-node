@@ -1,6 +1,8 @@
 export type Format = 'lrc' | 'ttml'
 
-export const AGENT_COLORS = ['#5856d6', '#ff9500', '#34c759', '#ff2d55', '#af52de', '#00c7be']
+export type Engine = 'pipeline' | 'client'
+
+export const AGENT_COLORS = ['#dc6464', '#e09f3e', '#5b8c5a', '#4f86c6', '#9b6bcc', '#3fb6ad']
 
 export const DEFAULT_LRC_ORIGINAL = `
 [ti: title]
@@ -30,6 +32,7 @@ export const DEFAULT_TTML = `<?xml version="1.0" encoding="UTF-8"?>
 
 export const STORAGE_KEYS = {
   FORMAT: 'lyric_parser_format',
+  ENGINE: 'lyric_parser_engine',
   ORIGINAL: 'lyric_parser_original',
   TRANSLATE: 'lyric_parser_translate',
   ROMAN: 'lyric_parser_roman',

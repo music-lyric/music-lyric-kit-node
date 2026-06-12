@@ -1,0 +1,43 @@
+{
+  "app.title": "Music Lyric Kit",
+  "app.subtitle": "Lyric parsing playground",
+  "app.changeLanguage": "Change language",
+
+  "panel.input": "Input",
+  "panel.result": "Result",
+
+  "format.lrc": "LRC",
+  "format.ttml": "TTML",
+
+  "field.songName": "Song Name",
+  "field.singers": "Singers",
+  "field.original": "Original",
+  "field.translate": "Translation",
+  "field.roman": "Romanization",
+  "field.ttml": "TTML Content",
+
+  "placeholder.songName": "Enter song name...",
+  "placeholder.singers": "Enter singers...",
+  "placeholder.original": "Paste original here...",
+  "placeholder.translate": "Paste translation here...",
+  "placeholder.roman": "Paste romanization here...",
+  "placeholder.ttml": "Paste TTML XML content here...",
+
+  "hint.singers": "Separate multiple singers with commas",
+
+  "label.engine": "Engine",
+  "engine.pipeline": "Pipeline",
+  "engine.client": "Client",
+
+  "action.parse": "Parse Lyrics",
+
+  "result.metadata": "Metadata",
+  "result.agents": "Agents",
+  "result.linesTitle": "Lines",
+  "result.lines": "lines",
+  "result.noLines": "No lyric lines",
+  "result.interlude": "Interlude",
+  "result.background": "Background",
+  "result.empty": "No result yet.",
+  "result.inferFailed": "Could not infer lyric format."
+}

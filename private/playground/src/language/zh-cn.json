@@ -1,0 +1,43 @@
+{
+  "app.title": "Music Lyric Kit",
+  "app.subtitle": "歌词解析练习场",
+  "app.changeLanguage": "切换语言",
+
+  "panel.input": "输入",
+  "panel.result": "结果",
+
+  "format.lrc": "LRC",
+  "format.ttml": "TTML",
+
+  "field.songName": "歌曲名",
+  "field.singers": "歌手",
+  "field.original": "原文",
+  "field.translate": "翻译",
+  "field.roman": "罗马音",
+  "field.ttml": "TTML 内容",
+
+  "placeholder.songName": "输入歌曲名...",
+  "placeholder.singers": "输入歌手...",
+  "placeholder.original": "粘贴原文...",
+  "placeholder.translate": "粘贴翻译...",
+  "placeholder.roman": "粘贴罗马音...",
+  "placeholder.ttml": "粘贴 TTML XML 内容...",
+
+  "hint.singers": "多个歌手用逗号分隔",
+
+  "label.engine": "引擎",
+  "engine.pipeline": "Pipeline",
+  "engine.client": "Client",
+
+  "action.parse": "解析歌词",
+
+  "result.metadata": "元数据",
+  "result.agents": "演唱者",
+  "result.linesTitle": "歌词行",
+  "result.lines": "行",
+  "result.noLines": "暂无歌词行",
+  "result.interlude": "间奏",
+  "result.background": "背景人声",
+  "result.empty": "暂无结果",
+  "result.inferFailed": "无法推断歌词格式"
+}
