@@ -13,21 +13,11 @@ export enum LineType {
 }
 
 export class LineInterlude {
-  get type() {
-    return LineType.Interlude as const
-  }
-
   id: string = createRandomHex(4).toUpperCase()
 
-  time: Time = new Time()
+  readonly type = LineType.Interlude
 
-  toJSON() {
-    return {
-      id: this.id,
-      type: this.type,
-      time: this.time,
-    }
-  }
+  time: Time = new Time()
 }
 
 export class LineNormalContent {
@@ -53,11 +43,9 @@ export class LineNormalContent {
 }
 
 export class LineNormal {
-  get type() {
-    return LineType.Normal as const
-  }
-
   id: string = createRandomHex(4).toUpperCase()
+
+  readonly type = LineType.Normal
 
   time: Time = new Time()
 
@@ -66,17 +54,6 @@ export class LineNormal {
   agent?: AgentLine
 
   background?: LineNormal[]
-
-  toJSON() {
-    return {
-      id: this.id,
-      type: this.type,
-      time: this.time,
-      content: this.content,
-      agent: this.agent,
-      background: this.background,
-    }
-  }
 }
 
 export type Line = LineInterlude | LineNormal

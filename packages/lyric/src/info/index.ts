@@ -20,9 +20,7 @@ enum Type {
 }
 
 class Info {
-  get version() {
-    return Version
-  }
+  readonly version = Version
 
   type: Type = Type.Incorrect
 
@@ -31,16 +29,6 @@ class Info {
   lines: Line[] = []
 
   agents: Agent[] = []
-
-  toJSON() {
-    return {
-      version: this.version,
-      type: this.type,
-      metas: this.metas,
-      lines: this.lines,
-      agents: this.agents,
-    }
-  }
 }
 
 export { Version, Type, Info }

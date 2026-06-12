@@ -20,55 +20,37 @@ export enum MetaType {
 abstract class MetaBase {
   id: string = createRandomHex(4).toUpperCase()
 
-  abstract get type(): MetaType
+  abstract readonly type: MetaType
 
   abstract content: any
-
-  toJSON() {
-    return {
-      id: this.id,
-      type: this.type,
-      content: this.content,
-    }
-  }
 }
 
 export class MetaOffset extends MetaBase {
-  override get type() {
-    return MetaType.Offset as const
-  }
+  override readonly type = MetaType.Offset
 
   override content: number = 0
 }
 
 export class MetaDuration extends MetaBase {
-  override get type() {
-    return MetaType.Duration as const
-  }
+  override readonly type = MetaType.Duration
 
   override content: number = 0
 }
 
 export class MetaTitle extends MetaBase {
-  override get type() {
-    return MetaType.Title as const
-  }
+  override readonly type = MetaType.Title
 
   override content: string = ''
 }
 
 export class MetaSinger extends MetaBase {
-  override get type() {
-    return MetaType.Singer as const
-  }
+  override readonly type = MetaType.Singer
 
   override content: string = ''
 }
 
 export class MetaAlbum extends MetaBase {
-  override get type() {
-    return MetaType.Album as const
-  }
+  override readonly type = MetaType.Album
 
   override content: string = ''
 }
@@ -78,9 +60,7 @@ interface MetaCreatorContent {
   name: string[]
 }
 export class MetaCreator extends MetaBase {
-  override get type() {
-    return MetaType.Creator as const
-  }
+  override readonly type = MetaType.Creator
 
   override content: MetaCreatorContent = {
     role: '',
@@ -89,9 +69,7 @@ export class MetaCreator extends MetaBase {
 }
 
 export class MetaUnKnown extends MetaBase {
-  override get type() {
-    return MetaType.UnKnown as const
-  }
+  override readonly type = MetaType.UnKnown
 
   override content: any = ''
 }

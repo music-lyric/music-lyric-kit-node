@@ -12,24 +12,10 @@ export class AgentLineIndex {
 
   // index in block
   block: number = 0
-
-  toJSON() {
-    return {
-      global: this.global,
-      block: this.block,
-    }
-  }
 }
 
 export class AgentLine {
   id: string = ''
 
   index: AgentLineIndex = new AgentLineIndex()
-
-  toJSON() {
-    return {
-      id: this.id,
-      index: this.index,
-    }
-  }
 }
