@@ -10,6 +10,7 @@
     "build:force": "turbo run build --force",
     "change-log:build": "tsx scripts/change-log/build.ts",
     "change-log:match": "tsx scripts/change-log/match.ts",
+    "version": "tsx scripts/version.ts",
     "publish": "tsx scripts/publish.ts"
   },
   "homepage": "https://github.com/music-lyric/music-lyric-kit-node#readme",
