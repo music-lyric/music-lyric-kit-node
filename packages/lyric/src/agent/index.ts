@@ -6,7 +6,7 @@ export class Agent {
   count: number = 0
 }
 
-export class AgentLineIndex {
+export class LineAgentIndex {
   // index in global
   global: number = 0
 
@@ -14,8 +14,8 @@ export class AgentLineIndex {
   block: number = 0
 }
 
-export class AgentLine {
+export class LineAgent {
   id: string = ''
 
-  index: AgentLineIndex = new AgentLineIndex()
+  index: LineAgentIndex = new LineAgentIndex()
 }

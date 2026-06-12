@@ -27,7 +27,7 @@ const processLineAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  const agent = new Lyric.AgentLine()
+  const agent = new Lyric.LineAgent()
   agent.id = raw
 
   return agent

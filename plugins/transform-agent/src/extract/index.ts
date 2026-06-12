@@ -128,7 +128,7 @@ export class Extract extends ParserPlugin {
         }
       }
 
-      const agent = new Lyric.AgentLine()
+      const agent = new Lyric.LineAgent()
       agent.id = currentId
 
       line.agent = agent

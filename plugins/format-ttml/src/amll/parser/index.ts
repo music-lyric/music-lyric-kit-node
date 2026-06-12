@@ -45,7 +45,7 @@ export class AmllParser extends ParserPlugin {
 
     const lines = processLines(root)
     const isSyllable = checkIsSyllable(lines[0])
-    ctx.result.type = isSyllable ? Lyric.Type.Syllable : Lyric.Type.Normal
+    ctx.result.type = isSyllable ? Lyric.InfoType.Syllable : Lyric.InfoType.Normal
     ctx.result.lines = lines
 
     const metas = processMetas(root)

@@ -116,7 +116,7 @@ export class Parser extends ParserPlugin {
 
     const lines = processLines(match.line)
     if (!lines.length) {
-      ctx.result.type = Lyric.Type.Empty
+      ctx.result.type = Lyric.InfoType.Empty
       return
     }
 
@@ -124,9 +124,9 @@ export class Parser extends ParserPlugin {
 
     ctx.result.lines = lines
     if (checkIsSyllable(match.line)) {
-      ctx.result.type = Lyric.Type.Syllable
+      ctx.result.type = Lyric.InfoType.Syllable
     } else {
-      ctx.result.type = Lyric.Type.Normal
+      ctx.result.type = Lyric.InfoType.Normal
     }
 
     const metas = processMetas(match.meta)

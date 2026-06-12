@@ -15,7 +15,7 @@ export const exportLines = (info: Lyric.Info) => {
 
     const lineTime = `[${formatTime(line.time.start)}]`
 
-    if (info.type === Lyric.Type.Syllable) {
+    if (info.type === Lyric.InfoType.Syllable) {
       const content = line.content.words
       const items = content.map((item) => {
         if (item.type === Lyric.WordType.Space) {

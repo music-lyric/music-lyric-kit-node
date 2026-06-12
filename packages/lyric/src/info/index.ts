@@ -4,7 +4,7 @@ import type { Agent } from '../agent'
 
 const Version = '0.5.1' as const
 
-enum Type {
+enum InfoType {
   // parse lyric failed
   Incorrect = 'Incorrect',
   // normal lyric (line by line)
@@ -22,7 +22,7 @@ enum Type {
 class Info {
   readonly version = Version
 
-  type: Type = Type.Incorrect
+  type: InfoType = InfoType.Incorrect
 
   metas: Meta[] = []
 
@@ -31,4 +31,4 @@ class Info {
   agents: Agent[] = []
 }
 
-export { Version, Type, Info }
+export { Version, InfoType, Info }
