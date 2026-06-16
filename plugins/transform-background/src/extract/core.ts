@@ -13,8 +13,20 @@ const copyWord = (word: Lyric.Word) => {
   if (word.type === Lyric.WordType.Normal) {
     const normal = new Lyric.WordNormal()
     normal.content = word.content
-    normal.extended = word.extended
-    normal.time = word.time
+
+    normal.time = new Lyric.Time()
+    normal.time.start = word.time.start
+    normal.time.end = word.time.end
+
+    normal.extended = word.extended.map((item) => {
+      const extended = new Lyric.Extended()
+      extended.type = item.type
+      extended.content = item.content
+      return extended
+    })
+
+    normal.config.stress = word.config.stress
+
     return normal
   }
 }
