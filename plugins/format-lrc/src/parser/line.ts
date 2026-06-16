@@ -93,12 +93,24 @@ const processSyllableLine = (line: MatchItem) => {
     }
   }
 
-  const start = words.find((item) => item.type === Lyric.WordType.Normal)?.time.start ?? lineTime
-  const duration = words.map((v) => (v.type === Lyric.WordType.Normal ? v.time.duration : 0)).reduce((a, b) => a + b, 0)
+  let first: Lyric.WordNormal | null = null
+  let last: Lyric.WordNormal | null = null
+  for (const word of words) {
+    if (word.type !== Lyric.WordType.Normal) {
+      continue
+    }
+    if (!first) {
+      first = word
+    }
+    last = word
+  }
+
+  const start = first?.time.start ?? lineTime
+  const end = last?.time.end ?? start
 
   const target = new Lyric.LineNormal()
   target.time.start = start
-  target.time.end = start + duration
+  target.time.end = end
   target.content.words = words
 
   return target

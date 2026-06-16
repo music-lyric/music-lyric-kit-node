@@ -153,15 +153,9 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
 
       const prev = words[words.length - 1]
       if (text.startsWith(' ') && prev?.type !== Lyric.WordType.Space) {
-        const count = calcStartSpaceCount(text)
-        const prev = words[words.length - 1]
-        if (prev?.type === Lyric.WordType.Space) {
-          prev.count += count
-        } else {
-          const space = new Lyric.WordSpace()
-          space.count = count
-          target.push(space)
-        }
+        const space = new Lyric.WordSpace()
+        space.count = calcStartSpaceCount(text)
+        target.push(space)
       }
 
       const normal = new Lyric.WordNormal()

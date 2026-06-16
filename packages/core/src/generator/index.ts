@@ -28,10 +28,6 @@ export class Generator {
       throw new Error('format not found')
     }
 
-    if (typeof current !== 'object') {
-      throw new Error('bad format plugin')
-    }
-
     const init = new Lyric.Info()
     const context = new GeneratorContext(params, init)
 
