@@ -35,17 +35,22 @@ export class Insert extends ParserPlugin {
       return
     }
 
+    const handleLine = (line: Lyric.LineNormal | Lyric.LineNormalBackground) => {
+      if (enableOriginal) {
+        line.content = insertSpaceToLine(line.content, this.config.current.types)
+      }
+      if (enableExtended) {
+        line.content = insertSpaceToExtended(line.content, this.config.current.types)
+      }
+    }
+
     for (const line of lines) {
       if (line.type !== Lyric.LineType.Normal) {
         continue
       }
-      if (enableOriginal) {
-        const result = insertSpaceToLine(line.content, this.config.current.types)
-        line.content = result
-      }
-      if (enableExtended) {
-        const result = insertSpaceToExtended(line.content, this.config.current.types)
-        line.content = result
+      handleLine(line)
+      for (const background of line.background || []) {
+        handleLine(background)
       }
     }
 
