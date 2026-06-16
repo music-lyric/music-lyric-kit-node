@@ -71,6 +71,15 @@ export const DEFAULT_CREATOR_RULES_ZH_CN: MatchRule[] = [
   /支持|鸣谢|特约嘉宾|指导|承办单位|承办|承办人|单位|业务|策监|经纪/,
   /人声打击|口技/,
   /独奏|伴奏/,
+  /数字编辑|数字剪辑/,
+  /次级发行|次级发行方|分发行/,
+  /所有乐器|所有乐器演奏|全部乐器/,
+  /音乐制作助理|制作助理/,
+  /混音工作室|混音室|混音录音室/,
+  /版权运营/,
+  /企宣|企划宣传/,
+  /艺人助理/,
+  /平面视觉|平面设计|平面/,
   /**
    * inst
    */
@@ -286,6 +295,15 @@ export const DEFAULT_CREATOR_RULES_EN_US: MatchRule[] = [
   /Special\s+Thanks|Thanks\s+to|Acknowledgments|Credits|Contractor/i,
   /Beatbox|Beatboxer|Human\s+Beatbox/i,
   /Solo|Soloist|Accompaniment|Accompanist/i,
+  /Sub-publisher|Sub\s+publisher|Subpublisher/i,
+  /All\s+instrumental|All\s+instruments|All\s+instrumental\s+by/i,
+  /Digital\s+editing|Digital\s+edit/i,
+  /Production\s+assistant|Music\s+production\s+assistant/i,
+  /Mixing\s+studio|Mix\s+studio/i,
+  /Copyright\s+operation|Copyright\s+management/i,
+  /Marketing\s+\&\s+promotion|PR\s+promotion/i,
+  /Artist\s+assistant/i,
+  /Graphic\s+visual|Print\s+visual|Flat\s+design/i,
   /**
    * inst
    */
