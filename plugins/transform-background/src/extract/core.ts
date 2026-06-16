@@ -99,7 +99,7 @@ const extractInLineExtended = (content: string): [string, string[]] => {
 
   // no close (
   if (inBracket) {
-    main += lastChar + content
+    main += lastChar + current
   }
 
   return [main, result]
