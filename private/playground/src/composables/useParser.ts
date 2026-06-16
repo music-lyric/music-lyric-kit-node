@@ -72,14 +72,14 @@ export const useParser = () => {
 
     pipeline.infer()
     pipeline.parse()
-    pipeline.pureClean()
-    pipeline.pureExtract()
-    pipeline.agentExtract()
-    pipeline.backgroundExtract()
-    pipeline.backgroundClean()
-    pipeline.interludeInsert()
-    pipeline.spaceInsert()
-    pipeline.stressMark()
+    pipeline.pure.clean()
+    pipeline.pure.extractCreator()
+    pipeline.agent.extract()
+    pipeline.background.extract()
+    pipeline.background.clean()
+    pipeline.interlude.insert()
+    pipeline.space.insert()
+    pipeline.stress.mark()
 
     const final = pipeline.final()
     return { format: final.format, info: final.result }

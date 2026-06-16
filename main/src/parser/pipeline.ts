@@ -18,27 +18,74 @@ export interface ParserPipelineResult {
 
 const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser()]
 
-const BuiltInPlugins = {
-  agent: {
-    extract: new Transform.Agent.Extract(),
-  },
-  background: {
-    extract: new Transform.Background.Extract(),
-    clean: new Transform.Background.Clean(),
-  },
-  pure: {
-    extract: new Transform.Pure.ExtractCreator(),
-    clean: new Transform.Pure.Clean(),
-  },
-  space: {
-    insert: new Transform.Space.Insert(),
-  },
-  interlude: {
-    insert: new Transform.Interlude.Insert(),
-  },
-  stress: {
-    mark: new Transform.Stress.Mark(),
-  },
+class Agent {
+  private _extract = new Transform.Agent.Extract()
+
+  constructor(private client: ParserPipeline) {}
+
+  extract(options?: Transform.Agent.ExtractConfig) {
+    return this.client.run(this._extract, options)
+  }
+}
+
+class Background {
+  private _extract = new Transform.Background.Extract()
+  private _clean = new Transform.Background.Clean()
+
+  constructor(private client: ParserPipeline) {}
+
+  extract(options?: Transform.Background.ExtractConfig) {
+    return this.client.run(this._extract, options)
+  }
+
+  clean() {
+    return this.client.run(this._clean)
+  }
+}
+
+class Pure {
+  private _extractCreator = new Transform.Pure.ExtractCreator()
+  private _clean = new Transform.Pure.Clean()
+
+  constructor(private client: ParserPipeline) {}
+
+  extractCreator(options?: Transform.Pure.ExtractCreatorConfig) {
+    return this.client.run(this._extractCreator, options)
+  }
+
+  clean(options?: Transform.Pure.CleanConfig) {
+    return this.client.run(this._clean, options)
+  }
+}
+
+class Interlude {
+  private _insert = new Transform.Interlude.Insert()
+
+  constructor(private client: ParserPipeline) {}
+
+  insert(options?: Transform.Interlude.InsertConfig) {
+    return this.client.run(this._insert, options)
+  }
+}
+
+class Space {
+  private _insert = new Transform.Space.Insert()
+
+  constructor(private client: ParserPipeline) {}
+
+  insert(options?: Transform.Space.SpaceConfig) {
+    return this.client.run(this._insert, options)
+  }
+}
+
+class Stress {
+  private _mark = new Transform.Stress.Mark()
+
+  constructor(private client: ParserPipeline) {}
+
+  mark(options?: Transform.Stress.MarkConfig) {
+    return this.client.run(this._mark, options)
+  }
 }
 
 export class ParserPipeline {
@@ -47,6 +94,13 @@ export class ParserPipeline {
   private input: ParserPipelineInput
   private done: boolean
 
+  readonly agent: Agent
+  readonly background: Background
+  readonly pure: Pure
+  readonly interlude: Interlude
+  readonly space: Space
+  readonly stress: Stress
+
   constructor(input: ParserPipelineInput) {
     this.done = false
     this.input = input
@@ -54,9 +108,16 @@ export class ParserPipeline {
 
     const init = new Lyric.Info()
     this.context = new ParserContext({ content: this.input.content, musicInfo: this.input.musicInfo }, init)
+
+    this.agent = new Agent(this)
+    this.background = new Background(this)
+    this.pure = new Pure(this)
+    this.interlude = new Interlude(this)
+    this.space = new Space(this)
+    this.stress = new Stress(this)
   }
 
-  private handleApplyConfig(plugin: ParserPlugin, options?: any) {
+  private applyConfig(plugin: ParserPlugin, options?: any) {
     if (!plugin.config) {
       return
     }
@@ -69,7 +130,7 @@ export class ParserPipeline {
     }
   }
 
-  private handleExecPlugin(plugin: ParserPlugin) {
+  private exec(plugin: ParserPlugin) {
     this.done = false
 
     try {
@@ -87,6 +148,16 @@ export class ParserPipeline {
     } catch (e: any) {
       console.warn(`plugin call failed id=${plugin.id} err=${e?.message}`)
     }
+  }
+
+  /**
+   * Apply optional config to a plugin and execute it against the current context.
+   * Intended for use by the pipeline plugin scopes.
+   */
+  run(plugin: ParserPlugin, options?: any): this {
+    this.applyConfig(plugin, options)
+    this.exec(plugin)
+    return this
   }
 
   infer(): this {
@@ -128,59 +199,12 @@ export class ParserPipeline {
     return this
   }
 
-  backgroundExtract(options?: Transform.Background.ExtractConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.background.extract, options)
-    this.handleExecPlugin(BuiltInPlugins.background.extract)
-    return this
-  }
-
-  backgroundClean(): this {
-    this.handleExecPlugin(BuiltInPlugins.background.clean)
-    return this
-  }
-
-  agentExtract(options?: Transform.Agent.ExtractConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.agent.extract, options)
-    this.handleExecPlugin(BuiltInPlugins.agent.extract)
-    return this
-  }
-
-  pureExtract(options?: Transform.Pure.ExtractCreatorConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.pure.extract, options)
-    this.handleExecPlugin(BuiltInPlugins.pure.extract)
-    return this
-  }
-
-  pureClean(options?: Transform.Pure.CleanConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.pure.clean, options)
-    this.handleExecPlugin(BuiltInPlugins.pure.clean)
-    return this
-  }
-
-  interludeInsert(options?: Transform.Interlude.InsertConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.interlude.insert, options)
-    this.handleExecPlugin(BuiltInPlugins.interlude.insert)
-    return this
-  }
-
-  spaceInsert(options?: Transform.Space.SpaceConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.space.insert, options)
-    this.handleExecPlugin(BuiltInPlugins.space.insert)
-    return this
-  }
-
-  stressMark(options?: Transform.Stress.MarkConfig): this {
-    this.handleApplyConfig(BuiltInPlugins.stress.mark, options)
-    this.handleExecPlugin(BuiltInPlugins.stress.mark)
-    return this
-  }
-
   final(): ParserPipelineResult {
     if (!this.done) {
       this.context.cleanWord()
-      this.context.calcAgentIndex()
       this.context.syncLineTimeWithWord()
       this.context.sort()
+      this.context.calcAgentIndex()
       this.context.syncLineTimeWithBackground()
       this.done = true
     }
