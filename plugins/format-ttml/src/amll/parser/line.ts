@@ -84,7 +84,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
 
   const begin = parseTime(rawBegin)
   const end = parseTime(rawEnd)
-  if (!begin || !end) {
+  if (begin === null || end === null) {
     return null
   }
 
@@ -145,7 +145,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
 
       const begin = parseTime(rawBegin)
       const end = parseTime(rawEnd)
-      if (!begin || !end) {
+      if (begin === null || end === null) {
         continue
       }
 
