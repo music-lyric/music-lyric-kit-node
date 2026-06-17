@@ -26,11 +26,12 @@ export class LineNormalContent {
   extended: Extended[] = []
 
   get original(): string {
-    return this.words
-      .map((word) => {
-        return word.type === WordType.Normal ? word.content : ' '.repeat(word.count)
-      })
-      .join('')
+    let result = ''
+    for (let i = 0, len = this.words.length; i < len; i++) {
+      const word = this.words[i]
+      result += word.type === WordType.Normal ? word.content : ' '.repeat(word.count)
+    }
+    return result
   }
 
   toJSON() {
