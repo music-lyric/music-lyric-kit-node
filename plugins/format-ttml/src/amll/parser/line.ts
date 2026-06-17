@@ -1,7 +1,7 @@
 import { Lyric } from '@music-lyric-kit/lyric'
 
 import { parseTime, Xml } from '@music-lyric-kit/utils'
-import { findElementsByLocalName, getChildElementByLocal, getAttributeByName, getTextContent, processTextToWords } from '@root/utils'
+import { findElementsByLocalName, hasChildElementByLocal, getAttributeByName, getTextContent, processTextToWords } from '@root/utils'
 
 const ALL_EXTRA_ROLE = ['x-bg', 'x-translation', 'x-roman']
 
@@ -74,7 +74,7 @@ const processLineExtra = (element: Xml.XmlElement, line: Lyric.LineNormal, role:
 }
 
 const processLine = (element: Xml.XmlElement, background: boolean = false) => {
-  const spans = getChildElementByLocal(element, 'span')
+  const hasSpan = hasChildElementByLocal(element, 'span')
 
   const rawBegin = getAttributeByName(element, 'begin', true)
   const rawEnd = getAttributeByName(element, 'end', true)
@@ -97,7 +97,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
     line.agent = agent
   }
 
-  if (!spans.length) {
+  if (!hasSpan) {
     const text = getTextContent(element).trim()
     if (!text.length) {
       return null
@@ -114,7 +114,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
       const content = item.content
       if (!content.trim() && i !== 0) {
         const space = new Lyric.WordSpace()
-        space.count = item.content.split('').length || 1
+        space.count = item.content.length || 1
         words.push(space)
       }
       continue
@@ -180,8 +180,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
   return line
 }
 
-export const processLines = (root: Xml.XmlElement) => {
-  const body = findElementsByLocalName(root, 'body', true)[0]
+export const processLines = (body?: Xml.XmlElement) => {
   if (!body) {
     return []
   }

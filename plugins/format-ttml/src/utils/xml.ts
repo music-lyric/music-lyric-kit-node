@@ -33,6 +33,15 @@ export const getChildElementByLocal = (element: Xml.XmlElement, name: string) =>
   return result
 }
 
+export const hasChildElementByLocal = (element: Xml.XmlElement, name: string) => {
+  for (const child of element.children) {
+    if (child.type === Xml.XmlNodeType.Element && child.local === name) {
+      return true
+    }
+  }
+  return false
+}
+
 export const getAttributeByName = (element: Xml.XmlElement, name: string, local: boolean = false) => {
   for (let i = 0; i < element.attributes.length; i++) {
     const item = element.attributes[i]

@@ -17,14 +17,13 @@ const processAgent = (element: Xml.XmlElement) => {
   return agent
 }
 
-export const processAgents = (root: Xml.XmlElement) => {
-  const data = findElementsByLocalName(root, 'metadata', true)[0]
-  if (!data) {
+export const processAgents = (metadata?: Xml.XmlElement) => {
+  if (!metadata) {
     return []
   }
 
   const result: Lyric.Agent[] = []
-  const elements = findElementsByLocalName(data, 'agent')
+  const elements = findElementsByLocalName(metadata, 'agent')
 
   for (const element of elements) {
     const item = processAgent(element)

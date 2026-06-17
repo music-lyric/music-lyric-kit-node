@@ -3,7 +3,7 @@ import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Xml } from '@music-lyric-kit/utils'
 import { Lyric } from '@music-lyric-kit/lyric'
 
-import { checkIsSyllable } from '@root/utils'
+import { checkIsSyllable, findElementsByLocalName } from '@root/utils'
 
 import { processLines } from './line'
 import { processMetas } from './meta'
@@ -43,15 +43,18 @@ export class AmllParser extends ParserPlugin {
 
     const root = this.parser.parse(input)
 
-    const lines = processLines(root)
+    const body = findElementsByLocalName(root, 'body', true)[0]
+    const metadata = findElementsByLocalName(root, 'metadata', true)[0]
+
+    const lines = processLines(body)
     const isSyllable = checkIsSyllable(lines[0])
     ctx.result.type = isSyllable ? Lyric.InfoType.Syllable : Lyric.InfoType.Normal
     ctx.result.lines = lines
 
-    const metas = processMetas(root)
+    const metas = processMetas(metadata)
     ctx.result.metas = metas
 
-    const agents = processAgents(root)
+    const agents = processAgents(metadata)
     ctx.result.agents = agents
   }
 }

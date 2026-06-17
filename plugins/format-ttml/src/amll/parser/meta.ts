@@ -27,14 +27,13 @@ const processMeta = (element: Xml.XmlElement) => {
   }
 }
 
-export const processMetas = (root: Xml.XmlElement) => {
-  const data = findElementsByLocalName(root, 'metadata', true)[0]
-  if (!data) {
+export const processMetas = (metadata?: Xml.XmlElement) => {
+  if (!metadata) {
     return []
   }
 
   const result: Lyric.Meta[] = []
-  const elements = findElementsByLocalName(data, 'meta')
+  const elements = findElementsByLocalName(metadata, 'meta')
 
   for (const element of elements) {
     const item = processMeta(element)
