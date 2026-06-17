@@ -61,17 +61,16 @@ const applyCompressSpaces = (text: string) => {
   return text.replaceAll(/[ ]{2,}/g, ' ')
 }
 
-const processTypes = (types?: InsertTextSpaceTypes[]) => {
+export const processTypes = (types?: InsertTextSpaceTypes[]) => {
   const target = types || [INSERT_TEXT_SPACE_TYPES.ALL]
   return new Set<InsertTextSpaceTypes>(target.includes(INSERT_TEXT_SPACE_TYPES.ALL) ? INSERT_TEXT_SPACE_TYPES_VALUE : target)
 }
 
-export const insertSpace = (text: string, types?: InsertTextSpaceTypes[]) => {
+export const insertSpace = (text: string, target: Set<InsertTextSpaceTypes>) => {
   if (typeof text !== 'string' || text.trim().length === 0) {
     return text
   }
 
-  const target = processTypes(types)
   let result = text
 
   if (target.has(INSERT_TEXT_SPACE_TYPES.CJK_ENGLISH)) result = applyCjkEnglish(result)
@@ -140,13 +139,13 @@ export function alignElements<T, R>(
   return result
 }
 
-export const insertSpaceToLine = (line: Lyric.LineNormalContent, types?: InsertTextSpaceTypes[]): Lyric.LineNormalContent => {
+export const insertSpaceToLine = (line: Lyric.LineNormalContent, target: Set<InsertTextSpaceTypes>): Lyric.LineNormalContent => {
   if (!line || !line.words || line.words.length === 0) {
     return line
   }
 
   const full = line.original
-  const processed = insertSpace(full, types)
+  const processed = insertSpace(full, target)
 
   const normalWords = line.words.filter((w) => w.type === Lyric.WordType.Normal) as Lyric.WordNormal[]
 
@@ -175,13 +174,13 @@ export const insertSpaceToLine = (line: Lyric.LineNormalContent, types?: InsertT
   return newLine
 }
 
-export const insertSpaceToExtended = (line: Lyric.LineNormalContent, types?: InsertTextSpaceTypes[]): Lyric.LineNormalContent => {
+export const insertSpaceToExtended = (line: Lyric.LineNormalContent, target: Set<InsertTextSpaceTypes>): Lyric.LineNormalContent => {
   if (!line.extended.length) {
     return line
   }
 
   for (const item of line.extended) {
-    item.content = insertSpace(item.content, types)
+    item.content = insertSpace(item.content, target)
   }
 
   return line

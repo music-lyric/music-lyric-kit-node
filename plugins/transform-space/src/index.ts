@@ -6,7 +6,8 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Lyric } from '@music-lyric-kit/lyric'
-import { insertSpaceToExtended, insertSpaceToLine } from './core'
+
+import { insertSpaceToExtended, insertSpaceToLine, processTypes } from './core'
 
 export class Insert extends ParserPlugin {
   override config = new ConfigManager<SpaceConfig, DeepPartial<SpaceConfig>>(DEFAULT_CONFIG)
@@ -35,12 +36,14 @@ export class Insert extends ParserPlugin {
       return
     }
 
+    const target = processTypes(this.config.current.types)
+
     const handleLine = (line: Lyric.LineNormal | Lyric.LineNormalBackground) => {
       if (enableOriginal) {
-        line.content = insertSpaceToLine(line.content, this.config.current.types)
+        line.content = insertSpaceToLine(line.content, target)
       }
       if (enableExtended) {
-        line.content = insertSpaceToExtended(line.content, this.config.current.types)
+        line.content = insertSpaceToExtended(line.content, target)
       }
     }
 
