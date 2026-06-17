@@ -19,11 +19,12 @@ const TRIM_INSIDE_SYMBOLS_RULE = /([<\[\{\("“‘])\s*([^<>\[\]\{\}\(\)"“‘�
 const QUOTE_BEFORE_RULE = new RegExp(`([${CJK_RANGE}${ENGLISH_NUMBER_RANGE}])(["\`“‘])`, 'gu')
 const QUOTE_AFTER_RULE = new RegExp(`(["\`”’])([${CJK_RANGE}${ENGLISH_NUMBER_RANGE}])`, 'gu')
 const PUNCTUATION_RULE = new RegExp(`([${ALL_RANGE}])([!;,\\?:])(?=[${ALL_RANGE}])`, 'gu')
-const MATH_OPERATOR_RULE = new RegExp(`([${ALL_RANGE}])([+*=&])([${ALL_RANGE}])`, 'gu') // 移除了连字符和斜杠，避免和特定规则冲突
+// remove '*' and '\'
+const MATH_OPERATOR_RULE = new RegExp(`([${ALL_RANGE}])([+=&])([${ALL_RANGE}])`, 'gu')
 const BRACKET_OUTSIDE_BEFORE_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])([\\[({<])`, 'gu')
 const BRACKET_OUTSIDE_AFTER_RULE = new RegExp(`([\\])}>])([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
 
-const HYPHEN_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(-)([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
+const HYPHEN_RULE = new RegExp(`(?<=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])-(?=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
 const SLASH_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(/)([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
 const HYPHEN_EDGE_RULE = new RegExp(`(\\s|^)(-)(?=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])|([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(-)(?=\\s|$)`, 'gu')
 
@@ -50,7 +51,7 @@ const applySlash = (text: string) => {
   return text.replace(SLASH_RULE, '$1 $2 $3')
 }
 const applyHyphen = (text: string) => {
-  return text.replace(HYPHEN_RULE, '$1 $2 $3').replace(HYPHEN_EDGE_RULE, (m, g1, g2, g3, g4) => {
+  return text.replace(HYPHEN_RULE, ' - ').replace(HYPHEN_EDGE_RULE, (m, g1, g2, g3, g4) => {
     return g1 !== undefined ? `${g1}${g2} ` : `${g3} ${g4}`
   })
 }

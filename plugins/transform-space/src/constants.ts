@@ -15,7 +15,7 @@ export const INSERT_TEXT_SPACE_TYPES = {
   //  ( [ { <
   BRACKET_OUTSIDE: 'BRACKET_OUTSIDE',
 
-  // + * = &
+  // + = &
   MATH_OPERATOR: 'MATH_OPERATOR',
   // -
   HYPHEN: 'HYPHEN',
