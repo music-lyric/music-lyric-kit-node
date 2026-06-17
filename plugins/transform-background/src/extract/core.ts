@@ -31,6 +31,28 @@ const copyWord = (word: Lyric.Word) => {
   }
 }
 
+const findFirstNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null => {
+  const words = line.content.words
+  for (let i = 0, len = words.length; i < len; i++) {
+    const word = words[i]
+    if (word.type === Lyric.WordType.Normal) {
+      return word
+    }
+  }
+  return null
+}
+
+const findLastNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null => {
+  const words = line.content.words
+  for (let i = words.length - 1; i >= 0; i--) {
+    const word = words[i]
+    if (word.type === Lyric.WordType.Normal) {
+      return word
+    }
+  }
+  return null
+}
+
 export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNormalBackground) => {
   if (!line.background) {
     line.background = [background]
@@ -40,30 +62,25 @@ export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNorm
 }
 
 export const hasStartOpenBracket = (line: Lyric.LineNormal) => {
-  const words = line.content.words.filter((w) => w.type === Lyric.WordType.Normal)
-  if (!words.length) {
+  const first = findFirstNormalWord(line)
+  if (!first) {
     return false
   }
-  return isOpenBracket(words[0].content.charAt(0))
+  return isOpenBracket(first.content.charAt(0))
 }
+
 export const hasEndCloseBracket = (line: Lyric.LineNormal) => {
-  const words = line.content.words.filter((w) => w.type === Lyric.WordType.Normal)
-  if (!words.length) {
+  const last = findLastNormalWord(line)
+  if (!last) {
     return false
   }
-  const last = words[words.length - 1]
   return isCloseBracket(last.content.charAt(last.content.length - 1))
 }
 
 export const isFullLine = (line: Lyric.LineNormal) => {
-  const words = line.content.words.filter((w) => w.type === Lyric.WordType.Normal)
-  if (words.length < 2) {
-    return false
-  }
-
-  const start = words[0]
-  const end = words[words.length - 1]
-  if (!start || !end) {
+  const start = findFirstNormalWord(line)
+  const end = findLastNormalWord(line)
+  if (!start || !end || start === end) {
     return false
   }
 
