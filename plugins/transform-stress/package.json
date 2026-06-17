@@ -1,6 +1,6 @@
 {
   "name": "@music-lyric-kit/plugin-transform-stress",
-  "version": "0.12.0",
+  "version": "0.12.1",
   "author": "folltoshe",
   "type": "module",
   "description": "Music Lyric Kit - Transform Stress Plugin",

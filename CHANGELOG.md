@@ -1,3 +1,45 @@
+## v0.12.1 (2026-06-18)
+
+### Document
+
+- `readme`
+  - update pipeline examples to per-plugin scope api ([4c4b46f](https://github.com/music-lyric/music-lyric-kit-node/commit/4c4b46f))
+
+### Feature
+
+- `plugin-transform-pure`
+  - update default extract creator rules ([ffbfefb](https://github.com/music-lyric/music-lyric-kit-node/commit/ffbfefb))
+
+### Fix
+
+- `plugin-format-ttml`
+  - keep zero timestamps when parsing line and word begin end ([c3f9f7e](https://github.com/music-lyric/music-lyric-kit-node/commit/c3f9f7e))
+- `plugin-transform-background`
+  - deep copy word time and extended when copying ([699e4b4](https://github.com/music-lyric/music-lyric-kit-node/commit/699e4b4))
+  - append buffered content for unclosed bracket in extended extract ([d6393f3](https://github.com/music-lyric/music-lyric-kit-node/commit/d6393f3))
+- `plugin-transform-space`
+  - space consecutive hyphens correctly and stop spacing asterisk ([912e128](https://github.com/music-lyric/music-lyric-kit-node/commit/912e128))
+  - align space stripping with the matcher space definition ([41c0eea](https://github.com/music-lyric/music-lyric-kit-node/commit/41c0eea))
+  - preserve word config when rebuilding spaced words ([70aa504](https://github.com/music-lyric/music-lyric-kit-node/commit/70aa504))
+  - apply space insertion to background lines ([b2ca2b1](https://github.com/music-lyric/music-lyric-kit-node/commit/b2ca2b1))
+
+### Performance
+
+- remove dead branches and redundant passes in lyric processing ([7b3c0dc](https://github.com/music-lyric/music-lyric-kit-node/commit/7b3c0dc))
+- `lyric`
+  - build line original without intermediate map array ([5513375](https://github.com/music-lyric/music-lyric-kit-node/commit/5513375))
+- `plugin-format-ttml`
+  - locate body and metadata once and drop redundant array builds ([35b05b9](https://github.com/music-lyric/music-lyric-kit-node/commit/35b05b9))
+- `plugin-transform-background`
+  - find boundary words without allocating filtered arrays ([e019ab2](https://github.com/music-lyric/music-lyric-kit-node/commit/e019ab2))
+- `plugin-transform-space`
+  - resolve enabled type set once per run instead of per line ([f73c980](https://github.com/music-lyric/music-lyric-kit-node/commit/f73c980))
+
+### Refactor
+
+- `main`
+  - group transform methods into per-plugin scopes in pipeline ([f537483](https://github.com/music-lyric/music-lyric-kit-node/commit/f537483))
+
 ## v0.12.0 (2026-06-12)
 
 ### Document
