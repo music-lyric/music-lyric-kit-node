@@ -162,6 +162,7 @@ export const insertSpaceToLine = (line: Lyric.LineNormalContent, target: Set<Ins
       normal.time = originalWord.time
       normal.extended = originalWord.extended
       normal.content = matchedText
+      normal.config = originalWord.config
       return normal
     },
     (w) => w.content.replace(/\s/g, ''),
