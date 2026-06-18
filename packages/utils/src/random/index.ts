@@ -18,3 +18,17 @@ export const createRandomHex = (length: number = 8) => {
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('')
 }
+
+/**
+ * Generate a non-secure random string using Math.random.
+ * Suitable for process-local ids, not for cryptographic purposes.
+ * The result is lower-cased base36 (0-9a-z).
+ * @param length the length of the returned string.
+ */
+export const createRandomString = (length: number = 8) => {
+  let result = ''
+  while (result.length < length) {
+    result += Math.random().toString(36).slice(2)
+  }
+  return result.slice(0, length)
+}
