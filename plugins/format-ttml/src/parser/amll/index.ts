@@ -5,9 +5,9 @@ import { Lyric } from '@music-lyric-kit/lyric'
 
 import { checkIsSyllable, findElementsByLocalName } from '@root/utils'
 
+import { processAgents } from '@root/common'
 import { processLines } from './line'
 import { processMetas } from './meta'
-import { processAgents } from './agent'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
 
