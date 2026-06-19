@@ -88,6 +88,21 @@ class Stress {
   }
 }
 
+class Language {
+  private _infer = new Transform.Language.Infer()
+  private _calculatePercent = new Transform.Language.CalculatePercent()
+
+  constructor(private client: ParserPipeline) {}
+
+  infer(options?: Transform.Language.InferConfig) {
+    return this.client.run(this._infer, options)
+  }
+
+  calculatePercent() {
+    return this.client.run(this._calculatePercent)
+  }
+}
+
 export class ParserPipeline {
   private context: ParserContext
   private format: string
@@ -100,6 +115,7 @@ export class ParserPipeline {
   readonly interlude: Interlude
   readonly space: Space
   readonly stress: Stress
+  readonly language: Language
 
   constructor(input: ParserPipelineInput) {
     this.done = false
@@ -115,6 +131,7 @@ export class ParserPipeline {
     this.interlude = new Interlude(this)
     this.space = new Space(this)
     this.stress = new Stress(this)
+    this.language = new Language(this)
   }
 
   private applyConfig(plugin: ParserPlugin, options?: any) {

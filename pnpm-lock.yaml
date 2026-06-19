@@ -59,6 +59,9 @@ importers:
       '@music-lyric-kit/plugin-transform-interlude':
         specifier: workspace:*
         version: link:../plugins/transform-interlude
+      '@music-lyric-kit/plugin-transform-language':
+        specifier: workspace:*
+        version: link:../plugins/transform-language
       '@music-lyric-kit/plugin-transform-pure':
         specifier: workspace:*
         version: link:../plugins/transform-pure

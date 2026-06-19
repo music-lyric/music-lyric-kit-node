@@ -47,6 +47,7 @@
     "@music-lyric-kit/plugin-transform-space": "workspace:*",
     "@music-lyric-kit/plugin-transform-pure": "workspace:*",
     "@music-lyric-kit/plugin-transform-agent": "workspace:*",
-    "@music-lyric-kit/plugin-transform-stress": "workspace:*"
+    "@music-lyric-kit/plugin-transform-stress": "workspace:*",
+    "@music-lyric-kit/plugin-transform-language": "workspace:*"
   }
 }
