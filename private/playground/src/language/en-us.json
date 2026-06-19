@@ -33,6 +33,7 @@
 
   "result.metadata": "Metadata",
   "result.agents": "Agents",
+  "result.languages": "Languages",
   "result.linesTitle": "Lines",
   "result.lines": "lines",
   "result.noLines": "No lyric lines",

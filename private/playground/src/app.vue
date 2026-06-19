@@ -63,6 +63,7 @@
           <div v-if="parser.error.value" :class="$style.error">{{ t(parser.error.value) }}</div>
           <template v-else-if="parser.result.value">
             <ResultMetas :metas="parser.result.value.meta.list" />
+            <ResultLanguages :languages="parser.result.value.language.list" />
             <ResultAgents :agents="parser.result.value.agents" />
             <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
           </template>
@@ -84,6 +85,7 @@ import Segmented from '@root/components/segmented.vue'
 import LabeledInput from '@root/components/labeled-input.vue'
 import LabeledTextarea from '@root/components/labeled-textarea.vue'
 import ResultMetas from '@root/components/result/metas.vue'
+import ResultLanguages from '@root/components/result/languages.vue'
 import ResultAgents from '@root/components/result/agents.vue'
 import ResultLines from '@root/components/result/lines.vue'
 

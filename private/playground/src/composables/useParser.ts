@@ -74,6 +74,8 @@ export const useParser = () => {
     pipeline.interlude.insert()
     pipeline.space.insert()
     pipeline.stress.mark()
+    pipeline.language.infer()
+    pipeline.language.calculatePercent()
 
     const final = pipeline.final()
     return { format: final.format, info: final.result }

@@ -13,6 +13,8 @@ export const createClient = () => {
   client.plugin.add(new Transform.Pure.ExtractCreator())
   client.plugin.add(new Transform.Space.Insert())
   client.plugin.add(new Transform.Stress.Mark())
+  client.plugin.add(new Transform.Language.Infer())
+  client.plugin.add(new Transform.Language.CalculatePercent())
 
   return client
 }
