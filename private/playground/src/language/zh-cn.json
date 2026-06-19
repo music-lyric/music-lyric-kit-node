@@ -31,6 +31,7 @@
 
   "action.parse": "解析歌词",
   "action.reset": "重置",
+  "action.close": "关闭",
 
   "panel.plugins": "插件",
 

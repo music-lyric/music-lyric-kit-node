@@ -187,4 +187,21 @@ const extended = computed(() => {
   font-size: 13px;
   color: var(--color-text-secondary);
 }
+
+@media (max-width: 640px) {
+  .lineRow {
+    gap: 8px;
+    padding: 6px 6px;
+  }
+
+  .time {
+    min-width: 64px;
+    font-size: 11px;
+  }
+
+  .background {
+    margin-left: 12px;
+    padding-left: 10px;
+  }
+}
 </style>

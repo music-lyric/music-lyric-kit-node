@@ -6,23 +6,39 @@
           <h1 :class="$style.title">{{ t('app.title') }}</h1>
           <span :class="$style.version">v{{ version }}</span>
         </div>
-        <button :class="$style.localeBtn" :title="t('app.changeLanguage')" @click="cycleLocale">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <path d="M2 12h20" />
-            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-          </svg>
-          <span :class="$style.localeLabel">{{ LOCALE_LABELS[locale] }}</span>
-        </button>
+        <div :class="$style.headerActions">
+          <button :class="$style.menuBtn" :title="t('panel.plugins')" @click="toggleSidebar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="4" y1="21" x2="4" y2="14" />
+              <line x1="4" y1="10" x2="4" y2="3" />
+              <line x1="12" y1="21" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12" y2="3" />
+              <line x1="20" y1="21" x2="20" y2="16" />
+              <line x1="20" y1="12" x2="20" y2="3" />
+              <line x1="1" y1="14" x2="7" y2="14" />
+              <line x1="9" y1="8" x2="15" y2="8" />
+              <line x1="17" y1="16" x2="23" y2="16" />
+            </svg>
+          </button>
+          <button :class="$style.localeBtn" :title="t('app.changeLanguage')" @click="cycleLocale">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20" />
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            <span :class="$style.localeLabel">{{ LOCALE_LABELS[locale] }}</span>
+          </button>
+        </div>
       </div>
       <p :class="$style.subtitle">{{ t('app.subtitle') }}</p>
     </header>
 
     <div :class="$style.body">
-      <PluginConfig />
+      <PluginConfig :open="sidebarOpen" @close="closeSidebar" />
+      <div :class="[$style.backdrop, { [$style.backdropShow]: sidebarOpen }]" @click="closeSidebar"></div>
 
       <main :class="$style.content">
-      <section :class="$style.panel">
+      <section :class="$style.section">
         <div :class="$style.panelHead">
           <h2 :class="$style.panelTitle">{{ t('panel.input') }}</h2>
           <Segmented v-model="parser.format.value" :options="formatOptions" />
@@ -53,7 +69,9 @@
         </div>
       </section>
 
-      <section :class="$style.panel">
+      <div :class="$style.divider"></div>
+
+      <section :class="$style.section">
         <div :class="$style.panelHead">
           <h2 :class="$style.panelTitle">{{ t('panel.result') }}</h2>
           <div :class="$style.resultMeta">
@@ -90,13 +108,17 @@ import ResultAgents from '@root/components/result/agents.vue'
 import ResultLines from '@root/components/result/lines.vue'
 import PluginConfig from '@root/components/config/plugin-config.vue'
 
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useParser } from '@root/composables/useParser'
 import { useI18n } from '@root/composables/useI18n'
 
 const version = __APP_VERSION__
 
 const { t, locale, setLocale, available } = useI18n()
+
+const sidebarOpen = ref(false)
+const toggleSidebar = () => (sidebarOpen.value = !sidebarOpen.value)
+const closeSidebar = () => (sidebarOpen.value = false)
 
 const LOCALE_LABELS: Record<LocaleKey, string> = {
   'en-us': 'EN',
@@ -125,19 +147,44 @@ onMounted(parser.parse)
 
 <style module lang="scss">
 .page {
-  max-width: 1320px;
-  margin: 0 auto;
-  padding: 40px 24px 64px;
+  height: 100%;
+  overflow: hidden;
+  padding: 40px 3% 40px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+
+  @media (max-width: 640px) {
+    padding: 16px 3%;
+    gap: 16px;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--motion-slow);
+  z-index: 25;
+
+  @media (min-width: 961px) {
+    display: none;
+  }
+}
+
+.backdropShow {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .body {
+  flex: 1;
+  min-height: 0;
   display: grid;
   grid-template-columns: 340px minmax(0, 1fr);
   gap: 24px;
-  align-items: start;
 
   @media (max-width: 960px) {
     grid-template-columns: 1fr;
@@ -148,6 +195,7 @@ onMounted(parser.parse)
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .headerRow {
@@ -161,6 +209,44 @@ onMounted(parser.parse)
   display: flex;
   align-items: baseline;
   gap: 10px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.menuBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 32px;
+  padding: 0;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  transition:
+    color var(--motion-fast),
+    border-color var(--motion-fast),
+    background var(--motion-fast);
+
+  &:hover {
+    color: var(--color-primary-strong);
+    border-color: var(--color-primary-border);
+    background: var(--color-primary-faint);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 960px) {
+    display: inline-flex;
+  }
 }
 
 .localeBtn {
@@ -202,6 +288,10 @@ onMounted(parser.parse)
   font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.01em;
+
+  @media (max-width: 640px) {
+    font-size: 20px;
+  }
 }
 
 .version {
@@ -223,17 +313,36 @@ onMounted(parser.parse)
 .content {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
+  gap: 20px;
   background: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
   padding: 20px;
+  min-height: 0;
+  overflow-y: auto;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.divider {
+  height: 1px;
+  background: var(--color-border-soft);
+  margin-left: -20px;
+  margin-right: -20px;
+
+  @media (max-width: 640px) {
+    margin-left: -16px;
+    margin-right: -16px;
+  }
 }
 
 .panelHead {
@@ -242,6 +351,11 @@ onMounted(parser.parse)
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 18px;
+
+  @media (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 }
 
 .panelTitle {
