@@ -1,7 +1,9 @@
-import { ref, type Ref } from 'vue'
+import type { Ref } from 'vue'
 
 import enUs from '@root/language/en-us.json'
 import zhCn from '@root/language/zh-cn.json'
+
+import { ref } from 'vue'
 
 export type LocaleKey = 'en-us' | 'zh-cn'
 

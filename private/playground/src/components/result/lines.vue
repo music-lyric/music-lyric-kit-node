@@ -22,10 +22,10 @@
 
 <script setup lang="ts">
 import { Lyric } from 'music-lyric-kit'
+import ResultLine from './line.vue'
+
 import { formatTime } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
-
-import ResultLine from './line.vue'
 
 defineProps<{
   lines: Lyric.Line[]

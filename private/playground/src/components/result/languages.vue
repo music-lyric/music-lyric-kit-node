@@ -12,6 +12,7 @@
 
 <script setup lang="ts">
 import { Lyric } from 'music-lyric-kit'
+
 import { useI18n } from '@root/composables/useI18n'
 
 defineProps<{ languages: Lyric.LanguageItem[] }>()

@@ -13,6 +13,7 @@
 
 <script setup lang="ts">
 import { Lyric } from 'music-lyric-kit'
+
 import { getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 

@@ -1,20 +1,22 @@
 import type { Lyric } from 'music-lyric-kit'
 import type { Format, Engine } from '@root/core/constants'
 
+import { PLUGIN_DEFS } from '@root/core/plugins'
+import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
+
 import { ref, shallowRef, computed } from 'vue'
 import { createParserPipeline } from 'music-lyric-kit'
-
-import { createClient } from '@root/core/parser'
-import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
+import { buildClient } from '@root/core/parser'
+import { usePluginConfig } from '@root/composables/usePluginConfig'
 
 type MusicInfo = { name: string; singer: string[] } | undefined
 
 const read = (key: string, fallback = '') => localStorage.getItem(key) ?? fallback
 const write = (key: string, value: string) => localStorage.setItem(key, value)
 
-const client = createClient()
-
 export const useParser = () => {
+  const { states: pluginStates } = usePluginConfig()
+
   const format = ref<Format>((read(STORAGE_KEYS.FORMAT) as Format) || 'lrc')
   const engine = ref<Engine>((read(STORAGE_KEYS.ENGINE) as Engine) || 'pipeline')
 
@@ -64,24 +66,22 @@ export const useParser = () => {
   const parseWithPipeline = (input: any, info: MusicInfo) => {
     const pipeline = createParserPipeline({ content: input, musicInfo: info })
 
-    pipeline.infer()
-    pipeline.parse()
-    pipeline.pure.clean()
-    pipeline.pure.extractCreator()
-    pipeline.agent.extract()
-    pipeline.background.extract()
-    pipeline.background.clean()
-    pipeline.interlude.insert()
-    pipeline.space.insert()
-    pipeline.stress.mark()
-    pipeline.language.infer()
-    pipeline.language.calculatePercent()
+    pipeline.infer().parse()
+
+    for (const def of PLUGIN_DEFS) {
+      const state = pluginStates[def.key]
+      if (!state?.enabled) {
+        continue
+      }
+      def.runPipeline(pipeline, def.buildConfig(state.values))
+    }
 
     const final = pipeline.final()
     return { format: final.format, info: final.result }
   }
 
   const parseWithClient = (input: any, info: MusicInfo) => {
+    const client = buildClient(pluginStates)
     const detected = client.infer({ content: input })
     if (!detected) return { format: '', info: null }
     return { format: detected, info: client.parse(detected, { content: input, musicInfo: info }) }

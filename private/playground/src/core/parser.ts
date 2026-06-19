@@ -1,20 +1,25 @@
-import { Parser, Format, Transform } from 'music-lyric-kit'
+import type { PluginStates } from '@root/composables/usePluginConfig'
 
-export const createClient = () => {
+import { Parser, Format } from 'music-lyric-kit'
+import { PLUGIN_DEFS } from '@root/core/plugins'
+
+/**
+ * Build a client parser with only the enabled plugins, each configured from the panel state.
+ * Plugins run by stage and priority, so registration order only breaks ties.
+ */
+export const buildClient = (states: PluginStates) => {
   const client = new Parser()
 
   client.plugin.add(new Format.Lrc.Parser())
   client.plugin.add(new Format.Ttml.AmllParser())
-  client.plugin.add(new Transform.Interlude.Insert())
-  client.plugin.add(new Transform.Background.Extract())
-  client.plugin.add(new Transform.Background.Clean())
-  client.plugin.add(new Transform.Agent.Extract())
-  client.plugin.add(new Transform.Pure.Clean())
-  client.plugin.add(new Transform.Pure.ExtractCreator())
-  client.plugin.add(new Transform.Space.Insert())
-  client.plugin.add(new Transform.Stress.Mark())
-  client.plugin.add(new Transform.Language.Infer())
-  client.plugin.add(new Transform.Language.CalculatePercent())
+
+  for (const def of PLUGIN_DEFS) {
+    const state = states[def.key]
+    if (!state?.enabled) {
+      continue
+    }
+    client.plugin.add(def.createPlugin(def.buildConfig(state.values)))
+  }
 
   return client
 }

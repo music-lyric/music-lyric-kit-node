@@ -28,6 +28,7 @@
 
 <script setup lang="ts">
 import { Lyric } from 'music-lyric-kit'
+
 import { computed } from 'vue'
 import { formatTime, getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'

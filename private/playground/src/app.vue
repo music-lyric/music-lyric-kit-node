@@ -18,7 +18,10 @@
       <p :class="$style.subtitle">{{ t('app.subtitle') }}</p>
     </header>
 
-    <main :class="$style.content">
+    <div :class="$style.body">
+      <PluginConfig />
+
+      <main :class="$style.content">
       <section :class="$style.panel">
         <div :class="$style.panelHead">
           <h2 :class="$style.panelTitle">{{ t('panel.input') }}</h2>
@@ -70,16 +73,13 @@
           <div v-else :class="$style.empty">{{ t('result.empty') }}</div>
         </div>
       </section>
-    </main>
+      </main>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { LocaleKey } from '@root/composables/useI18n'
-
-import { computed, onMounted } from 'vue'
-import { useParser } from '@root/composables/useParser'
-import { useI18n } from '@root/composables/useI18n'
 
 import Segmented from '@root/components/segmented.vue'
 import LabeledInput from '@root/components/labeled-input.vue'
@@ -88,6 +88,11 @@ import ResultMetas from '@root/components/result/metas.vue'
 import ResultLanguages from '@root/components/result/languages.vue'
 import ResultAgents from '@root/components/result/agents.vue'
 import ResultLines from '@root/components/result/lines.vue'
+import PluginConfig from '@root/components/config/plugin-config.vue'
+
+import { computed, onMounted } from 'vue'
+import { useParser } from '@root/composables/useParser'
+import { useI18n } from '@root/composables/useI18n'
 
 const version = __APP_VERSION__
 
@@ -120,12 +125,23 @@ onMounted(parser.parse)
 
 <style module lang="scss">
 .page {
-  max-width: 1100px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 40px 24px 64px;
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 960px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .header {
