@@ -157,6 +157,18 @@ importers:
         specifier: workspace:*
         version: link:../../packages/utils
 
+  plugins/transform-language:
+    dependencies:
+      '@music-lyric-kit/core':
+        specifier: workspace:*
+        version: link:../../packages/core
+      '@music-lyric-kit/lyric':
+        specifier: workspace:*
+        version: link:../../packages/lyric
+      '@music-lyric-kit/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
+
   plugins/transform-pure:
     dependencies:
       '@music-lyric-kit/core':
