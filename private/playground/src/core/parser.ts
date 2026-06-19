@@ -12,6 +12,7 @@ export const buildClient = (states: PluginStates) => {
 
   client.plugin.add(new Format.Lrc.Parser())
   client.plugin.add(new Format.Ttml.AmllParser())
+  client.plugin.add(new Format.Ttml.AmParser())
 
   for (const def of PLUGIN_DEFS) {
     const state = states[def.key]
