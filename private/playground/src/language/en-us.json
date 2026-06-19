@@ -62,6 +62,7 @@
   "field.spaceTypes": "Spacing rules",
   "field.checkTime": "Min duration (ms)",
   "field.override": "Override existing language",
+  "field.background": "Include background vocals",
 
   "option.fuzzy": "Fuzzy",
   "option.exact": "Exact",

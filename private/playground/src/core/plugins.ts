@@ -193,9 +193,13 @@ export const PLUGIN_DEFS: PluginDef[] = [
     key: 'languageCalc',
     labelKey: 'plugin.languageCalc',
     defaultEnabled: true,
-    fields: [],
-    buildConfig: () => undefined,
-    runPipeline: (p) => p.language.calculatePercent(),
-    createPlugin: () => new Transform.Language.CalculatePercent(),
+    fields: [{ key: 'background', type: 'boolean', default: false, labelKey: 'field.background' }],
+    buildConfig: (v) => ({ background: v.background }),
+    runPipeline: (p, c) => p.language.calculatePercent(c),
+    createPlugin: (c) => {
+      const plugin = new Transform.Language.CalculatePercent()
+      plugin.config.update(c)
+      return plugin
+    },
   },
 ]

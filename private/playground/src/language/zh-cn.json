@@ -62,6 +62,7 @@
   "field.spaceTypes": "空格规则",
   "field.checkTime": "最短时长 (ms)",
   "field.override": "覆盖已有语言",
+  "field.background": "计入背景人声",
 
   "option.fuzzy": "模糊",
   "option.exact": "精确",
