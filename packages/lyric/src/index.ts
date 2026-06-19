@@ -1,1 +1,1 @@
-export * as Lyric from './namespace'
+export * as Lyric from './root'

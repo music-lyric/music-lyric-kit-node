@@ -1,8 +1,6 @@
+export * from './language'
+
 export * from './time'
-
-export * from './word'
-
-export * from './extended'
 
 export * from './line'
 

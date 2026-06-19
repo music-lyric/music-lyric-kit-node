@@ -45,8 +45,8 @@ export class Extract extends ParserPlugin {
         continue
       }
 
-      const words = line.content.words
-      const trimmed = line.content.original.trim()
+      const words = line.words
+      const trimmed = line.original.trim()
 
       if (!trimmed) {
         currentId = null
@@ -97,9 +97,9 @@ export class Extract extends ParserPlugin {
         if (this.config.current.replace) {
           if (afterColon) {
             colonWord.content = afterColon
-            line.content.words = words.slice(colonWordIndex)
+            line.words = words.slice(colonWordIndex)
           } else {
-            line.content.words = words.slice(colonWordIndex + 1)
+            line.words = words.slice(colonWordIndex + 1)
           }
         }
 
@@ -118,7 +118,7 @@ export class Extract extends ParserPlugin {
           }
         }
 
-        if (!line.content.words.length) {
+        if (!line.words.length) {
           continue
         }
       } else {

@@ -61,15 +61,13 @@ const processLineExtra = (element: Xml.XmlElement, line: Lyric.LineNormal, role:
     return
   }
 
-  const extended = new Lyric.Extended()
+  const item = new Lyric.LineAnnotationItem()
+  item.content = text
 
-  extended.type = role === 'x-translation' ? Lyric.ExtendedType.Translate : Lyric.ExtendedType.Roman
-  extended.content = text
-
-  if (!line.content.extended) {
-    line.content.extended = [extended]
+  if (role === 'x-translation') {
+    line.annotation.translates = [...(line.annotation.translates || []), item]
   } else {
-    line.content.extended.push(extended)
+    line.annotation.romans = [...(line.annotation.romans || []), item]
   }
 }
 
@@ -102,7 +100,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
     if (!text.length) {
       return null
     }
-    line.content.words = processTextToWords(text)
+    line.words = processTextToWords(text)
     return line
   }
 
@@ -160,6 +158,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
 
       const normal = new Lyric.WordNormal()
       normal.content = trimed
+      normal.time = new Lyric.Time()
       normal.time.start = begin
       normal.time.end = end
       target.push(normal)
@@ -175,7 +174,7 @@ const processLine = (element: Xml.XmlElement, background: boolean = false) => {
     }
   }
 
-  line.content.words = words
+  line.words = words
 
   return line
 }

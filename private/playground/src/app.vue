@@ -62,7 +62,7 @@
         <div :class="$style.resultBody">
           <div v-if="parser.error.value" :class="$style.error">{{ t(parser.error.value) }}</div>
           <template v-else-if="parser.result.value">
-            <ResultMetas :metas="parser.result.value.metas" />
+            <ResultMetas :metas="parser.result.value.meta.list" />
             <ResultAgents :agents="parser.result.value.agents" />
             <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
           </template>

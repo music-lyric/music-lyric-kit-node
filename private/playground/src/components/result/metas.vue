@@ -16,7 +16,7 @@ import { computed } from 'vue'
 import { formatDuration } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-const props = defineProps<{ metas: Lyric.Meta[] }>()
+const props = defineProps<{ metas: Lyric.MetaItem[] }>()
 
 const { t } = useI18n()
 
@@ -24,15 +24,15 @@ const tags = computed(() =>
   props.metas.map((meta) => {
     switch (meta.type) {
       case Lyric.MetaType.Duration:
-        return { label: meta.type, value: formatDuration(meta.content as number) }
+        return { label: meta.type, value: formatDuration(meta.value) }
       case Lyric.MetaType.Offset:
-        return { label: meta.type, value: `${meta.content}ms` }
+        return { label: meta.type, value: `${meta.value}ms` }
       case Lyric.MetaType.Creator: {
-        const creator = meta.content as { role: string; name: string[] }
+        const creator = meta.value
         return { label: creator.role || 'Creator', value: creator.name.join(', ') }
       }
       default:
-        return { label: meta.type, value: String(meta.content) }
+        return { label: meta.type, value: String(meta.value) }
     }
   }),
 )

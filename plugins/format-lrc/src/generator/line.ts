@@ -15,36 +15,31 @@ export const exportLines = (info: Lyric.Info) => {
 
     const lineTime = `[${formatTime(line.time.start)}]`
 
-    if (info.type === Lyric.InfoType.Syllable) {
-      const content = line.content.words
+    if (info.timing === Lyric.InfoTiming.Syllable) {
+      const content = line.words
       const items = content.map((item) => {
         if (item.type === Lyric.WordType.Space) {
           return ' '.repeat(item.count)
         }
-        const time = formatTime(item.time.start)
+        const time = formatTime(item.time?.start ?? 0)
         return `<${time}>${item.content}`
       })
 
       const syllableLine = `${lineTime}${items.join('')}`
       syllable.push(syllableLine)
 
-      const originalLine = `${lineTime}${line.content.original}`
+      const originalLine = `${lineTime}${line.original}`
       original.push(originalLine)
     } else {
-      const target = `${lineTime}${line.content.original}`
+      const target = `${lineTime}${line.original}`
       original.push(target)
     }
 
-    for (const item of line.content.extended || []) {
-      const target = `${lineTime}${item.content}`
-      switch (item.type) {
-        case Lyric.ExtendedType.Translate:
-          translate.push(target)
-          break
-        case Lyric.ExtendedType.Roman:
-          roman.push(target)
-          break
-      }
+    for (const item of line.annotation.translates || []) {
+      translate.push(`${lineTime}${item.content}`)
+    }
+    for (const item of line.annotation.romans || []) {
+      roman.push(`${lineTime}${item.content}`)
     }
   }
 

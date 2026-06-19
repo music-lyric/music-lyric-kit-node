@@ -46,7 +46,7 @@ export class ExtractCreator extends ParserPlugin {
       return
     }
 
-    const newMetas: Lyric.Meta[] = [...ctx.result.metas]
+    const newMetas: Lyric.MetaItem[] = [...ctx.result.meta.list]
     const newLines: Lyric.Line[] = []
 
     for (const line of lines) {
@@ -55,7 +55,7 @@ export class ExtractCreator extends ParserPlugin {
         continue
       }
 
-      const target = extractCreator(line.content.original)
+      const target = extractCreator(line.original)
       if (!target) {
         newLines.push(line)
         continue
@@ -72,9 +72,10 @@ export class ExtractCreator extends ParserPlugin {
       if (name) {
         const names = splitNameWithRule(name, this.config.current.split)
         if (names.length > 0) {
-          const meta = new Lyric.MetaCreator()
-          meta.content.role = role
-          meta.content.name = names
+          const meta = Lyric.createMetaItem(Lyric.MetaType.Creator, role, {
+            role,
+            name: names,
+          })
           newMetas.push(meta)
         }
       }
@@ -85,7 +86,7 @@ export class ExtractCreator extends ParserPlugin {
     }
 
     ctx.result.lines = newLines
-    ctx.result.metas = newMetas
+    ctx.result.meta.list = newMetas
   }
 }
 

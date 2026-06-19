@@ -48,11 +48,12 @@ export class AmllParser extends ParserPlugin {
 
     const lines = processLines(body)
     const isSyllable = checkIsSyllable(lines[0])
-    ctx.result.type = isSyllable ? Lyric.InfoType.Syllable : Lyric.InfoType.Normal
+    ctx.result.type = Lyric.InfoType.Normal
+    ctx.result.timing = isSyllable ? Lyric.InfoTiming.Syllable : Lyric.InfoTiming.Line
     ctx.result.lines = lines
 
     const metas = processMetas(metadata)
-    ctx.result.metas = metas
+    ctx.result.meta.list = metas
 
     const agents = processAgents(metadata)
     ctx.result.agents = agents

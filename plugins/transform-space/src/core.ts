@@ -140,9 +140,9 @@ export function alignElements<T, R>(
   return result
 }
 
-export const insertSpaceToLine = (line: Lyric.LineNormalContent, target: Set<InsertTextSpaceTypes>): Lyric.LineNormalContent => {
+export const insertSpaceToLine = (line: Lyric.LineNormalBase, target: Set<InsertTextSpaceTypes>): void => {
   if (!line || !line.words || line.words.length === 0) {
-    return line
+    return
   }
 
   const full = line.original
@@ -160,31 +160,38 @@ export const insertSpaceToLine = (line: Lyric.LineNormalContent, target: Set<Ins
     },
     (originalWord, matchedText) => {
       const normal = new Lyric.WordNormal()
-      normal.time = originalWord.time
-      normal.extended = originalWord.extended
       normal.content = matchedText
-      normal.config = originalWord.config
+      normal.time = originalWord.time
+      normal.language = originalWord.language
+      normal.annotation = originalWord.annotation
+      normal.stress = originalWord.stress
       return normal
     },
     // strip only the literal space, matching the space notion used inside alignElements
     (w) => w.content.replaceAll(' ', ''),
   )
 
-  const newLine = new Lyric.LineNormalContent()
-  newLine.extended = line.extended
-  newLine.words = newWords
-
-  return newLine
+  line.words = newWords
 }
 
-export const insertSpaceToExtended = (line: Lyric.LineNormalContent, target: Set<InsertTextSpaceTypes>): Lyric.LineNormalContent => {
-  if (!line.extended.length) {
-    return line
+export const insertSpaceToExtended = (line: Lyric.LineNormalBase, target: Set<InsertTextSpaceTypes>): void => {
+  const apply = (items: Lyric.LineAnnotationItem[] | undefined) => {
+    if (!items) {
+      return undefined
+    }
+    for (const item of items) {
+      item.content = insertSpace(item.content, target)
+    }
+    return items
   }
 
-  for (const item of line.extended) {
-    item.content = insertSpace(item.content, target)
+  const translates = apply(line.annotation.translates)
+  if (translates) {
+    line.annotation.translates = translates
   }
 
-  return line
+  const romans = apply(line.annotation.romans)
+  if (romans) {
+    line.annotation.romans = romans
+  }
 }

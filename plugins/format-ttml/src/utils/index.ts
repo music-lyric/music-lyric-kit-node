@@ -35,7 +35,7 @@ export const checkIsSyllable = (line: Lyric.LineNormal) => {
   if (!line) {
     return false
   }
-  const words = line.content.words.filter((item) => item.type === Lyric.WordType.Normal)
-  const time = words.reduce((sum, line) => sum + line.time.start, 0)
+  const words = line.words.filter((item) => item.type === Lyric.WordType.Normal)
+  const time = words.reduce((sum, word) => sum + (word.time?.start ?? 0), 0)
   return time > 0
 }

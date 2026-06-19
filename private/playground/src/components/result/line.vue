@@ -52,29 +52,43 @@ const agentInfo = computed(() => {
 })
 
 const words = computed(() =>
-  props.line.content.words.map((word) => {
+  props.line.words.map((word) => {
     if (word.type === Lyric.WordType.Space) {
       return { type: 'space' as const, text: ' '.repeat((word as Lyric.WordSpace).count) }
     }
     const w = word as Lyric.WordNormal
-    const hasTime = w.time.start > 0 || w.time.end > 0
+    const hasTime = !!w.time && (w.time.start > 0 || w.time.end > 0)
     return {
       type: 'word' as const,
       text: w.content,
       hasTime,
-      stress: w.config.stress,
-      title: hasTime ? `${formatTime(w.time.start)} ~ ${formatTime(w.time.end)}` : '',
+      stress: w.stress,
+      title: hasTime ? `${formatTime(w.time?.start ?? 0)} ~ ${formatTime(w.time?.end ?? 0)}` : '',
     }
   }),
 )
 
-const extended = computed(() =>
-  props.line.content.extended.map((ext) => {
-    if (ext.type === Lyric.ExtendedType.Translate) return { kind: 'translate' as const, text: ext.content }
-    if (ext.type === Lyric.ExtendedType.Roman) return { kind: 'roman' as const, text: ext.content }
-    return { kind: 'other' as const, text: `[${ext.type}] ${ext.content}` }
-  }),
-)
+const extended = computed(() => {
+  const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
+  const annotation = props.line.annotation
+
+  for (const item of annotation.translates || []) {
+    result.push({ kind: 'translate', text: item.content })
+  }
+  for (const item of annotation.romans || []) {
+    result.push({ kind: 'roman', text: item.content })
+  }
+
+  const ruby = annotation.ruby
+  if (ruby) {
+    result.push({ kind: 'other', text: `[ruby] ${ruby.content}` })
+  }
+  for (const item of annotation.unknowns || []) {
+    result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
+  }
+
+  return result
+})
 </script>
 
 <style module lang="scss">

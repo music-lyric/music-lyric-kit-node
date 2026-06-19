@@ -3,28 +3,24 @@ import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
 import { findElementsByLocalName, getAttributeByName } from '@root/utils'
 
-const processMeta = (element: Xml.XmlElement) => {
+const processMeta = (element: Xml.XmlElement): Lyric.MetaItem | undefined => {
   const key = getAttributeByName(element, 'key', true)
   const value = getAttributeByName(element, 'value', true)
 
   if (!key || !value) {
-    return null
+    return undefined
   }
 
   switch (key) {
     case 'musicName':
-      const title = new Lyric.MetaTitle()
-      title.content = value.trim()
-      return title
+      return Lyric.createMetaItem(Lyric.MetaType.Title, key, value.trim())
     case 'artists':
-      const singer = new Lyric.MetaSinger()
-      singer.content = value.trim()
-      return singer
+      return Lyric.createMetaItem(Lyric.MetaType.Singer, key, value.trim())
     case 'album':
-      const album = new Lyric.MetaAlbum()
-      album.content = value.trim()
-      return album
+      return Lyric.createMetaItem(Lyric.MetaType.Album, key, value.trim())
   }
+
+  return undefined
 }
 
 export const processMetas = (metadata?: Xml.XmlElement) => {
@@ -32,7 +28,7 @@ export const processMetas = (metadata?: Xml.XmlElement) => {
     return []
   }
 
-  const result: Lyric.Meta[] = []
+  const result: Lyric.MetaItem[] = []
   const elements = findElementsByLocalName(metadata, 'meta')
 
   for (const element of elements) {

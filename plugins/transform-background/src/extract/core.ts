@@ -14,25 +14,24 @@ const copyWord = (word: Lyric.Word) => {
     const normal = new Lyric.WordNormal()
     normal.content = word.content
 
-    normal.time = new Lyric.Time()
-    normal.time.start = word.time.start
-    normal.time.end = word.time.end
+    if (word.time) {
+      normal.time = new Lyric.Time()
+      normal.time.start = word.time.start
+      normal.time.end = word.time.end
+    }
 
-    normal.extended = word.extended.map((item) => {
-      const extended = new Lyric.Extended()
-      extended.type = item.type
-      extended.content = item.content
-      return extended
-    })
+    if (word.annotation) {
+      normal.annotation = word.annotation
+    }
 
-    normal.config.stress = word.config.stress
+    normal.stress = word.stress
 
     return normal
   }
 }
 
 const findFirstNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null => {
-  const words = line.content.words
+  const words = line.words
   for (let i = 0, len = words.length; i < len; i++) {
     const word = words[i]
     if (word.type === Lyric.WordType.Normal) {
@@ -43,7 +42,7 @@ const findFirstNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null =>
 }
 
 const findLastNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null => {
-  const words = line.content.words
+  const words = line.words
   for (let i = words.length - 1; i >= 0; i--) {
     const word = words[i]
     if (word.type === Lyric.WordType.Normal) {
@@ -53,7 +52,7 @@ const findLastNormalWord = (line: Lyric.LineNormal): Lyric.WordNormal | null => 
   return null
 }
 
-export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNormalBackground) => {
+export const addBackground = (line: Lyric.LineNormal, background: Lyric.LineNormalBase) => {
   if (!line.background) {
     line.background = [background]
   } else {
@@ -137,7 +136,7 @@ export const extractInLine = (line: Lyric.LineNormal) => {
   let hasOpen = false
   let hasClose = false
 
-  for (const word of line.content.words) {
+  for (const word of line.words) {
     if (word.type === Lyric.WordType.Normal) {
       const content = word.content
       for (let i = 0; i < content.length; i++) {
@@ -151,7 +150,7 @@ export const extractInLine = (line: Lyric.LineNormal) => {
     return
   }
 
-  const words = line.content.words
+  const words = line.words
   const mainWords: Lyric.Word[] = []
   const backgroundGroups: Lyric.Word[][] = []
 
@@ -235,39 +234,64 @@ export const extractInLine = (line: Lyric.LineNormal) => {
     return
   }
 
-  line.content.words = mainWords
+  line.words = mainWords
 
-  const backgroundLines: Lyric.LineNormalBackground[] = []
+  const backgroundLines: Lyric.LineNormalBase[] = []
   for (const item of backgroundGroups) {
-    const result = new Lyric.LineNormalBackground()
+    const result = new Lyric.LineNormalBase()
 
     const normals = item.filter((w) => w.type === Lyric.WordType.Normal)
     if (normals.length > 0) {
-      result.time.start = normals[0].time.start || 0
-      result.time.end = normals[normals.length - 1].time.end || 0
+      result.time.start = normals[0].time?.start ?? 0
+      result.time.end = normals[normals.length - 1].time?.end ?? 0
     }
-    result.content.words = item
+    result.words = item
 
     backgroundLines.push(result)
     addBackground(line, result)
   }
 
-  for (const item of line.content.extended) {
-    if (!item.content.trim()) {
-      continue
+  const splitAnnotation = (
+    items: Lyric.LineAnnotationItem[] | undefined,
+    push: (background: Lyric.LineNormalBase, item: Lyric.LineAnnotationItem) => void,
+  ) => {
+    if (!items) {
+      return
     }
+    for (const item of items) {
+      if (!item.content.trim()) {
+        continue
+      }
 
-    const [main, backgrounds] = extractInLineExtended(item.content)
+      const [main, backgrounds] = extractInLineExtended(item.content)
+      item.content = main
 
-    item.content = main
-    for (let i = 0; i < backgrounds.length; i++) {
-      if (i < backgroundLines.length) {
-        const target = new Lyric.Extended()
-        target.type = item.type
+      for (let i = 0; i < backgrounds.length; i++) {
+        if (i >= backgroundLines.length) {
+          continue
+        }
+        const target = new Lyric.LineAnnotationItem()
         target.content = backgrounds[i]
-        backgroundLines[i].content.extended.push(target)
+        target.language = item.language
+        push(backgroundLines[i], target)
       }
     }
+  }
+
+  const translates = line.annotation.translates
+  splitAnnotation(translates, (background, item) => {
+    background.annotation.translates = [...(background.annotation.translates || []), item]
+  })
+  if (translates) {
+    line.annotation.translates = translates
+  }
+
+  const romans = line.annotation.romans
+  splitAnnotation(romans, (background, item) => {
+    background.annotation.romans = [...(background.annotation.romans || []), item]
+  })
+  if (romans) {
+    line.annotation.romans = romans
   }
 }
 

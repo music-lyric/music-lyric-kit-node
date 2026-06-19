@@ -71,7 +71,7 @@ export class Clean extends ParserPlugin {
         }
       }
 
-      const clean = extra.length ? processText(line.content.original).join('') : line.content.original
+      const clean = extra.length ? processText(line.original).join('') : line.original
       const result = this.matcher.match(clean, extra)
       if (!result) {
         newLines.push(line)

@@ -1,17 +1,11 @@
 import type { Lyric } from 'music-lyric-kit'
 import type { Format, Engine } from '@root/core/constants'
 
-import { ref, computed } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { createParserPipeline } from 'music-lyric-kit'
 
 import { createClient } from '@root/core/parser'
-import {
-  STORAGE_KEYS,
-  DEFAULT_LRC_ORIGINAL,
-  DEFAULT_LRC_TRANSLATE,
-  DEFAULT_LRC_ROMAN,
-  DEFAULT_TTML,
-} from '@root/core/constants'
+import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
 
 type MusicInfo = { name: string; singer: string[] } | undefined
 
@@ -32,7 +26,7 @@ export const useParser = () => {
   const roman = ref(read(STORAGE_KEYS.ROMAN, DEFAULT_LRC_ROMAN))
   const ttml = ref(read(STORAGE_KEYS.TTML, DEFAULT_TTML))
 
-  const result = ref<Lyric.Info | null>(null)
+  const result = shallowRef<Lyric.Info | null>(null)
   const resultType = ref('')
   const resultVersion = ref<string | number>('')
   const inferredFormat = ref('')
@@ -103,6 +97,8 @@ export const useParser = () => {
       const start = performance.now()
       const parsed = engine.value === 'client' ? parseWithClient(input, musicInfo.value) : parseWithPipeline(input, musicInfo.value)
       elapsed.value = performance.now() - start
+
+      console.log('parse done. ', parsed.format, parsed.info)
 
       if (!parsed.format || !parsed.info) {
         error.value = 'result.inferFailed'

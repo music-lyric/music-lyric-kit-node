@@ -1,77 +1,79 @@
-import { createRandomHex } from '@music-lyric-kit/utils'
+import type { MetaItem } from './content'
 
-export enum MetaType {
-  // lyric offset
-  Offset = 'Offset',
-  // song duration
-  Duration = 'Duration',
-  // song title
-  Title = 'Title',
-  // song singer
-  Singer = 'Singer',
-  // song album
-  Album = 'Album',
-  // song creators
-  Creator = 'Creator',
-  // unknown
-  Unknown = 'Unknown',
-}
+import { MetaType } from './content'
 
-abstract class MetaBase {
-  id: string = createRandomHex(4).toUpperCase()
+export class Meta {
+  /**
+   * All meta entries in order.
+   */
+  list: MetaItem[] = []
 
-  abstract readonly type: MetaType
+  private listOf<T extends MetaType>(type: T): Extract<MetaItem, { type: T }>[] {
+    return this.list.filter((meta) => meta.type === type) as Extract<MetaItem, { type: T }>[]
+  }
 
-  abstract content: any
-}
+  /**
+   * All offset meta entries.
+   */
+  get offsets() {
+    return this.listOf(MetaType.Offset)
+  }
 
-export class MetaOffset extends MetaBase {
-  override readonly type = MetaType.Offset
+  /**
+   * All duration meta entries.
+   */
+  get durations() {
+    return this.listOf(MetaType.Duration)
+  }
 
-  override content: number = 0
-}
+  /**
+   * All title meta entries.
+   */
+  get titles() {
+    return this.listOf(MetaType.Title)
+  }
 
-export class MetaDuration extends MetaBase {
-  override readonly type = MetaType.Duration
+  /**
+   * All singer meta entries.
+   */
+  get singers() {
+    return this.listOf(MetaType.Singer)
+  }
 
-  override content: number = 0
-}
+  /**
+   * All album meta entries.
+   */
+  get albums() {
+    return this.listOf(MetaType.Album)
+  }
 
-export class MetaTitle extends MetaBase {
-  override readonly type = MetaType.Title
+  /**
+   * All creator meta entries.
+   */
+  get creators() {
+    return this.listOf(MetaType.Creator)
+  }
 
-  override content: string = ''
-}
+  /**
+   * All author meta entries.
+   */
+  get authors() {
+    return this.listOf(MetaType.Author)
+  }
 
-export class MetaSinger extends MetaBase {
-  override readonly type = MetaType.Singer
+  /**
+   * All isrc meta entries.
+   */
+  get isrcs() {
+    return this.listOf(MetaType.Isrc)
+  }
 
-  override content: string = ''
-}
-
-export class MetaAlbum extends MetaBase {
-  override readonly type = MetaType.Album
-
-  override content: string = ''
-}
-
-interface MetaCreatorContent {
-  role: string
-  name: string[]
-}
-export class MetaCreator extends MetaBase {
-  override readonly type = MetaType.Creator
-
-  override content: MetaCreatorContent = {
-    role: '',
-    name: [],
+  /**
+   * All unknown meta entries.
+   */
+  get unknowns() {
+    return this.listOf(MetaType.Unknown)
   }
 }
 
-export class MetaUnknown extends MetaBase {
-  override readonly type = MetaType.Unknown
-
-  override content: any = ''
-}
-
-export type Meta = MetaOffset | MetaDuration | MetaTitle | MetaSinger | MetaAlbum | MetaCreator | MetaUnknown
+export * from './content'

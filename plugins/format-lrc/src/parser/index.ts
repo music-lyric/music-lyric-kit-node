@@ -46,7 +46,8 @@ export class Parser extends ParserPlugin {
 
   private processExtended(lines: Lyric.LineNormal[], inputTranslate: string, inputRoman: string) {
     const lineMap: Map<number, Lyric.LineNormal> = new Map()
-    const extendedMap: Map<number, Lyric.Extended[]> = new Map()
+    const translateMap: Map<number, Lyric.LineAnnotationItem[]> = new Map()
+    const romanMap: Map<number, Lyric.LineAnnotationItem[]> = new Map()
 
     for (const line of lines) {
       lineMap.set(line.time.start, line)
@@ -54,41 +55,42 @@ export class Parser extends ParserPlugin {
 
     const translate = processLines(matchLyric(inputTranslate).line, true)
     for (const item of translate) {
-      const current = extendedMap.get(item.time.start) || []
-      const extended = new Lyric.Extended()
-      extended.type = Lyric.ExtendedType.Translate
-      extended.content = item.content.original
-      current.push(extended)
-      extendedMap.set(item.time.start, current)
+      const current = translateMap.get(item.time.start) || []
+      const annotation = new Lyric.LineAnnotationItem()
+      annotation.content = item.original
+      current.push(annotation)
+      translateMap.set(item.time.start, current)
     }
 
     const roman = processLines(matchLyric(inputRoman).line, true) || []
     for (const item of roman) {
-      const current = extendedMap.get(item.time.start) || []
-      const extended = new Lyric.Extended()
-      extended.type = Lyric.ExtendedType.Roman
-      extended.content = item.content.original
-      current.push(extended)
-      extendedMap.set(item.time.start, current)
+      const current = romanMap.get(item.time.start) || []
+      const annotation = new Lyric.LineAnnotationItem()
+      annotation.content = item.original
+      current.push(annotation)
+      romanMap.set(item.time.start, current)
     }
 
-    const result = alignNumberArray([...lineMap.keys()], [...extendedMap.keys()])
+    const targets = [...new Set([...translateMap.keys(), ...romanMap.keys()])]
+    const result = alignNumberArray([...lineMap.keys()], targets)
     for (const item of result) {
       const line = lineMap.get(item.base)
       if (!line) {
         continue
       }
 
-      if (!line.content.extended) {
-        line.content.extended = []
+      const translates: Lyric.LineAnnotationItem[] = []
+      const romans: Lyric.LineAnnotationItem[] = []
+      for (const target of item.targets) {
+        translates.push(...(translateMap.get(target.value) || []))
+        romans.push(...(romanMap.get(target.value) || []))
       }
 
-      for (const target of item.targets) {
-        const extended = extendedMap.get(target.value)
-        if (!extended) {
-          continue
-        }
-        line.content.extended.push(...extended)
+      if (translates.length) {
+        line.annotation.translates = translates
+      }
+      if (romans.length) {
+        line.annotation.romans = romans
       }
     }
   }
@@ -123,13 +125,14 @@ export class Parser extends ParserPlugin {
     this.processExtended(lines, input.translate || '', input.roman || '')
 
     ctx.result.lines = lines
+    ctx.result.type = Lyric.InfoType.Normal
     if (checkIsSyllable(match.line)) {
-      ctx.result.type = Lyric.InfoType.Syllable
+      ctx.result.timing = Lyric.InfoTiming.Syllable
     } else {
-      ctx.result.type = Lyric.InfoType.Normal
+      ctx.result.timing = Lyric.InfoTiming.Line
     }
 
     const metas = processMetas(match.meta)
-    ctx.result.metas = metas
+    ctx.result.meta.list = metas
   }
 }

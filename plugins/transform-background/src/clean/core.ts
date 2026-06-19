@@ -4,8 +4,8 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
-export const removeBrackets = (line: Lyric.LineNormal, removeStart: boolean = true, removeEnd: boolean = true): void => {
-  const words = line.content.words
+export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean = true, removeEnd: boolean = true): void => {
+  const words = line.words
 
   if (removeStart) {
     for (let i = 0; i < words.length; i++) {
@@ -38,18 +38,35 @@ export const removeBrackets = (line: Lyric.LineNormal, removeStart: boolean = tr
     }
   }
 
-  for (const item of line.content.extended) {
-    if (!item.content.trim()) continue
-
-    if (removeStart && isOpenBracket(item.content.charAt(0))) {
-      item.content = item.content.substring(1)
+  const stripBrackets = (items: Lyric.LineAnnotationItem[] | undefined) => {
+    if (!items) {
+      return
     }
+    for (const item of items) {
+      if (!item.content.trim()) continue
 
-    if (removeEnd && item.content) {
-      const lastCharIdx = item.content.length - 1
-      if (isCloseBracket(item.content.charAt(lastCharIdx))) {
-        item.content = item.content.slice(0, -1)
+      if (removeStart && isOpenBracket(item.content.charAt(0))) {
+        item.content = item.content.substring(1)
+      }
+
+      if (removeEnd && item.content) {
+        const lastCharIdx = item.content.length - 1
+        if (isCloseBracket(item.content.charAt(lastCharIdx))) {
+          item.content = item.content.slice(0, -1)
+        }
       }
     }
+  }
+
+  const translates = line.annotation.translates
+  stripBrackets(translates)
+  if (translates) {
+    line.annotation.translates = translates
+  }
+
+  const romans = line.annotation.romans
+  stripBrackets(romans)
+  if (romans) {
+    line.annotation.romans = romans
   }
 }

@@ -74,7 +74,7 @@ export class ParserContext implements BaseContext {
         this.syncLineTimeWithWord(line.background)
       }
 
-      const words = line.content.words
+      const words = line.words
 
       let first: Lyric.WordNormal | null = null
       let last: Lyric.WordNormal | null = null
@@ -140,7 +140,7 @@ export class ParserContext implements BaseContext {
         this.cleanWord(line.background)
       }
 
-      const words = line.content.words
+      const words = line.words
       if (!words.length) {
         continue
       }
@@ -182,14 +182,14 @@ export class ParserContext implements BaseContext {
       const current = line.agent.id
 
       const gi = globalIndex.get(current) ?? 0
-      line.agent.index.global = gi
+      line.agent.globalIndex = gi
       globalIndex.set(current, gi + 1)
 
       if (current !== id) {
         blockIndex = 0
         id = current
       }
-      line.agent.index.block = blockIndex++
+      line.agent.blockIndex = blockIndex++
 
       idIndex.set(current, (idIndex.get(current) ?? 0) + 1)
     }
