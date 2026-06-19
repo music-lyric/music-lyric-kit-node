@@ -1,7 +1,16 @@
+import type { DeepPartial } from '@music-lyric-kit/utils'
+import type { CalculateConfig } from './config'
+
+import { DEFAULT_CONFIG } from './config'
+import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Lyric } from '@music-lyric-kit/lyric'
 
+import { isCjkLanguage, countCjkChars, countLatinWords } from '../utils'
+
 export class CalculatePercent extends ParserPlugin {
+  override config = new ConfigManager<CalculateConfig, DeepPartial<CalculateConfig>>(DEFAULT_CONFIG)
+
   override get id() {
     return 'TRANSFORM-LANGUAGE-CALCULATE-PERCENT'
   }
@@ -20,28 +29,38 @@ export class CalculatePercent extends ParserPlugin {
       return
     }
 
+    const includeBackground = this.config.current.background
+
     const counts = new Map<Lyric.LanguageTag, number>()
     let total = 0
 
-    // weight by character count so the share is stable across tokenization granularity
+    // CJK weighs per character while Latin and Cyrillic weigh per word, so letter-rich scripts do not inflate their share
     const handleLine = (line: Lyric.LineNormalBase) => {
       for (const word of line.words) {
         if (word.type !== Lyric.WordType.Normal || !word.language) {
           continue
         }
-        const length = word.content.length
-        counts.set(word.language, (counts.get(word.language) ?? 0) + length)
-        total += length
+
+        const unit = isCjkLanguage(word.language) ? countCjkChars(word.content) : countLatinWords(word.content)
+        if (unit <= 0) {
+          continue
+        }
+
+        counts.set(word.language, (counts.get(word.language) ?? 0) + unit)
+        total += unit
       }
     }
 
+    // background vocals are ad-libs by default, so they stay out of the language share unless opted in
     for (const line of lines) {
       if (line.type !== Lyric.LineType.Normal) {
         continue
       }
       handleLine(line)
-      for (const background of line.background || []) {
-        handleLine(background)
+      if (includeBackground) {
+        for (const background of line.background || []) {
+          handleLine(background)
+        }
       }
     }
 
@@ -61,3 +80,5 @@ export class CalculatePercent extends ParserPlugin {
     ctx.result.language.list = list
   }
 }
+
+export type { CalculateConfig }
