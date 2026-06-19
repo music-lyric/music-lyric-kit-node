@@ -98,8 +98,8 @@ class Language {
     return this.client.run(this._infer, options)
   }
 
-  calculatePercent() {
-    return this.client.run(this._calculatePercent)
+  calculatePercent(options?: Transform.Language.CalculateConfig) {
+    return this.client.run(this._calculatePercent, options)
   }
 }
 
