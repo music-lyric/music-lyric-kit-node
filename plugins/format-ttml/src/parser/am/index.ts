@@ -2,11 +2,10 @@ import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Xml } from '@music-lyric-kit/utils'
 import { Lyric } from '@music-lyric-kit/lyric'
 
-import { checkIsSyllable, findElementsByLocalName, getAttributeByName } from '@root/utils'
-import { processLine, processAgents } from '@root/common'
+import { checkIsSyllable, findElementsByLocalName } from '@root/utils'
+import { processAgents } from '@root/common'
 import { processMetas } from './meta'
-import { attachTranslate } from './translate'
-import { attachRoman } from './roman'
+import { processLines } from './line'
 
 const CHECK_REGEXP = /iTunesMetadata|itunes:timing=/iu
 
@@ -47,26 +46,7 @@ export class AmParser extends ParserPlugin {
     const body = findElementsByLocalName(root, 'body', true)[0]
     const metadata = findElementsByLocalName(root, 'metadata', true)[0]
 
-    // collect lines and index them by itunes:key so head translations can be attached
-    const lines: Lyric.LineNormal[] = []
-    const keyMap = new Map<string, Lyric.LineNormal>()
-    if (body) {
-      const elements = findElementsByLocalName(body, 'p')
-      for (const element of elements) {
-        const line = processLine(element)
-        if (!line) {
-          continue
-        }
-        lines.push(line)
-        const key = getAttributeByName(element, 'key', true)
-        if (key) {
-          keyMap.set(key, line)
-        }
-      }
-    }
-
-    attachTranslate(root, keyMap)
-    attachRoman(root, keyMap)
+    const lines = processLines(body, root)
 
     const isSyllable = checkIsSyllable(lines[0])
     ctx.result.type = Lyric.InfoType.Normal
