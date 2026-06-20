@@ -18,9 +18,14 @@ const processMeta = (element: Xml.XmlElement): Lyric.MetaItem | undefined => {
       return Lyric.createMetaItem(Lyric.MetaType.Singer, key, value.trim())
     case 'album':
       return Lyric.createMetaItem(Lyric.MetaType.Album, key, value.trim())
+    case 'isrc':
+      return Lyric.createMetaItem(Lyric.MetaType.Isrc, key, value.trim())
+    case 'ttmlAuthorGithubLogin':
+      return Lyric.createMetaItem(Lyric.MetaType.Author, key, value.trim())
+    default:
+      // keep every other amll:meta (platform ids, github id, ...) under its original key for round-trip
+      return Lyric.createMetaItem(Lyric.MetaType.Unknown, key, value.trim())
   }
-
-  return undefined
 }
 
 export const processMetas = (metadata?: Xml.XmlElement) => {
