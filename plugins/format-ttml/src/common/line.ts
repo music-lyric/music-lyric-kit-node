@@ -116,6 +116,43 @@ const resolveWordSpan = (element: Xml.XmlElement, prev: Lyric.Word | undefined):
   return result
 }
 
+/**
+ * Builds the ordered word list from a span-bearing element.
+ * Text nodes turn into spaces and plain timed spans into words.
+ * Spans carrying a ttm:role are handed to onRole and skipped here.
+ */
+export const processSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.XmlElement, role: string) => void): Lyric.Word[] => {
+  const words: Lyric.Word[] = []
+  const children = element.children
+  for (let i = 0; i < children.length; i++) {
+    const item = children[i]
+
+    if (item.type === Xml.XmlNodeType.Text) {
+      const space = resolveWordSpace(item.content, i === 0)
+      if (space) {
+        words.push(space)
+      }
+      continue
+    }
+
+    if (item.type !== Xml.XmlNodeType.Element || item.local !== 'span') {
+      continue
+    }
+
+    const role = getAttributeByName(item, 'role', true)
+    if (role) {
+      onRole?.(item, role)
+      continue
+    }
+
+    const parsed = resolveWordSpan(item, words[words.length - 1])
+    if (parsed) {
+      words.push(...parsed)
+    }
+  }
+  return words
+}
+
 export const processLine = (element: Xml.XmlElement, background: boolean = false, onRole?: LineRoleHandler): Lyric.LineNormal | null => {
   const time = resolveLineTime(element, background)
   if (!time) {
@@ -140,48 +177,21 @@ export const processLine = (element: Xml.XmlElement, background: boolean = false
     return line
   }
 
-  const words: Lyric.Word[] = []
-  const children = element.children
-  for (let i = 0; i < children.length; i++) {
-    const item = children[i]
-
-    if (item.type === Xml.XmlNodeType.Text) {
-      const space = resolveWordSpace(item.content, i === 0)
-      if (space) {
-        words.push(space)
-      }
-      continue
-    }
-
-    if (item.type !== Xml.XmlNodeType.Element || item.local !== 'span') {
-      continue
-    }
-
-    const role = getAttributeByName(item, 'role', true)
+  line.words = processSpanWords(element, (span, role) => {
     // background is common field.
     if (role === 'x-bg') {
       if (!background) {
-        const bg = processLine(item, true, onRole)
+        const bg = processLine(span, true, onRole)
         if (bg) {
           line.background ??= []
           line.background.push(bg)
         }
       }
-      continue
+      return
     }
     // other roles.
-    if (role) {
-      onRole?.({ element: item, role, line, background })
-      continue
-    }
-
-    const parsed = resolveWordSpan(item, words[words.length - 1])
-    if (parsed) {
-      words.push(...parsed)
-    }
-  }
-
-  line.words = words
+    onRole?.({ element: span, role, line, background })
+  })
   return line
 }
 
