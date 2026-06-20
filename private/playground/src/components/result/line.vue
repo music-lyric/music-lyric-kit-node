@@ -5,13 +5,17 @@
     <div :class="$style.content">
       <div :class="$style.words">
         <template v-for="(word, i) in words" :key="i">
-          <span
-            v-if="word.type === 'word'"
-            :class="[$style.word, { [$style.hasTime]: word.hasTime, [$style.stress]: word.stress }]"
-            :title="word.title"
-            >{{ word.text }}</span
-          >
-          <span v-else>{{ word.text }}</span>
+          <span v-if="word.type === 'word'" :class="$style.wordCol">
+            <span v-if="word.ruby" :class="$style.ruby" :title="word.ruby.title">{{ word.ruby.text }}</span>
+            <span v-for="(r, ri) in word.romans" :key="`r${ri}`" :class="$style.wordRoman" :title="r.title">{{ r.text }}</span>
+            <span v-for="(u, ui) in word.unknowns" :key="`u${ui}`" :class="$style.wordUnknown" :title="u.title">{{ u.text }}</span>
+            <span
+              :class="[$style.word, { [$style.hasTime]: word.hasTime, [$style.stress]: word.stress }]"
+              :title="word.title"
+              >{{ word.text }}</span
+            >
+          </span>
+          <span v-else :class="$style.space">{{ word.text }}</span>
         </template>
       </div>
       <div v-if="extended.length" :class="$style.extended">
@@ -52,6 +56,12 @@ const agentInfo = computed(() => {
   return { name: props.agents[index].name, color: getAgentColor(index) }
 })
 
+const annoItem = (item: Lyric.WordAnnotationItem) => {
+  const timed = !!item.time && (item.time.start > 0 || item.time.end > 0)
+  const time = timed ? `${formatTime(item.time!.start)} ~ ${formatTime(item.time!.end)}` : ''
+  return { text: item.content, title: [item.language, time].filter(Boolean).join(' · ') }
+}
+
 const words = computed(() =>
   props.line.words.map((word) => {
     if (word.type === Lyric.WordType.Space) {
@@ -59,15 +69,48 @@ const words = computed(() =>
     }
     const w = word as Lyric.WordNormal
     const hasTime = !!w.time && (w.time.start > 0 || w.time.end > 0)
+    const anno = w.annotation
     return {
       type: 'word' as const,
       text: w.content,
       hasTime,
       stress: w.stress,
       title: hasTime ? `${formatTime(w.time?.start ?? 0)} ~ ${formatTime(w.time?.end ?? 0)}` : '',
+      ruby: anno?.ruby ? annoItem(anno.ruby) : null,
+      romans: (anno?.romans ?? []).map(annoItem),
+      unknowns: (anno?.unknowns ?? []).map((u) => {
+        const base = annoItem(u)
+        return { text: base.text, title: [u.key, base.title].filter(Boolean).join(' · ') }
+      }),
     }
   }),
 )
+
+// word-level annotations are rendered per syllable, so skip the line-level (aggregated) duplicate of the same kind.
+const wordAnno = computed(() => {
+  let roman = false
+  let ruby = false
+  let unknown = false
+  for (const word of props.line.words) {
+    if (word.type !== Lyric.WordType.Normal) {
+      continue
+    }
+    const anno = (word as Lyric.WordNormal).annotation
+    if (!anno) {
+      continue
+    }
+    if (anno.romans?.length) {
+      roman = true
+    }
+    if (anno.ruby) {
+      ruby = true
+    }
+    if (anno.unknowns?.length) {
+      unknown = true
+    }
+  }
+  return { roman, ruby, unknown }
+})
 
 const extended = computed(() => {
   const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
@@ -76,16 +119,21 @@ const extended = computed(() => {
   for (const item of annotation.translates || []) {
     result.push({ kind: 'translate', text: item.content })
   }
-  for (const item of annotation.romans || []) {
-    result.push({ kind: 'roman', text: item.content })
+  if (!wordAnno.value.roman) {
+    for (const item of annotation.romans || []) {
+      result.push({ kind: 'roman', text: item.content })
+    }
   }
-
-  const ruby = annotation.ruby
-  if (ruby) {
-    result.push({ kind: 'other', text: `[ruby] ${ruby.content}` })
+  if (!wordAnno.value.ruby) {
+    const ruby = annotation.ruby
+    if (ruby) {
+      result.push({ kind: 'other', text: `[ruby] ${ruby.content}` })
+    }
   }
-  for (const item of annotation.unknowns || []) {
-    result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
+  if (!wordAnno.value.unknown) {
+    for (const item of annotation.unknowns || []) {
+      result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
+    }
   }
 
   return result
@@ -130,9 +178,24 @@ const extended = computed(() => {
 }
 
 .words {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  column-gap: 4px;
+  row-gap: 8px;
   font-size: 15px;
-  line-height: 1.6;
-  white-space: pre-wrap;
+  line-height: 1.5;
+}
+
+.wordCol {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+.space {
+  white-space: pre;
 }
 
 .word {
@@ -148,6 +211,27 @@ const extended = computed(() => {
   &.stress {
     font-weight: 700;
   }
+}
+
+.ruby,
+.wordRoman,
+.wordUnknown {
+  font-size: 11px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ruby {
+  color: var(--color-primary);
+}
+
+.wordRoman {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.wordUnknown {
+  color: var(--color-text-secondary);
 }
 
 .extended {
