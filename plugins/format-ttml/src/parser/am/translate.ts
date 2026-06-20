@@ -31,7 +31,7 @@ const readReplacementWords = (text: Xml.XmlElement): Lyric.Word[] => {
   return plain ? processTextToWords(plain) : []
 }
 
-export const attachTranslations = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNormal>) => {
+export const attachTranslate = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNormal>) => {
   const translations = findElementsByLocalName(root, 'translation')
 
   for (const translation of translations) {

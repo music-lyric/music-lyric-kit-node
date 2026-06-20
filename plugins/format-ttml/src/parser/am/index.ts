@@ -5,7 +5,8 @@ import { Lyric } from '@music-lyric-kit/lyric'
 import { checkIsSyllable, findElementsByLocalName, getAttributeByName } from '@root/utils'
 import { processLine, processAgents } from '@root/common'
 import { processMetas } from './meta'
-import { attachTranslations } from './translation'
+import { attachTranslate } from './translate'
+import { attachRoman } from './roman'
 
 const CHECK_REGEXP = /iTunesMetadata|itunes:timing=/iu
 
@@ -64,7 +65,8 @@ export class AmParser extends ParserPlugin {
       }
     }
 
-    attachTranslations(root, keyMap)
+    attachTranslate(root, keyMap)
+    attachRoman(root, keyMap)
 
     const isSyllable = checkIsSyllable(lines[0])
     ctx.result.type = Lyric.InfoType.Normal
