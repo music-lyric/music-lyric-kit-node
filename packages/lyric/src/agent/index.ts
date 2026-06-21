@@ -1,3 +1,22 @@
+export enum AgentType {
+  /**
+   * A single person.
+   */
+  Person = 'Person',
+  /**
+   * A group of voices, such as a duet, harmony or chorus.
+   */
+  Group = 'Group',
+  /**
+   * Another kind of agent that is neither a person nor a group.
+   */
+  Other = 'Other',
+  /**
+   * An unrecognized agent type.
+   */
+  Unknown = 'Unknown',
+}
+
 export class Agent {
   /**
    * Unique identifier of the agent.
@@ -8,6 +27,11 @@ export class Agent {
    * Display name of the agent.
    */
   name: string = ''
+
+  /**
+   * Performing type of the agent.
+   */
+  type: AgentType = AgentType.Unknown
 
   /**
    * Number of lines performed by this agent.
