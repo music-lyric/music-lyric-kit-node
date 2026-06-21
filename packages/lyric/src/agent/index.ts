@@ -24,11 +24,6 @@ export class Agent {
   id: string = ''
 
   /**
-   * Display name of the agent.
-   */
-  name: string = ''
-
-  /**
    * Performing type of the agent.
    */
   type: AgentType = AgentType.Unknown
@@ -37,6 +32,11 @@ export class Agent {
    * Number of lines performed by this agent.
    */
   count: number = 0
+
+  /**
+   * Display names of the agent; a group may carry more than one.
+   */
+  names: string[] = []
 }
 
 export class LineAgent {
