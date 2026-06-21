@@ -109,12 +109,12 @@ export class Extract extends ParserPlugin {
         if (!agentMap.has(id)) {
           const agent = new Lyric.Agent()
           agent.id = id
-          agent.name = name
+          agent.names = [name]
           agentMap.set(id, agent)
         } else {
           const exist = agentMap.get(id)!
-          if (!exist.name) {
-            exist.name = name
+          if (!exist.names.includes(name)) {
+            exist.names.push(name)
           }
         }
 
