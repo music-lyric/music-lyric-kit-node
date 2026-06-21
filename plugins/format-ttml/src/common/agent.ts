@@ -1,7 +1,7 @@
 import { Lyric } from '@music-lyric-kit/lyric'
 
 import { Xml } from '@music-lyric-kit/utils'
-import { findElementsByLocalName, getAttributeByName } from '@root/utils'
+import { findElementsByLocalName, getChildElementByLocal, getAttributeByName, getTextContent } from '@root/utils'
 
 const resolveAgentType = (type: string): Lyric.AgentType => {
   switch (type) {
@@ -16,6 +16,17 @@ const resolveAgentType = (type: string): Lyric.AgentType => {
   }
 }
 
+const processAgentNames = (element: Xml.XmlElement): string[] => {
+  const names: string[] = []
+  for (const child of getChildElementByLocal(element, 'name')) {
+    const name = getTextContent(child).trim()
+    if (name) {
+      names.push(name)
+    }
+  }
+  return names
+}
+
 const processAgent = (element: Xml.XmlElement) => {
   const type = getAttributeByName(element, 'type', true)
   const id = getAttributeByName(element, 'id', true)
@@ -27,6 +38,7 @@ const processAgent = (element: Xml.XmlElement) => {
   const agent = new Lyric.Agent()
   agent.id = id
   agent.type = resolveAgentType(type)
+  agent.names = processAgentNames(element)
 
   return agent
 }
