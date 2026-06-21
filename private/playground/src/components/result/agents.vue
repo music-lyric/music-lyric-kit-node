@@ -4,7 +4,7 @@
     <div :class="$style.list">
       <span v-for="(agent, i) in agents" :key="agent.id" :class="$style.tag">
         <span :class="$style.dot" :style="{ background: getAgentColor(i) }"></span>
-        {{ agent.name }}
+        {{ agent.names.join(' / ') }}
         <span :class="$style.count">{{ agent.count }} {{ t('result.lines') }}</span>
       </span>
     </div>

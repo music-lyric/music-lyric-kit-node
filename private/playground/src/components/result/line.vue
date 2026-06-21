@@ -53,7 +53,7 @@ const agentInfo = computed(() => {
   if (!props.line.agent) return null
   const index = props.agents.findIndex((item) => item.id === props.line.agent!.id)
   if (index < 0) return null
-  return { name: props.agents[index].name, color: getAgentColor(index) }
+  return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
 
 const annoItem = (item: Lyric.WordAnnotationItem) => {
