@@ -1,5 +1,7 @@
 import { Xml } from '@music-lyric-kit/utils'
 
+import { parseTime } from '@music-lyric-kit/utils'
+
 export type ElementGroups = Map<string, Xml.XmlElement[]>
 
 export const collectElementsByLocalName = (root: Xml.XmlElement, names: string[]): ElementGroups => {
@@ -97,4 +99,18 @@ export const getTextContent = (node: Xml.XmlNode) => {
     result += getTextContent(child)
   }
   return result
+}
+
+export const parseSpanTime = (element: Xml.XmlElement): { start: number; end: number } | null => {
+  const rawBegin = getAttributeByName(element, 'begin', true)
+  const rawEnd = getAttributeByName(element, 'end', true)
+  if (!rawBegin || !rawEnd) {
+    return null
+  }
+  const start = parseTime(rawBegin)
+  const end = parseTime(rawEnd)
+  if (start === null || end === null) {
+    return null
+  }
+  return { start, end }
 }

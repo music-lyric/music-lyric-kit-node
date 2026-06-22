@@ -4,6 +4,7 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { parseDocument } from '@root/parser/itunes/core'
 import { getAttributeByName } from '@root/utils'
+import { interceptRubySpan } from './ruby'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
 
@@ -81,7 +82,7 @@ export class AmllParser extends ParserPlugin {
       return
     }
 
-    const { lines, metas, agents, timing, groups } = parseDocument(root)
+    const { lines, metas, agents, timing, groups } = parseDocument(root, { onSpan: interceptRubySpan })
 
     // amll is itunes plus its own amll:meta layered on top.
     ctx.result.type = Lyric.InfoType.Normal

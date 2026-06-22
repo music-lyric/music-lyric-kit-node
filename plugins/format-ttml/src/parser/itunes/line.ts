@@ -2,8 +2,17 @@ import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
 
 import { parseTime } from '@music-lyric-kit/utils'
-import { findElementsByLocalName, hasChildElementByLocalName, getAttributeByName, getTextContent, parseTextToWords } from '@root/utils'
+import { findElementsByLocalName, hasChildElementByLocalName, getAttributeByName, getTextContent, parseTextToWords, parseSpanTime } from '@root/utils'
 import { appendLineTranslate, appendLineRoman } from './annotation'
+
+export interface ParseSpanOptions {
+  /**
+   * Intercept a span before the default word handling.
+   *
+   * Returns true when the hook has consumed the span.
+   */
+  onSpan?: (span: Xml.XmlElement, words: Lyric.Word[]) => boolean
+}
 
 export interface ProcessLinesResult {
   /**
@@ -72,15 +81,8 @@ const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
     return
   }
 
-  const rawBegin = getAttributeByName(element, 'begin', true)
-  const rawEnd = getAttributeByName(element, 'end', true)
-  if (!rawBegin || !rawEnd) {
-    return
-  }
-
-  const begin = parseTime(rawBegin)
-  const end = parseTime(rawEnd)
-  if (begin === null || end === null) {
+  const time = parseSpanTime(element)
+  if (!time) {
     return
   }
 
@@ -94,8 +96,8 @@ const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
   const normal = new Lyric.WordNormal()
   normal.content = trimed
   normal.time = new Lyric.Time()
-  normal.time.start = begin
-  normal.time.end = end
+  normal.time.start = time.start
+  normal.time.end = time.end
   words.push(normal)
 
   if (text.endsWith(' ')) {
@@ -111,8 +113,14 @@ const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
  * Text nodes turn into spaces and plain timed spans into words.
  *
  * Spans carrying a ttm:role are handed to onRole and skipped here.
+ *
+ * A span consumed by options.onSpan is skipped here too.
  */
-export const parseSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.XmlElement, role: string) => void): Lyric.Word[] => {
+export const parseSpanWords = (
+  element: Xml.XmlElement,
+  onRole?: (span: Xml.XmlElement, role: string) => void,
+  options?: ParseSpanOptions,
+): Lyric.Word[] => {
   const words: Lyric.Word[] = []
   const children = element.children
   for (let i = 0; i < children.length; i++) {
@@ -136,17 +144,21 @@ export const parseSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.XmlE
       continue
     }
 
+    if (options?.onSpan?.(item, words)) {
+      continue
+    }
+
     appendWordSpan(words, item)
   }
   return words
 }
 
-const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: string, background: boolean) => {
+const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: string, background: boolean, options?: ParseSpanOptions) => {
   if (role === 'x-bg') {
     if (background) {
       return
     }
-    const bg = parseLine(span, true)
+    const bg = parseLine(span, true, options)
     if (bg) {
       line.background ??= []
       line.background.push(bg)
@@ -169,7 +181,7 @@ const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: strin
   }
 }
 
-export const parseLine = (element: Xml.XmlElement, background: boolean = false): Lyric.LineNormal | null => {
+export const parseLine = (element: Xml.XmlElement, background: boolean = false, options?: ParseSpanOptions): Lyric.LineNormal | null => {
   const time = resolveLineTime(element, background)
   if (!time) {
     return null
@@ -193,11 +205,11 @@ export const parseLine = (element: Xml.XmlElement, background: boolean = false):
     return line
   }
 
-  line.words = parseSpanWords(element, (span, role) => applyLineRole(line, span, role, background))
+  line.words = parseSpanWords(element, (span, role) => applyLineRole(line, span, role, background, options), options)
   return line
 }
 
-export const parseLines = (body?: Xml.XmlElement): ProcessLinesResult => {
+export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): ProcessLinesResult => {
   const lines: Lyric.LineNormal[] = []
   const lineMap = new Map<string, Lyric.LineNormal>()
 
@@ -207,7 +219,7 @@ export const parseLines = (body?: Xml.XmlElement): ProcessLinesResult => {
 
   const elements = findElementsByLocalName(body, 'p')
   for (const element of elements) {
-    const line = parseLine(element, false)
+    const line = parseLine(element, false, options)
     if (!line) {
       continue
     }

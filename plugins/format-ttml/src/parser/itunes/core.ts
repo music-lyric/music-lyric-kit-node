@@ -1,4 +1,5 @@
 import type { ElementGroups } from '@root/utils'
+import type { ParseSpanOptions } from './line'
 
 import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
@@ -39,11 +40,11 @@ export interface TtmlDocument {
  *
  * A dialect layers its own content on top of the returned base.
  */
-export const parseDocument = (root: Xml.XmlElement): TtmlDocument => {
+export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions): TtmlDocument => {
   const body = findElementsByLocalName(root, 'body', true)[0]
   const metadata = findElementsByLocalName(root, 'metadata', true)[0]
 
-  const { lines, lineMap } = parseLines(body)
+  const { lines, lineMap } = parseLines(body, options)
 
   const groups = metadata ? collectElementsByLocalName(metadata, HEAD_BLOCKS) : (new Map() as ElementGroups)
   attachHeadAnnotations(groups, lineMap)
