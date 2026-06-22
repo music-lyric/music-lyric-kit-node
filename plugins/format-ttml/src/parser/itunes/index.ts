@@ -1,21 +1,18 @@
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-import { Xml } from '@music-lyric-kit/utils'
 import { Lyric } from '@music-lyric-kit/lyric'
+import { Xml } from '@music-lyric-kit/utils'
 
-import { checkIsSyllable, findElementsByLocalName } from '@root/utils'
-import { processAgents } from '@root/common'
-import { processMetas } from './meta'
-import { processLines } from './line'
+import { parseDocument } from './core'
 
-const CHECK_REGEXP = /iTunesMetadata|itunes:timing=/iu
+const CHECK_REGEXP = /xmlns:itunes|iTunesMetadata|itunes:timing=/iu
 
 const AMLL_HINT_REGEXP = /xmlns:amll|amll:meta/iu
 
-export class AmParser extends ParserPlugin {
+export class ItunesParser extends ParserPlugin {
   private parser = new Xml.Parser()
 
   override get id() {
-    return 'TTML-AM-PARSER'
+    return 'TTML-ITUNES-PARSER'
   }
 
   override get stage() {
@@ -23,7 +20,7 @@ export class AmParser extends ParserPlugin {
   }
 
   override get format() {
-    return 'ttml-am'
+    return 'ttml-itunes'
   }
 
   override check(ctx: ParserContext) {
@@ -42,18 +39,17 @@ export class AmParser extends ParserPlugin {
     }
 
     const root = this.parser.parse(input)
+    // invalid xml parses to null; leave the result untouched.
+    if (!root) {
+      return
+    }
 
-    const body = findElementsByLocalName(root, 'body', true)[0]
-    const metadata = findElementsByLocalName(root, 'metadata', true)[0]
+    const { lines, metas, agents, timing } = parseDocument(root)
 
-    const lines = processLines(body, root)
-
-    const isSyllable = checkIsSyllable(lines[0])
     ctx.result.type = Lyric.InfoType.Normal
-    ctx.result.timing = isSyllable ? Lyric.InfoTiming.Syllable : Lyric.InfoTiming.Line
+    ctx.result.timing = timing
     ctx.result.lines = lines
-
-    ctx.result.meta.list = processMetas(metadata)
-    ctx.result.agents = processAgents(metadata)
+    ctx.result.meta.list = metas
+    ctx.result.agents = agents
   }
 }

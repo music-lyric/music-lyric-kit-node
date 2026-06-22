@@ -1,15 +1,49 @@
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
-
-import { Xml } from '@music-lyric-kit/utils'
 import { Lyric } from '@music-lyric-kit/lyric'
+import { Xml } from '@music-lyric-kit/utils'
 
-import { checkIsSyllable, findElementsByLocalName } from '@root/utils'
-
-import { processAgents } from '@root/common'
-import { processLines } from './line'
-import { processMetas } from './meta'
+import { parseDocument } from '@root/parser/itunes/core'
+import { getAttributeByName } from '@root/utils'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
+
+const parseMetaItem = (element: Xml.XmlElement): Lyric.MetaItem | undefined => {
+  const key = getAttributeByName(element, 'key', true)
+  const value = getAttributeByName(element, 'value', true)
+
+  if (!key || !value) {
+    return undefined
+  }
+
+  switch (key) {
+    case 'musicName':
+      return Lyric.createMetaItem(Lyric.MetaType.Title, key, value.trim())
+    case 'artists':
+      return Lyric.createMetaItem(Lyric.MetaType.Singer, key, value.trim())
+    case 'album':
+      return Lyric.createMetaItem(Lyric.MetaType.Album, key, value.trim())
+    case 'isrc':
+      return Lyric.createMetaItem(Lyric.MetaType.Isrc, key, value.trim())
+    case 'ttmlAuthorGithubLogin':
+      return Lyric.createMetaItem(Lyric.MetaType.Author, key, value.trim())
+    default:
+      // keep every other amll:meta (platform ids, github id, ...) under its original key for round-trip
+      return Lyric.createMetaItem(Lyric.MetaType.Unknown, key, value.trim())
+  }
+}
+
+const parseMetas = (metas: Xml.XmlElement[]) => {
+  const result: Lyric.MetaItem[] = []
+
+  for (const element of metas) {
+    const item = parseMetaItem(element)
+    if (item) {
+      result.push(item)
+    }
+  }
+
+  return result
+}
 
 export class AmllParser extends ParserPlugin {
   private parser = new Xml.Parser()
@@ -42,20 +76,18 @@ export class AmllParser extends ParserPlugin {
     }
 
     const root = this.parser.parse(input)
+    // invalid xml parses to null; leave the result untouched.
+    if (!root) {
+      return
+    }
 
-    const body = findElementsByLocalName(root, 'body', true)[0]
-    const metadata = findElementsByLocalName(root, 'metadata', true)[0]
+    const { lines, metas, agents, timing, groups } = parseDocument(root)
 
-    const lines = processLines(body)
-    const isSyllable = checkIsSyllable(lines[0])
+    // amll is itunes plus its own amll:meta layered on top.
     ctx.result.type = Lyric.InfoType.Normal
-    ctx.result.timing = isSyllable ? Lyric.InfoTiming.Syllable : Lyric.InfoTiming.Line
+    ctx.result.timing = timing
     ctx.result.lines = lines
-
-    const metas = processMetas(metadata)
-    ctx.result.meta.list = metas
-
-    const agents = processAgents(metadata)
+    ctx.result.meta.list = [...metas, ...parseMetas(groups.get('meta') ?? [])]
     ctx.result.agents = agents
   }
 }

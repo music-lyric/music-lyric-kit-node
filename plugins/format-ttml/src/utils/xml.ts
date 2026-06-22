@@ -1,5 +1,35 @@
 import { Xml } from '@music-lyric-kit/utils'
 
+export type ElementGroups = Map<string, Xml.XmlElement[]>
+
+export const collectElementsByLocalName = (root: Xml.XmlElement, names: string[]): ElementGroups => {
+  const wanted = new Set(names)
+  const result: ElementGroups = new Map()
+  const stack: Xml.XmlNode[] = [root]
+
+  while (stack.length > 0) {
+    const node = stack.pop()!
+    if (node.type !== Xml.XmlNodeType.Element) {
+      continue
+    }
+
+    if (wanted.has(node.local)) {
+      const list = result.get(node.local)
+      if (list) {
+        list.push(node)
+      } else {
+        result.set(node.local, [node])
+      }
+    }
+
+    for (let i = node.children.length - 1; i >= 0; i--) {
+      stack.push(node.children[i])
+    }
+  }
+
+  return result
+}
+
 export const findElementsByLocalName = (root: Xml.XmlElement, local: string, first: boolean = false) => {
   const stack: Xml.XmlNode[] = [root]
   const result: Xml.XmlElement[] = []
@@ -23,7 +53,7 @@ export const findElementsByLocalName = (root: Xml.XmlElement, local: string, fir
   return result
 }
 
-export const getChildElementByLocal = (element: Xml.XmlElement, name: string) => {
+export const getChildElementsByLocalName = (element: Xml.XmlElement, name: string) => {
   const result: Xml.XmlElement[] = []
   for (const child of element.children) {
     if (child.type === Xml.XmlNodeType.Element && child.local === name) {
@@ -33,7 +63,7 @@ export const getChildElementByLocal = (element: Xml.XmlElement, name: string) =>
   return result
 }
 
-export const hasChildElementByLocal = (element: Xml.XmlElement, name: string) => {
+export const hasChildElementByLocalName = (element: Xml.XmlElement, name: string) => {
   for (const child of element.children) {
     if (child.type === Xml.XmlNodeType.Element && child.local === name) {
       return true

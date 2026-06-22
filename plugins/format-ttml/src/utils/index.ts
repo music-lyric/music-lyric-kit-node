@@ -3,7 +3,7 @@ import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 
 export * from './xml'
 
-export const processTextToWords = (text: string): Lyric.Word[] => {
+export const parseTextToWords = (text: string): Lyric.Word[] => {
   const normalized = removeTextSpaceToOne(text).trim()
   const words = normalized.split(/(\s+)/g)
 
@@ -31,11 +31,17 @@ export const processTextToWords = (text: string): Lyric.Word[] => {
   return result
 }
 
-export const checkIsSyllable = (line: Lyric.LineNormal) => {
+/**
+ * Detect per-word timing by finding any timed word in the line.
+ */
+export const hasWordTiming = (line?: Lyric.LineNormal) => {
   if (!line) {
     return false
   }
-  const words = line.words.filter((item) => item.type === Lyric.WordType.Normal)
-  const time = words.reduce((sum, word) => sum + (word.time?.start ?? 0), 0)
-  return time > 0
+  for (const word of line.words) {
+    if (word.type === Lyric.WordType.Normal && (word.time?.start ?? 0) > 0) {
+      return true
+    }
+  }
+  return false
 }

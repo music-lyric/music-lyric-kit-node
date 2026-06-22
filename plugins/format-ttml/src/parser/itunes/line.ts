@@ -1,28 +1,20 @@
 import { Lyric } from '@music-lyric-kit/lyric'
+import { Xml } from '@music-lyric-kit/utils'
 
-import { Xml, parseTime } from '@music-lyric-kit/utils'
-import { findElementsByLocalName, hasChildElementByLocal, getAttributeByName, getTextContent, processTextToWords } from '@root/utils'
+import { parseTime } from '@music-lyric-kit/utils'
+import { findElementsByLocalName, hasChildElementByLocalName, getAttributeByName, getTextContent, parseTextToWords } from '@root/utils'
+import { appendLineTranslate, appendLineRoman } from './annotation'
 
-export interface LineRoleContext {
+export interface ProcessLinesResult {
   /**
-   * The span element that carries the role.
+   * Parsed normal lines in document order.
    */
-  element: Xml.XmlElement
+  lines: Lyric.LineNormal[]
   /**
-   * Value of the ttm:role attribute.
+   * Lines indexed by their itunes:key, for attaching head annotations.
    */
-  role: string
-  /**
-   * Line the role span belongs to.
-   */
-  line: Lyric.LineNormal
-  /**
-   * Whether the current line is itself a background line.
-   */
-  background: boolean
+  lineMap: Map<string, Lyric.LineNormal>
 }
-
-export type LineRoleHandler = (context: LineRoleContext) => void
 
 const calcEndSpaceCount = (content: string) => {
   let count = 0
@@ -40,7 +32,7 @@ const calcStartSpaceCount = (content: string) => {
   return count
 }
 
-const processLineAgent = (element: Xml.XmlElement) => {
+const parseLineAgent = (element: Xml.XmlElement) => {
   const raw = getAttributeByName(element, 'agent', true)
   if (!raw) {
     return null
@@ -73,31 +65,30 @@ const resolveWordSpace = (content: string, isFirst: boolean) => {
   return space
 }
 
-const resolveWordSpan = (element: Xml.XmlElement, prev: Lyric.Word | undefined): Lyric.Word[] | null => {
+const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
   const text = getTextContent(element)
   const trimed = text.trim()
   if (!trimed) {
-    return null
+    return
   }
 
   const rawBegin = getAttributeByName(element, 'begin', true)
   const rawEnd = getAttributeByName(element, 'end', true)
   if (!rawBegin || !rawEnd) {
-    return null
+    return
   }
 
   const begin = parseTime(rawBegin)
   const end = parseTime(rawEnd)
   if (begin === null || end === null) {
-    return null
+    return
   }
 
-  const result: Lyric.Word[] = []
-
+  const prev = words[words.length - 1]
   if (text.startsWith(' ') && prev?.type !== Lyric.WordType.Space) {
     const space = new Lyric.WordSpace()
     space.count = calcStartSpaceCount(text)
-    result.push(space)
+    words.push(space)
   }
 
   const normal = new Lyric.WordNormal()
@@ -105,23 +96,23 @@ const resolveWordSpan = (element: Xml.XmlElement, prev: Lyric.Word | undefined):
   normal.time = new Lyric.Time()
   normal.time.start = begin
   normal.time.end = end
-  result.push(normal)
+  words.push(normal)
 
   if (text.endsWith(' ')) {
     const space = new Lyric.WordSpace()
     space.count = calcEndSpaceCount(text)
-    result.push(space)
+    words.push(space)
   }
-
-  return result
 }
 
 /**
  * Builds the ordered word list from a span-bearing element.
+ *
  * Text nodes turn into spaces and plain timed spans into words.
+ *
  * Spans carrying a ttm:role are handed to onRole and skipped here.
  */
-export const processSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.XmlElement, role: string) => void): Lyric.Word[] => {
+export const parseSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.XmlElement, role: string) => void): Lyric.Word[] => {
   const words: Lyric.Word[] = []
   const children = element.children
   for (let i = 0; i < children.length; i++) {
@@ -145,15 +136,40 @@ export const processSpanWords = (element: Xml.XmlElement, onRole?: (span: Xml.Xm
       continue
     }
 
-    const parsed = resolveWordSpan(item, words[words.length - 1])
-    if (parsed) {
-      words.push(...parsed)
-    }
+    appendWordSpan(words, item)
   }
   return words
 }
 
-export const processLine = (element: Xml.XmlElement, background: boolean = false, onRole?: LineRoleHandler): Lyric.LineNormal | null => {
+const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: string, background: boolean) => {
+  if (role === 'x-bg') {
+    if (background) {
+      return
+    }
+    const bg = parseLine(span, true)
+    if (bg) {
+      line.background ??= []
+      line.background.push(bg)
+    }
+    return
+  }
+
+  const text = getTextContent(span).trim()
+  if (!text) {
+    return
+  }
+
+  switch (role) {
+    case 'x-translation':
+      appendLineTranslate(line, text, getAttributeByName(span, 'lang', true))
+      break
+    case 'x-roman':
+      appendLineRoman(line, text, getAttributeByName(span, 'lang', true))
+      break
+  }
+}
+
+export const parseLine = (element: Xml.XmlElement, background: boolean = false): Lyric.LineNormal | null => {
   const time = resolveLineTime(element, background)
   if (!time) {
     return null
@@ -163,52 +179,44 @@ export const processLine = (element: Xml.XmlElement, background: boolean = false
   line.time.start = time.start
   line.time.end = time.end
 
-  const agent = processLineAgent(element)
+  const agent = parseLineAgent(element)
   if (agent) {
     line.agent = agent
   }
 
-  if (!hasChildElementByLocal(element, 'span')) {
+  if (!hasChildElementByLocalName(element, 'span')) {
     const text = getTextContent(element).trim()
     if (!text.length) {
       return null
     }
-    line.words = processTextToWords(text)
+    line.words = parseTextToWords(text)
     return line
   }
 
-  line.words = processSpanWords(element, (span, role) => {
-    // background is common field.
-    if (role === 'x-bg') {
-      if (!background) {
-        const bg = processLine(span, true, onRole)
-        if (bg) {
-          line.background ??= []
-          line.background.push(bg)
-        }
-      }
-      return
-    }
-    // other roles.
-    onRole?.({ element: span, role, line, background })
-  })
+  line.words = parseSpanWords(element, (span, role) => applyLineRole(line, span, role, background))
   return line
 }
 
-export const processLines = (body?: Xml.XmlElement, onRole?: LineRoleHandler) => {
+export const parseLines = (body?: Xml.XmlElement): ProcessLinesResult => {
+  const lines: Lyric.LineNormal[] = []
+  const lineMap = new Map<string, Lyric.LineNormal>()
+
   if (!body) {
-    return []
+    return { lines, lineMap }
   }
 
-  const result: Lyric.LineNormal[] = []
   const elements = findElementsByLocalName(body, 'p')
-
   for (const element of elements) {
-    const line = processLine(element, false, onRole)
-    if (line) {
-      result.push(line)
+    const line = parseLine(element, false)
+    if (!line) {
+      continue
+    }
+    lines.push(line)
+    const key = getAttributeByName(element, 'key', true)
+    if (key) {
+      lineMap.set(key, line)
     }
   }
 
-  return result
+  return { lines, lineMap }
 }

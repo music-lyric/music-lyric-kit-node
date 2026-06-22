@@ -1,66 +1,49 @@
 import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
 
+import type { ElementGroups } from '@root/utils'
 import {
   findElementsByLocalName,
-  hasChildElementByLocal,
-  getChildElementByLocal,
+  getChildElementsByLocalName,
+  hasChildElementByLocalName,
   getAttributeByName,
   getTextContent,
-  processTextToWords,
+  parseTextToWords,
 } from '@root/utils'
-import { processLine, processSpanWords } from '@root/common'
+import { parseSpanWords } from './line'
+import { appendLineTranslate, appendLineRoman, normalizeLanguage } from './annotation'
 
-type LineTextHandler = (text: Xml.XmlElement, line: Lyric.LineNormal, language?: string, type?: string) => void
+type AnnotationTextHandler = (text: Xml.XmlElement, line: Lyric.LineNormal, language?: string, type?: string) => void
 
-const eachAnnotationText = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNormal>, block: string, handle: LineTextHandler) => {
-  const blocks = findElementsByLocalName(root, block)
+const eachAnnotationText = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, handle: AnnotationTextHandler) => {
   for (const item of blocks) {
     const language = getAttributeByName(item, 'lang', true)
     const type = getAttributeByName(item, 'type')
-    const texts = findElementsByLocalName(item, 'text')
 
+    const texts = findElementsByLocalName(item, 'text')
     for (const text of texts) {
       const key = getAttributeByName(text, 'for')
       if (!key) {
         continue
       }
-
-      const line = keyMap.get(key)
-      if (!line) {
-        continue
+      const line = lineMap.get(key)
+      if (line) {
+        handle(text, line, language, type)
       }
-
-      handle(text, line, language, type)
     }
   }
 }
 
-const createLineAnnotationItem = (text: Xml.XmlElement, language?: string): Lyric.LineAnnotationItem | undefined => {
-  const content = getTextContent(text).trim()
-  if (!content) {
-    return undefined
-  }
-
-  const item = new Lyric.LineAnnotationItem()
-  item.content = content
-  if (language) {
-    item.language = language
-  }
-
-  return item
-}
-
 const readReplacementWords = (text: Xml.XmlElement): Lyric.Word[] => {
-  if (hasChildElementByLocal(text, 'span')) {
-    return processSpanWords(text)
+  if (hasChildElementByLocalName(text, 'span')) {
+    return parseSpanWords(text)
   }
   const plain = getTextContent(text).trim()
-  return plain ? processTextToWords(plain) : []
+  return plain ? parseTextToWords(plain) : []
 }
 
-const attachTranslate = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNormal>) => {
-  eachAnnotationText(root, keyMap, 'translation', (text, line, language, type) => {
+const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>) => {
+  eachAnnotationText(blocks, lineMap, (text, line, language, type) => {
     // replacement overrides the original wording (e.g. traditional to simplified).
     if (type === 'replacement') {
       const words = readReplacementWords(text)
@@ -69,16 +52,13 @@ const attachTranslate = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNor
       }
       return
     }
-
-    const item = createLineAnnotationItem(text, language)
-    if (item) {
-      line.annotation.translates = [...(line.annotation.translates || []), item]
-    }
+    // head subtitle wins over an inline x-translation of the same language.
+    appendLineTranslate(line, getTextContent(text), language, true)
   })
 }
 
 const hasTimedSpans = (text: Xml.XmlElement): boolean => {
-  const spans = getChildElementByLocal(text, 'span')
+  const spans = getChildElementsByLocalName(text, 'span')
   for (const span of spans) {
     if (getAttributeByName(span, 'begin', true) && getAttributeByName(span, 'end', true)) {
       return true
@@ -87,15 +67,23 @@ const hasTimedSpans = (text: Xml.XmlElement): boolean => {
   return false
 }
 
-const findBodyWordByTime = (words: Lyric.Word[], start: number, end: number): Lyric.WordNormal | undefined => {
+const findBodyWordByTime = (
+  words: Lyric.Word[],
+  startMap: Map<number, Lyric.WordNormal>,
+  start: number,
+  end: number,
+): Lyric.WordNormal | undefined => {
+  // roman spans align to body words by exact start time (1:1 in practice).
+  const exact = startMap.get(start)
+  if (exact) {
+    return exact
+  }
+  // otherwise fall back to the largest time overlap.
   let best: Lyric.WordNormal | undefined
   let bestOverlap = 0
   for (const word of words) {
     if (word.type !== Lyric.WordType.Normal || !word.time) {
       continue
-    }
-    if (word.time.start === start) {
-      return word
     }
     const overlap = Math.min(end, word.time.end) - Math.max(start, word.time.start)
     if (overlap > bestOverlap) {
@@ -129,21 +117,25 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
   const words = line.words
 
   const indexMap = new Map<Lyric.WordNormal, number>()
+  const startMap = new Map<number, Lyric.WordNormal>()
   for (let i = 0; i < words.length; i++) {
     const word = words[i]
     if (word.type === Lyric.WordType.Normal) {
       indexMap.set(word, i)
+      if (word.time) {
+        startMap.set(word.time.start, word)
+      }
     }
   }
 
-  const roman = processSpanWords(text)
+  const roman = parseSpanWords(text)
   const entries: RomanEntry[] = []
   for (let i = 0; i < roman.length; i++) {
     const span = roman[i]
     if (span.type !== Lyric.WordType.Normal || !span.time) {
       continue
     }
-    const target = findBodyWordByTime(words, span.time.start, span.time.end)
+    const target = findBodyWordByTime(words, startMap, span.time.start, span.time.end)
     if (!target) {
       continue
     }
@@ -214,6 +206,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
     tail.content = tail.content.trimEnd()
   }
 
+  const lang = normalizeLanguage(language)
   for (const [word, tokens] of groups) {
     const item = new Lyric.WordAnnotationItem()
     item.words = tokens
@@ -222,57 +215,35 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
     item.time.start = tokens[0].time!.start
     item.time.end = tokens[tokens.length - 1].time!.end
 
+    if (lang) {
+      item.language = lang
+    }
+
     word.annotation ??= new Lyric.WordAnnotation()
     word.annotation.romans = [...(word.annotation.romans || []), item]
-
-    if (language) {
-      item.language = language
-    }
   }
 
   return true
 }
 
-const attachRoman = (root: Xml.XmlElement, keyMap: Map<string, Lyric.LineNormal>) => {
-  eachAnnotationText(root, keyMap, 'transliteration', (text, line, language) => {
+const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>) => {
+  eachAnnotationText(blocks, lineMap, (text, line, language) => {
     if (hasTimedSpans(text) && attachWordRomans(text, line, language)) {
       return
     }
-    const item = createLineAnnotationItem(text, language)
-    if (!item) {
-      return
-    }
-    if (!line.annotation.romans) {
-      line.annotation.romans = [item]
-    } else {
-      line.annotation.romans.push(item)
-    }
+    appendLineRoman(line, getTextContent(text), language)
   })
 }
 
-export const processLines = (body: Xml.XmlElement | undefined, root: Xml.XmlElement): Lyric.LineNormal[] => {
-  const lines: Lyric.LineNormal[] = []
-  if (!body) {
-    return lines
+/**
+ * Attach head iTunesMetadata translations and transliterations to body lines by itunes:key.
+ *
+ * Shared by every TTML dialect, since amll is itunes plus its own amll:meta.
+ */
+export const attachHeadAnnotations = (groups: ElementGroups, lineMap: Map<string, Lyric.LineNormal>) => {
+  if (!lineMap.size) {
+    return
   }
-
-  const lineMap = new Map<string, Lyric.LineNormal>()
-
-  const elements = findElementsByLocalName(body, 'p')
-  for (const element of elements) {
-    const line = processLine(element)
-    if (!line) {
-      continue
-    }
-    lines.push(line)
-    const key = getAttributeByName(element, 'key', true)
-    if (key) {
-      lineMap.set(key, line)
-    }
-  }
-
-  attachTranslate(root, lineMap)
-  attachRoman(root, lineMap)
-
-  return lines
+  attachTranslate(groups.get('translation') ?? [], lineMap)
+  attachRoman(groups.get('transliteration') ?? [], lineMap)
 }
