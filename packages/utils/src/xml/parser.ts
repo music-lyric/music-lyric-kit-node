@@ -6,11 +6,17 @@ export class Parser {
   private src: string = ''
   private pos: number = 0
   private len: number = 0
+  private valid: boolean = true
 
-  parse(xml: string): XmlElement {
+  /**
+   * Parse an xml string into a document tree.
+   * Returns null when the input is not well formed, so callers can bail out.
+   */
+  parse(xml: string): XmlElement | null {
     this.src = xml
     this.pos = 0
     this.len = xml.length
+    this.valid = true
 
     const root: XmlElement = {
       type: XmlNodeType.Element,
@@ -27,7 +33,23 @@ export class Parser {
     }
 
     this.parseContent(root)
+
+    if (!this.valid || !this.hasElementChild(root)) {
+      return null
+    }
     return root
+  }
+
+  /**
+   * Whether the node has at least one element child, i.e. the input parsed to real markup.
+   */
+  private hasElementChild(node: XmlElement): boolean {
+    for (const child of node.children) {
+      if (child.type === XmlNodeType.Element) {
+        return true
+      }
+    }
+    return false
   }
 
   private skipWhitespace(): void {
@@ -150,6 +172,8 @@ export class Parser {
     const quote = this.src.charCodeAt(this.pos)
 
     if (quote !== CharCode.DoubleQuote && quote !== CharCode.SingleQuote) {
+      // a well formed attribute value must be quoted; bare values are illegal.
+      this.valid = false
       const start = this.pos
       while (this.pos < this.len) {
         const ch = this.src.charCodeAt(this.pos)
@@ -213,7 +237,7 @@ export class Parser {
         // skip '>'
         this.pos++
         this.parseContent(element)
-        this.parseCloseTag()
+        this.parseCloseTag(tag)
         break
       }
 
@@ -262,8 +286,18 @@ export class Parser {
     parent.children.push(element)
   }
 
-  private parseCloseTag(): void {
+  private parseCloseTag(expected: string): void {
+    // the open tag must be paired by a matching </tag>.
+    if (this.src.charCodeAt(this.pos) !== CharCode.LessThan || this.src.charCodeAt(this.pos + 1) !== CharCode.Slash) {
+      this.valid = false
+      return
+    }
+
     this.pos += 2
+    if (this.parseName() !== expected) {
+      this.valid = false
+    }
+
     const end = this.src.indexOf('>', this.pos)
     this.pos = end === -1 ? this.len : end + 1
   }
