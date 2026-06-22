@@ -1,3 +1,48 @@
+## v0.13.0 (2026-06-22)
+
+### Feature
+
+- `lyric`
+  - agent support multiple names ([a25fcd8](https://github.com/music-lyric/music-lyric-kit-node/commit/a25fcd8))
+  - add agent type ([2fe921f](https://github.com/music-lyric/music-lyric-kit-node/commit/2fe921f))
+- `main`
+  - add new format parser ([261b4c4](https://github.com/music-lyric/music-lyric-kit-node/commit/261b4c4))
+  - add language calculate options ([1251720](https://github.com/music-lyric/music-lyric-kit-node/commit/1251720))
+  - add language plugin ([038f006](https://github.com/music-lyric/music-lyric-kit-node/commit/038f006))
+- `plugin-format-ttml`
+  - add amll ruby annotations parse ([aa9a516](https://github.com/music-lyric/music-lyric-kit-node/commit/aa9a516))
+  - parse agent names ([ffc74c2](https://github.com/music-lyric/music-lyric-kit-node/commit/ffc74c2))
+  - parse agent type ([c191adb](https://github.com/music-lyric/music-lyric-kit-node/commit/c191adb))
+  - add roman parse for am format ([793848a](https://github.com/music-lyric/music-lyric-kit-node/commit/793848a))
+  - add new meta support for amll parser ([af4d5cf](https://github.com/music-lyric/music-lyric-kit-node/commit/af4d5cf))
+  - add am format ttml parser ([b55bf21](https://github.com/music-lyric/music-lyric-kit-node/commit/b55bf21))
+- `plugin-transform-language`
+  - add percent calculation plugin ([f8132a4](https://github.com/music-lyric/music-lyric-kit-node/commit/f8132a4))
+  - add infer plugin ([2acd707](https://github.com/music-lyric/music-lyric-kit-node/commit/2acd707))
+- `utils`
+  - add create random string tool ([c75f27e](https://github.com/music-lyric/music-lyric-kit-node/commit/c75f27e))
+
+### Fix
+
+- `plugin-format-ttml`
+  - apply am replacement translation as original words ([5eec81a](https://github.com/music-lyric/music-lyric-kit-node/commit/5eec81a))
+
+### Refactor
+
+- `lyric`
+  - restructure data model ([4606027](https://github.com/music-lyric/music-lyric-kit-node/commit/4606027))
+- `main`
+  - update plugin name ([df84a73](https://github.com/music-lyric/music-lyric-kit-node/commit/df84a73))
+- `plugin-format-ttml`
+  - restructure parser ([7f197ed](https://github.com/music-lyric/music-lyric-kit-node/commit/7f197ed))
+  - optimize code ([0d69c7f](https://github.com/music-lyric/music-lyric-kit-node/commit/0d69c7f))
+- `plugin-transform-agent`
+  - adapt agent names to array ([20b6491](https://github.com/music-lyric/music-lyric-kit-node/commit/20b6491))
+- `plugin-transform-language`
+  - restructure language detection and share weighting ([47bc329](https://github.com/music-lyric/music-lyric-kit-node/commit/47bc329))
+- `utils`
+  - return null when an invalid value is passed in while parsing xml ([1bab549](https://github.com/music-lyric/music-lyric-kit-node/commit/1bab549))
+
 ## v0.12.1 (2026-06-18)
 
 ### Document
