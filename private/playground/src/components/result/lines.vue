@@ -71,6 +71,12 @@ const interludeTime = (line: Lyric.LineInterlude) => `${formatTime(line.time.sta
   gap: 2px;
 }
 
+.list > * {
+  // skip layout and paint for rows scrolled off-screen; a long song emits hundreds of rows.
+  content-visibility: auto;
+  contain-intrinsic-size: auto 40px;
+}
+
 .interlude {
   display: flex;
   align-items: center;
