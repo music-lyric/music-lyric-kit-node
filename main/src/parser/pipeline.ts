@@ -16,7 +16,7 @@ export interface ParserPipelineResult {
   result: Lyric.Info
 }
 
-const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser(), new Format.Ttml.AmParser()]
+const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser(), new Format.Ttml.ItunesParser()]
 
 class Agent {
   private _extract = new Transform.Agent.Extract()
