@@ -35,8 +35,16 @@ const applyCjkNumber = (text: string) => {
   return text.replace(CJK_WITH_NUM_RULE, '$1 $2').replace(NUM_WITH_CJK_RULE, '$1 $2')
 }
 
+const isDigit = (char: string | undefined) => char !== undefined && char >= '0' && char <= '9'
+
 const applyPunctuation = (text: string) => {
-  return text.replace(PUNCTUATION_RULE, '$1$2 ')
+  // a comma or colon between two digits belongs to one number or clock time, so keep it tight
+  return text.replace(PUNCTUATION_RULE, (full: string, before: string, punct: string, offset: number, str: string) => {
+    if ((punct === ',' || punct === ':') && isDigit(before) && isDigit(str[offset + full.length])) {
+      return full
+    }
+    return `${before}${punct} `
+  })
 }
 const applyQuote = (text: string) => {
   return text.replace(QUOTE_BEFORE_RULE, '$1 $2').replace(QUOTE_AFTER_RULE, '$1 $2')
@@ -48,12 +56,26 @@ const applyMathOperator = (text: string) => {
   return text.replace(MATH_OPERATOR_RULE, '$1 $2 ')
 }
 const applySlash = (text: string) => {
-  return text.replace(SLASH_RULE, '$1 $2 ')
+  // a slash between two digits is a fraction or date, so keep it tight
+  return text.replace(SLASH_RULE, (full: string, before: string, slash: string, offset: number, str: string) => {
+    if (isDigit(before) && isDigit(str[offset + full.length])) {
+      return full
+    }
+    return `${before} ${slash} `
+  })
 }
 const applyHyphen = (text: string) => {
-  return text.replace(HYPHEN_RULE, ' - ').replace(HYPHEN_EDGE_RULE, (m, g1, g2, g3, g4) => {
-    return g1 !== undefined ? `${g1}${g2} ` : `${g3} ${g4}`
-  })
+  // a hyphen between two digits is a date, range or phone number, so keep it tight
+  return text
+    .replace(HYPHEN_RULE, (hyphen: string, offset: number, str: string) => {
+      if (isDigit(str[offset - 1]) && isDigit(str[offset + 1])) {
+        return hyphen
+      }
+      return ' - '
+    })
+    .replace(HYPHEN_EDGE_RULE, (m, g1, g2, g3, g4) => {
+      return g1 !== undefined ? `${g1}${g2} ` : `${g3} ${g4}`
+    })
 }
 const applyTrimInsideSymbols = (text: string) => {
   return text.replace(TRIM_INSIDE_SYMBOLS_RULE, (_, left, inner, right) => `${left.trim()}${inner.trim()}${right.trim()}`)
