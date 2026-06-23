@@ -20,12 +20,12 @@ const QUOTE_BEFORE_RULE = new RegExp(`([${CJK_RANGE}${ENGLISH_NUMBER_RANGE}])(["
 const QUOTE_AFTER_RULE = new RegExp(`(["\`”’])([${CJK_RANGE}${ENGLISH_NUMBER_RANGE}])`, 'gu')
 const PUNCTUATION_RULE = new RegExp(`([${ALL_RANGE}])([!;,\\?:])(?=[${ALL_RANGE}])`, 'gu')
 // remove '*' and '\'
-const MATH_OPERATOR_RULE = new RegExp(`([${ALL_RANGE}])([+=&])([${ALL_RANGE}])`, 'gu')
+const MATH_OPERATOR_RULE = new RegExp(`([${ALL_RANGE}])([+=&])(?=[${ALL_RANGE}])`, 'gu')
 const BRACKET_OUTSIDE_BEFORE_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])([\\[({<])`, 'gu')
 const BRACKET_OUTSIDE_AFTER_RULE = new RegExp(`([\\])}>])([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
 
 const HYPHEN_RULE = new RegExp(`(?<=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])-(?=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
-const SLASH_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(/)([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
+const SLASH_RULE = new RegExp(`([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(/)(?=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])`, 'gu')
 const HYPHEN_EDGE_RULE = new RegExp(`(\\s|^)(-)(?=[${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])|([${ENGLISH_NUMBER_RANGE}${CJK_RANGE}])(-)(?=\\s|$)`, 'gu')
 
 const applyCjkEnglish = (text: string) => {
@@ -45,10 +45,10 @@ const applyBracketOutside = (text: string) => {
   return text.replace(BRACKET_OUTSIDE_BEFORE_RULE, '$1 $2').replace(BRACKET_OUTSIDE_AFTER_RULE, '$1 $2')
 }
 const applyMathOperator = (text: string) => {
-  return text.replace(MATH_OPERATOR_RULE, '$1 $2 $3')
+  return text.replace(MATH_OPERATOR_RULE, '$1 $2 ')
 }
 const applySlash = (text: string) => {
-  return text.replace(SLASH_RULE, '$1 $2 $3')
+  return text.replace(SLASH_RULE, '$1 $2 ')
 }
 const applyHyphen = (text: string) => {
   return text.replace(HYPHEN_RULE, ' - ').replace(HYPHEN_EDGE_RULE, (m, g1, g2, g3, g4) => {
