@@ -57,6 +57,18 @@ export class WordAnnotationItem {
   }
 }
 
+export class WordRubyAnnotation extends WordAnnotationItem {
+  /**
+   * Whether this ruby marks the start of a phrase.
+   */
+  phraseStart: boolean
+
+  constructor(init: Init<WordRubyAnnotation> = {}) {
+    super(init)
+    this.phraseStart = init.phraseStart ?? false
+  }
+}
+
 export class WordUnknownAnnotation extends WordAnnotationItem {
   /**
    * Original annotation type name.
@@ -73,7 +85,7 @@ export class WordAnnotation {
   /**
    * Ruby annotation such as furigana.
    */
-  ruby?: WordAnnotationItem
+  ruby?: WordRubyAnnotation
 
   /**
    * Romanized transliterations.

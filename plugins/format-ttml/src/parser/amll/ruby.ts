@@ -46,7 +46,7 @@ export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Word[]): bo
   const start = items[0].time!.start
   const end = items[items.length - 1].time!.end
 
-  const ruby = new Lyric.WordAnnotationItem({ words: items, time: new Lyric.Time(start, end) })
+  const ruby = new Lyric.WordRubyAnnotation({ words: items, time: new Lyric.Time(start, end) })
 
   const word = new Lyric.WordNormal({
     content: base,
