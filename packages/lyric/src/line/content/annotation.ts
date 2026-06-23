@@ -4,58 +4,175 @@ import type { Word, WordNormal, WordAnnotationItem } from '../word'
 
 import { WordType } from '../word'
 
-export class LineAnnotationItem {
-  /**
-   * Language or transliteration scheme of this item.
-   * Should be set when multiple languages coexist, since aggregation from words groups by it.
-   */
-  language?: LanguageTag
+import { createRandomString } from '@music-lyric-kit/utils'
 
+export enum LineAnnotationKind {
   /**
-   * Original text.
+   * Ruby annotation such as furigana.
    */
-  content: string
+  Ruby = 'Ruby',
+  /**
+   * Romanized transliteration.
+   */
+  Roman = 'Roman',
+  /**
+   * Translation into another language.
+   */
+  Translate = 'Translate',
+  /**
+   * Unknown annotation preserved by its original key.
+   */
+  Unknown = 'Unknown',
+}
 
-  constructor(init: Init<LineAnnotationItem> = {}) {
-    this.language = init.language
-    this.content = init.content ?? ''
+const DERIVED_KINDS = [LineAnnotationKind.Ruby, LineAnnotationKind.Roman, LineAnnotationKind.Unknown] as const
+
+interface LineAnnotationExtra {
+  [LineAnnotationKind.Ruby]: {}
+  [LineAnnotationKind.Roman]: {}
+  [LineAnnotationKind.Translate]: {}
+  [LineAnnotationKind.Unknown]: {
+    /**
+     * Original annotation type name.
+     */
+    key: string
   }
 }
 
-export class LineUnknownAnnotation extends LineAnnotationItem {
-  /**
-   * Original annotation type name.
-   */
-  key: string
+export type LineAnnotationItem = {
+  [K in LineAnnotationKind]: {
+    /**
+     * Unique identifier of the item.
+     */
+    id: string
+    /**
+     * Semantic kind of the annotation.
+     */
+    kind: K
+    /**
+     * Language or transliteration scheme of this item.
+     */
+    language?: LanguageTag
+    /**
+     * Original text.
+     */
+    content: string
+    /**
+     * Whether this item was derived from word-level annotations rather than set explicitly.
+     */
+    derived: boolean
+  } & LineAnnotationExtra[K]
+}[LineAnnotationKind]
 
-  constructor(init: Init<LineUnknownAnnotation> = {}) {
-    super(init)
-    this.key = init.key ?? ''
-  }
+export type LineAnnotationItemInit<K extends LineAnnotationKind = LineAnnotationKind> = Omit<
+  Extract<LineAnnotationItem, { kind: K }>,
+  'id' | 'kind' | 'derived'
+> & {
+  /**
+   * Identifier to restore, generated when omitted.
+   */
+  id?: string
+  derived?: boolean
 }
 
 export class LineAnnotation {
-  #host: { words: Word[] }
+  /**
+   * All annotation items in order.
+   */
+  list: LineAnnotationItem[]
 
-  constructor(host: { words: Word[] }) {
-    this.#host = host
+  constructor(init: Init<LineAnnotation> = {}) {
+    this.list = init.list ?? []
   }
 
   /**
-   * Aggregate one per-word item into a single line item, padding spaces to follow word spacing.
+   * Whether any item of a kind exists.
    */
-  #aggregateSingle(pick: (word: WordNormal) => WordAnnotationItem | undefined): LineAnnotationItem | undefined {
+  has(kind: LineAnnotationKind): boolean {
+    return this.list.some((item) => item.kind === kind)
+  }
+
+  /**
+   * All items of a kind.
+   */
+  all<T extends LineAnnotationKind>(kind: T): Extract<LineAnnotationItem, { kind: T }>[] {
+    return this.list.filter((item) => item.kind === kind) as Extract<LineAnnotationItem, { kind: T }>[]
+  }
+
+  /**
+   * The first item of a kind, preferring a language match then falling back to the first.
+   */
+  first<T extends LineAnnotationKind>(kind: T, language?: LanguageTag): Extract<LineAnnotationItem, { kind: T }> | undefined {
+    const items = this.all(kind)
+    if (language !== undefined) {
+      const matched = items.find((item) => item.language === language)
+      if (matched) {
+        return matched
+      }
+    }
+    return items[0]
+  }
+}
+
+/**
+ * Create a line annotation item of a given kind.
+ */
+export const createLineAnnotationItem = <K extends LineAnnotationKind>(
+  kind: K,
+  init: LineAnnotationItemInit<K>,
+): Extract<LineAnnotationItem, { kind: K }> => {
+  return {
+    id: createRandomString(6).toUpperCase(),
+    derived: false,
+    ...init,
+    kind,
+  } as Extract<LineAnnotationItem, { kind: K }>
+}
+
+/**
+ * Aggregate per-word annotations into line items, one per distinct group.
+ *
+ * `collect` selects a word's annotation tokens, `groupOf` names each token's group, `make` builds the line item.
+ *
+ * Tokens are joined in word order with spaces padded to follow word spacing; groups keep first-seen order.
+ */
+const aggregateLineItems = <T extends WordAnnotationItem>(
+  words: Word[],
+  collect: (word: WordNormal) => T[] | undefined,
+  groupOf: (item: T) => string,
+  make: (group: string, content: string, language: LanguageTag | undefined) => LineAnnotationItem,
+): LineAnnotationItem[] => {
+  const groups: string[] = []
+  for (let i = 0, len = words.length; i < len; i++) {
+    const word = words[i]
+    if (word.type === WordType.Space) {
+      continue
+    }
+    const items = collect(word)
+    if (!items) {
+      continue
+    }
+    for (const item of items) {
+      const group = groupOf(item)
+      if (!groups.includes(group)) {
+        groups.push(group)
+      }
+    }
+  }
+
+  const result: LineAnnotationItem[] = []
+  for (const group of groups) {
     let content = ''
     let pending = 0
     let language: LanguageTag | undefined
     let has = false
-    for (let i = 0, len = this.#host.words.length; i < len; i++) {
-      const word = this.#host.words[i]
+    for (let i = 0, len = words.length; i < len; i++) {
+      const word = words[i]
       if (word.type === WordType.Space) {
         pending += word.count
         continue
       }
-      const item = pick(word)
+      const item = collect(word)?.find((entry) => groupOf(entry) === group)
       if (item) {
         if (has) {
           content += ' '.repeat(pending)
@@ -66,168 +183,55 @@ export class LineAnnotation {
         has = true
       }
     }
-    if (!has) {
-      return undefined
+    if (has) {
+      result.push(make(group, content, language))
     }
-    return new LineAnnotationItem({ content, language })
   }
+  return result
+}
 
-  /**
-   * Aggregate multi-value per-word items into line items, one per language.
-   */
-  #aggregateGrouped(pick: (word: WordNormal) => WordAnnotationItem[] | undefined): LineAnnotationItem[] | undefined {
-    const languages: LanguageTag[] = []
-    for (let i = 0, len = this.#host.words.length; i < len; i++) {
-      const word = this.#host.words[i]
-      if (word.type === WordType.Space) {
-        continue
-      }
-      const items = pick(word)
-      if (!items) {
-        continue
-      }
-      for (const item of items) {
-        const language = item.language ?? ''
-        if (!languages.includes(language)) {
-          languages.push(language)
-        }
-      }
+/**
+ * Derive line annotations from word-level annotations.
+ *
+ * Refreshes derived items while preserving explicit ones, so it is safe to call repeatedly.
+ */
+export const deriveLineAnnotation = (line: { words: Word[]; annotation: LineAnnotation }): void => {
+  const { words, annotation } = line
+  for (const kind of DERIVED_KINDS) {
+    const hasExplicit = annotation.list.some((item) => item.kind === kind && !item.derived)
+    annotation.list = annotation.list.filter((item) => !(item.kind === kind && item.derived))
+    if (hasExplicit) {
+      continue
     }
-    if (!languages.length) {
-      return undefined
+    let derived: LineAnnotationItem[]
+    switch (kind) {
+      case LineAnnotationKind.Ruby:
+        derived = aggregateLineItems(
+          words,
+          (word) => {
+            const ruby = word.annotation?.ruby
+            return ruby ? [ruby] : undefined
+          },
+          () => '',
+          (_group, content, language) => createLineAnnotationItem(LineAnnotationKind.Ruby, { content, language, derived: true }),
+        )
+        break
+      case LineAnnotationKind.Roman:
+        derived = aggregateLineItems(
+          words,
+          (word) => word.annotation?.romans,
+          (item) => item.language ?? '',
+          (group, content) => createLineAnnotationItem(LineAnnotationKind.Roman, { content, language: group || undefined, derived: true }),
+        )
+        break
+      default:
+        derived = aggregateLineItems(
+          words,
+          (word) => word.annotation?.unknowns,
+          (item) => item.key,
+          (group, content, language) => createLineAnnotationItem(LineAnnotationKind.Unknown, { content, language, key: group, derived: true }),
+        )
     }
-    const result: LineAnnotationItem[] = []
-    for (const language of languages) {
-      let content = ''
-      let pending = 0
-      let has = false
-      for (let i = 0, len = this.#host.words.length; i < len; i++) {
-        const word = this.#host.words[i]
-        if (word.type === WordType.Space) {
-          pending += word.count
-          continue
-        }
-        const item = pick(word)?.find((entry) => (entry.language ?? '') === language)
-        if (item) {
-          if (has) {
-            content += ' '.repeat(pending)
-          }
-          content += item.content
-          pending = 0
-          has = true
-        }
-      }
-      const lineItem = new LineAnnotationItem({ content, language: language || undefined })
-      result.push(lineItem)
-    }
-    return result
-  }
-
-  /**
-   * Aggregate unknown per-word items into line items, one per key.
-   */
-  #aggregateUnknowns(): LineUnknownAnnotation[] | undefined {
-    const keys: string[] = []
-    for (let i = 0, len = this.#host.words.length; i < len; i++) {
-      const word = this.#host.words[i]
-      if (word.type === WordType.Space) {
-        continue
-      }
-      const items = word.annotation?.unknowns
-      if (!items) {
-        continue
-      }
-      for (const item of items) {
-        if (!keys.includes(item.key)) {
-          keys.push(item.key)
-        }
-      }
-    }
-    if (!keys.length) {
-      return undefined
-    }
-    const result: LineUnknownAnnotation[] = []
-    for (const key of keys) {
-      let content = ''
-      let pending = 0
-      let language: LanguageTag | undefined
-      let has = false
-      for (let i = 0, len = this.#host.words.length; i < len; i++) {
-        const word = this.#host.words[i]
-        if (word.type === WordType.Space) {
-          pending += word.count
-          continue
-        }
-        const item = word.annotation?.unknowns?.find((entry) => entry.key === key)
-        if (item) {
-          if (has) {
-            content += ' '.repeat(pending)
-          }
-          content += item.content
-          language ??= item.language
-          pending = 0
-          has = true
-        }
-      }
-      const lineItem = new LineUnknownAnnotation({ key, content, language })
-      result.push(lineItem)
-    }
-    return result
-  }
-
-  #ruby?: LineAnnotationItem
-  /**
-   * Ruby annotation: the explicit value, otherwise aggregated from words.
-   */
-  get ruby(): LineAnnotationItem | undefined {
-    return this.#ruby ?? this.#aggregateSingle((word) => word.annotation?.ruby)
-  }
-  /**
-   * Override the words-derived ruby with an explicit value.
-   */
-  set ruby(value: LineAnnotationItem | undefined) {
-    this.#ruby = value
-  }
-
-  #romans?: LineAnnotationItem[]
-  /**
-   * Romanized transliterations: the explicit value, otherwise aggregated from words grouped by language.
-   */
-  get romans(): LineAnnotationItem[] | undefined {
-    return this.#romans ?? this.#aggregateGrouped((word) => word.annotation?.romans)
-  }
-  /**
-   * Override the words-derived romans with explicit values.
-   */
-  set romans(value: LineAnnotationItem[] | undefined) {
-    this.#romans = value
-  }
-
-  #translates?: LineAnnotationItem[]
-  /**
-   * Translations, explicit only since words carry no line-level translation.
-   */
-  get translates(): LineAnnotationItem[] | undefined {
-    return this.#translates
-  }
-  /**
-   * Set the explicit translations.
-   */
-  set translates(value: LineAnnotationItem[] | undefined) {
-    this.#translates = value
-  }
-
-  #unknowns?: LineUnknownAnnotation[]
-  /**
-   * Unknown annotations: the explicit value, otherwise aggregated from words grouped by key.
-   */
-  get unknowns(): LineUnknownAnnotation[] | undefined {
-    return this.#unknowns ?? this.#aggregateUnknowns()
-  }
-  /**
-   * Override the words-derived unknowns with explicit values.
-   */
-  set unknowns(value: LineUnknownAnnotation[] | undefined) {
-    this.#unknowns = value
+    annotation.list.push(...derived)
   }
 }

@@ -38,10 +38,7 @@ export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean 
     }
   }
 
-  const stripBrackets = (items: Lyric.LineAnnotationItem[] | undefined) => {
-    if (!items) {
-      return
-    }
+  const stripBrackets = (items: Lyric.LineAnnotationItem[]) => {
     for (const item of items) {
       if (!item.content.trim()) continue
 
@@ -58,15 +55,6 @@ export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean 
     }
   }
 
-  const translates = line.annotation.translates
-  stripBrackets(translates)
-  if (translates) {
-    line.annotation.translates = translates
-  }
-
-  const romans = line.annotation.romans
-  stripBrackets(romans)
-  if (romans) {
-    line.annotation.romans = romans
-  }
+  stripBrackets(line.annotation.all(Lyric.LineAnnotationKind.Translate))
+  stripBrackets(line.annotation.all(Lyric.LineAnnotationKind.Roman))
 }

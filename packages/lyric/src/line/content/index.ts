@@ -62,7 +62,7 @@ export class LineNormalBase extends LineBase {
     super(init)
     this.agent = init.agent
     this.words = init.words ?? []
-    this.annotation = init.annotation ?? new LineAnnotation(this)
+    this.annotation = init.annotation ?? new LineAnnotation()
     if (init.languages) {
       this.languages = init.languages
     }

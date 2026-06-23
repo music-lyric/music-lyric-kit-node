@@ -173,23 +173,9 @@ export const insertSpaceToLine = (line: Lyric.LineNormalBase, target: Set<Insert
 }
 
 export const insertSpaceToExtended = (line: Lyric.LineNormalBase, target: Set<InsertTextSpaceTypes>): void => {
-  const apply = (items: Lyric.LineAnnotationItem[] | undefined) => {
-    if (!items) {
-      return undefined
-    }
-    for (const item of items) {
+  for (const item of line.annotation.list) {
+    if (item.kind === Lyric.LineAnnotationKind.Translate || item.kind === Lyric.LineAnnotationKind.Roman) {
       item.content = insertSpace(item.content, target)
     }
-    return items
-  }
-
-  const translates = apply(line.annotation.translates)
-  if (translates) {
-    line.annotation.translates = translates
-  }
-
-  const romans = apply(line.annotation.romans)
-  if (romans) {
-    line.annotation.romans = romans
   }
 }

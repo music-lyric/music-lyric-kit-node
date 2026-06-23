@@ -116,22 +116,22 @@ const extended = computed(() => {
   const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
   const annotation = props.line.annotation
 
-  for (const item of annotation.translates || []) {
+  for (const item of annotation.all(Lyric.LineAnnotationKind.Translate)) {
     result.push({ kind: 'translate', text: item.content })
   }
   if (!wordAnno.value.roman) {
-    for (const item of annotation.romans || []) {
+    for (const item of annotation.all(Lyric.LineAnnotationKind.Roman)) {
       result.push({ kind: 'roman', text: item.content })
     }
   }
   if (!wordAnno.value.ruby) {
-    const ruby = annotation.ruby
+    const ruby = annotation.first(Lyric.LineAnnotationKind.Ruby)
     if (ruby) {
       result.push({ kind: 'other', text: `[ruby] ${ruby.content}` })
     }
   }
   if (!wordAnno.value.unknown) {
-    for (const item of annotation.unknowns || []) {
+    for (const item of annotation.all(Lyric.LineAnnotationKind.Unknown)) {
       result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
     }
   }

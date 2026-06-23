@@ -239,13 +239,7 @@ export const extractInLine = (line: Lyric.LineNormal) => {
     addBackground(line, result)
   }
 
-  const splitAnnotation = (
-    items: Lyric.LineAnnotationItem[] | undefined,
-    push: (background: Lyric.LineNormalBase, item: Lyric.LineAnnotationItem) => void,
-  ) => {
-    if (!items) {
-      return
-    }
+  const splitAnnotation = (kind: Lyric.LineAnnotationKind, items: Lyric.LineAnnotationItem[]) => {
     for (const item of items) {
       if (!item.content.trim()) {
         continue
@@ -258,27 +252,14 @@ export const extractInLine = (line: Lyric.LineNormal) => {
         if (i >= backgroundLines.length) {
           continue
         }
-        const target = new Lyric.LineAnnotationItem({ content: backgrounds[i], language: item.language })
-        push(backgroundLines[i], target)
+        const target = Lyric.createLineAnnotationItem(kind, { content: backgrounds[i], language: item.language })
+        backgroundLines[i].annotation.list.push(target)
       }
     }
   }
 
-  const translates = line.annotation.translates
-  splitAnnotation(translates, (background, item) => {
-    background.annotation.translates = [...(background.annotation.translates || []), item]
-  })
-  if (translates) {
-    line.annotation.translates = translates
-  }
-
-  const romans = line.annotation.romans
-  splitAnnotation(romans, (background, item) => {
-    background.annotation.romans = [...(background.annotation.romans || []), item]
-  })
-  if (romans) {
-    line.annotation.romans = romans
-  }
+  splitAnnotation(Lyric.LineAnnotationKind.Translate, line.annotation.all(Lyric.LineAnnotationKind.Translate))
+  splitAnnotation(Lyric.LineAnnotationKind.Roman, line.annotation.all(Lyric.LineAnnotationKind.Roman))
 }
 
 export const extractCrossLine = (lines: Lyric.Line[]) => {

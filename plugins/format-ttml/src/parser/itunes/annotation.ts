@@ -31,22 +31,18 @@ export const appendLineTranslate = (line: Lyric.LineNormal, content: string, lan
 
   const lang = normalizeLanguage(language)
 
-  const item = new Lyric.LineAnnotationItem({ content: text })
-  if (lang) {
-    item.language = lang
-  }
+  const item = Lyric.createLineAnnotationItem(Lyric.LineAnnotationKind.Translate, { content: text, language: lang || undefined })
 
-  const list = line.annotation.translates || []
-  const index = list.findIndex((entry) => normalizeLanguage(entry.language) === lang)
+  const list = line.annotation.list
+  const index = list.findIndex((entry) => entry.kind === Lyric.LineAnnotationKind.Translate && normalizeLanguage(entry.language) === lang)
 
   if (index < 0) {
-    line.annotation.translates = [...list, item]
+    list.push(item)
     return
   }
 
   if (fromItunes) {
     list[index] = item
-    line.annotation.translates = list
   }
 }
 
@@ -56,12 +52,9 @@ export const appendLineRoman = (line: Lyric.LineNormal, content: string, languag
     return
   }
 
-  const item = new Lyric.LineAnnotationItem({ content: text })
-
   const lang = normalizeLanguage(language)
-  if (lang) {
-    item.language = lang
-  }
 
-  line.annotation.romans = [...(line.annotation.romans || []), item]
+  const item = Lyric.createLineAnnotationItem(Lyric.LineAnnotationKind.Roman, { content: text, language: lang || undefined })
+
+  line.annotation.list.push(item)
 }

@@ -35,10 +35,10 @@ export const exportLines = (info: Lyric.Info) => {
       original.push(target)
     }
 
-    for (const item of line.annotation.translates || []) {
+    for (const item of line.annotation.all(Lyric.LineAnnotationKind.Translate)) {
       translate.push(`${lineTime}${item.content}`)
     }
-    for (const item of line.annotation.romans || []) {
+    for (const item of line.annotation.all(Lyric.LineAnnotationKind.Roman)) {
       roman.push(`${lineTime}${item.content}`)
     }
   }

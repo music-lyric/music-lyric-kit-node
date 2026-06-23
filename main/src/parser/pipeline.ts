@@ -213,12 +213,15 @@ export class ParserPipeline {
       console.warn(`plugin call failed id=${parser.id} err=${e?.message}`)
     }
 
+    this.context.finalizeAnnotation()
+
     return this
   }
 
   final(): ParserPipelineResult {
     if (!this.done) {
       this.context.cleanWord()
+      this.context.finalizeAnnotation()
       this.context.syncLineTimeWithWord()
       this.context.sort()
       this.context.calcAgentIndex()

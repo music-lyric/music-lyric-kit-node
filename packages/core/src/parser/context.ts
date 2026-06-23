@@ -160,6 +160,24 @@ export class ParserContext implements BaseContext {
   }
 
   /**
+   * Build line annotations from words for every line and its background lines.
+   */
+  finalizeAnnotation(lines?: Lyric.Line[]) {
+    const result = this.result
+    for (const line of lines || result?.lines || []) {
+      if (line.type !== Lyric.LineType.Normal) {
+        continue
+      }
+
+      if (line.background) {
+        this.finalizeAnnotation(line.background)
+      }
+
+      Lyric.deriveLineAnnotation(line)
+    }
+  }
+
+  /**
    * Calculate global index, block index for each line's agent, and total line count for each agent.
    */
   calcAgentIndex() {
