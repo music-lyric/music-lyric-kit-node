@@ -41,7 +41,7 @@ defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
   line: Lyric.LineNormal
-  agents: Lyric.Agent[]
+  agents: Lyric.AgentItem[]
   isBg?: boolean
 }>()
 

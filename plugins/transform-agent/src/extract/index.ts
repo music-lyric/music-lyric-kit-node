@@ -32,8 +32,8 @@ export class Extract extends ParserPlugin {
 
     const newLines: Lyric.Line[] = []
 
-    const agentMap = new Map<string, Lyric.Agent>()
-    for (const item of ctx.result.agents) {
+    const agentMap = new Map<string, Lyric.AgentItem>()
+    for (const item of ctx.result.agent.list) {
       agentMap.set(item.id, item)
     }
 
@@ -107,7 +107,7 @@ export class Extract extends ParserPlugin {
         currentId = id
 
         if (!agentMap.has(id)) {
-          agentMap.set(id, new Lyric.Agent({ id, names: [name] }))
+          agentMap.set(id, new Lyric.AgentItem({ id, names: [name] }))
         } else {
           const exist = agentMap.get(id)!
           if (!exist.names.includes(name)) {
@@ -130,7 +130,7 @@ export class Extract extends ParserPlugin {
     }
 
     ctx.result.lines = newLines
-    ctx.result.agents = [...agentMap.values()]
+    ctx.result.agent.list = [...agentMap.values()]
 
     ctx.syncLineTimeWithWord()
   }

@@ -17,7 +17,7 @@ import { Lyric } from 'music-lyric-kit'
 import { getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-defineProps<{ agents: Lyric.Agent[] }>()
+defineProps<{ agents: Lyric.AgentItem[] }>()
 
 const { t } = useI18n()
 </script>

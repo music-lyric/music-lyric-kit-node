@@ -24,7 +24,7 @@ export interface TtmlDocument {
   /**
    * Performing agents declared in the head.
    */
-  agents: Lyric.Agent[]
+  agents: Lyric.AgentItem[]
   /**
    * Whether the lines carry per-word timing.
    */

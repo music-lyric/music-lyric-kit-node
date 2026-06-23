@@ -1,9 +1,9 @@
 import type { Init } from './init'
 import type { Line } from './line'
-import type { Agent } from './agent'
 
 import { Meta } from './meta'
 import { Language } from './language'
+import { Agent } from './agent'
 
 export const Version = '0.8.0' as const
 
@@ -66,7 +66,7 @@ export class Info {
   /**
    * Performing agents referenced by lines.
    */
-  agents: Agent[]
+  agent: Agent
 
   /**
    * Lyric lines in order.
@@ -78,7 +78,7 @@ export class Info {
     this.timing = init.timing ?? InfoTiming.None
     this.meta = init.meta ?? new Meta()
     this.language = init.language ?? new Language()
-    this.agents = init.agents ?? []
+    this.agent = init.agent ?? new Agent()
     this.lines = init.lines ?? []
   }
 }

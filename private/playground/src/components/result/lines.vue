@@ -29,7 +29,7 @@ import { useI18n } from '@root/composables/useI18n'
 
 defineProps<{
   lines: Lyric.Line[]
-  agents: Lyric.Agent[]
+  agents: Lyric.AgentItem[]
 }>()
 
 const { t } = useI18n()

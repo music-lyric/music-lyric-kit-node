@@ -89,6 +89,6 @@ export class AmllParser extends ParserPlugin {
     ctx.result.timing = timing
     ctx.result.lines = lines
     ctx.result.meta.list = [...metas, ...parseMetas(groups.get('meta') ?? [])]
-    ctx.result.agents = agents
+    ctx.result.agent.list = agents
   }
 }

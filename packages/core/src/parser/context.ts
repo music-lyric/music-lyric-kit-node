@@ -182,7 +182,7 @@ export class ParserContext implements BaseContext {
    */
   calcAgentIndex() {
     const result = this.result
-    if (!Array.isArray(result?.lines) || !Array.isArray(result?.agents)) {
+    if (!Array.isArray(result?.lines) || !Array.isArray(result?.agent?.list)) {
       return
     }
 
@@ -212,7 +212,7 @@ export class ParserContext implements BaseContext {
       idIndex.set(current, (idIndex.get(current) ?? 0) + 1)
     }
 
-    for (const agent of result.agents) {
+    for (const agent of result.agent.list) {
       agent.count = idIndex.get(agent.id) ?? 0
     }
   }

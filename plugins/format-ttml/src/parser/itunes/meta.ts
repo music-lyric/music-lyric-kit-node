@@ -62,11 +62,11 @@ const parseAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  return new Lyric.Agent({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
+  return new Lyric.AgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
 }
 
 export const parseAgents = (agents: Xml.XmlElement[]) => {
-  const result: Lyric.Agent[] = []
+  const result: Lyric.AgentItem[] = []
 
   for (const element of agents) {
     const item = parseAgent(element)

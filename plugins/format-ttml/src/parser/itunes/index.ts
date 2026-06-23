@@ -50,6 +50,6 @@ export class ItunesParser extends ParserPlugin {
     ctx.result.timing = timing
     ctx.result.lines = lines
     ctx.result.meta.list = metas
-    ctx.result.agents = agents
+    ctx.result.agent.list = agents
   }
 }

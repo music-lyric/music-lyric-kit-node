@@ -19,7 +19,7 @@ export enum AgentType {
   Unknown = 'Unknown',
 }
 
-export class Agent {
+export class AgentItem {
   /**
    * Unique identifier of the agent.
    */
@@ -40,7 +40,7 @@ export class Agent {
    */
   names: string[]
 
-  constructor(init: Init<Agent> = {}) {
+  constructor(init: Init<AgentItem> = {}) {
     this.id = init.id ?? ''
     this.type = init.type ?? AgentType.Unknown
     this.count = init.count ?? 0
@@ -50,7 +50,7 @@ export class Agent {
 
 export class LineAgent {
   /**
-   * Identifier of the referenced Agent.
+   * Identifier of the referenced agent.
    */
   id: string
 
@@ -68,5 +68,50 @@ export class LineAgent {
     this.id = init.id ?? ''
     this.globalIndex = init.globalIndex ?? 0
     this.blockIndex = init.blockIndex ?? 0
+  }
+}
+
+export class Agent {
+  /**
+   * All agents in order.
+   */
+  list: AgentItem[]
+
+  constructor(init: Init<Agent> = {}) {
+    this.list = init.list ?? []
+  }
+
+  /**
+   * Whether any agent of a type exists.
+   */
+  has(type: AgentType): boolean {
+    return this.list.some((item) => item.type === type)
+  }
+
+  /**
+   * All agents of a type.
+   */
+  all(type: AgentType): AgentItem[] {
+    return this.list.filter((item) => item.type === type)
+  }
+
+  /**
+   * The agent with the given id, used to resolve a LineAgent reference.
+   */
+  byId(id: string): AgentItem | undefined {
+    return this.list.find((item) => item.id === id)
+  }
+
+  /**
+   * The agent performing the most lines.
+   */
+  get primary(): AgentItem | undefined {
+    let result: AgentItem | undefined
+    for (let i = 0, len = this.list.length; i < len; i++) {
+      if (!result || this.list[i].count > result.count) {
+        result = this.list[i]
+      }
+    }
+    return result
   }
 }
