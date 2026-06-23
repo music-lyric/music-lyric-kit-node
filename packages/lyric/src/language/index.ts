@@ -1,5 +1,5 @@
 import type { Init } from '@root/init'
-import type { LanguageItem } from './content'
+import type { LanguageItem, LanguageTag } from './content'
 
 export class Language {
   /**
@@ -9,6 +9,20 @@ export class Language {
 
   constructor(init: Init<Language> = {}) {
     this.list = init.list ?? []
+  }
+
+  /**
+   * Whether a language of the given tag is present.
+   */
+  has(type: LanguageTag): boolean {
+    return this.list.some((item) => item.tag === type)
+  }
+
+  /**
+   * The language entry of the given tag.
+   */
+  byType(type: LanguageTag): LanguageItem | undefined {
+    return this.list.find((item) => item.tag === type)
   }
 
   /**
