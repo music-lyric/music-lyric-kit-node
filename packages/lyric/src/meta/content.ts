@@ -1,5 +1,3 @@
-import { createRandomString } from '@music-lyric-kit/utils'
-
 export enum MetaType {
   /**
    * Lyric time offset in milliseconds.
@@ -92,10 +90,6 @@ export type MetaValue<T extends MetaType> = MetaValueMap[T]
 export type MetaItem = {
   [K in MetaType]: {
     /**
-     * Unique identifier of the meta entry.
-     */
-    id: string
-    /**
      * Semantic kind of the meta entry.
      */
     type: K
@@ -115,7 +109,6 @@ export type MetaItem = {
  */
 export const createMetaItem = <T extends MetaType>(type: T, key: string, value: MetaValueMap[T]): Extract<MetaItem, { type: T }> => {
   return {
-    id: createRandomString(6).toUpperCase(),
     type,
     key,
     value,

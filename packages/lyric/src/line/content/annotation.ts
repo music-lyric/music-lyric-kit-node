@@ -4,8 +4,6 @@ import type { Word, WordNormal, WordAnnotationItem } from '../word'
 
 import { WordType } from '../word'
 
-import { createRandomString } from '@music-lyric-kit/utils'
-
 export enum LineAnnotationKind {
   /**
    * Ruby annotation such as furigana.
@@ -42,10 +40,6 @@ interface LineAnnotationExtra {
 export type LineAnnotationItem = {
   [K in LineAnnotationKind]: {
     /**
-     * Unique identifier of the item.
-     */
-    id: string
-    /**
      * Semantic kind of the annotation.
      */
     kind: K
@@ -66,12 +60,8 @@ export type LineAnnotationItem = {
 
 export type LineAnnotationItemInit<K extends LineAnnotationKind = LineAnnotationKind> = Omit<
   Extract<LineAnnotationItem, { kind: K }>,
-  'id' | 'kind' | 'derived'
+  'kind' | 'derived'
 > & {
-  /**
-   * Identifier to restore, generated when omitted.
-   */
-  id?: string
   derived?: boolean
 }
 
@@ -122,7 +112,6 @@ export const createLineAnnotationItem = <K extends LineAnnotationKind>(
   init: LineAnnotationItemInit<K>,
 ): Extract<LineAnnotationItem, { kind: K }> => {
   return {
-    id: createRandomString(6).toUpperCase(),
     derived: false,
     ...init,
     kind,

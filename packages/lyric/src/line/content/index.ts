@@ -7,8 +7,6 @@ import { LineAgent } from '@root/agent'
 import { WordType } from '../word'
 import { LineAnnotation } from './annotation'
 
-import { createRandomString } from '@music-lyric-kit/utils'
-
 export enum LineType {
   /**
    * Normal lyric line carrying content.
@@ -22,17 +20,11 @@ export enum LineType {
 
 class LineBase {
   /**
-   * Unique identifier of the line.
-   */
-  readonly id: string
-
-  /**
    * Time range of the line.
    */
   time: Time
 
   constructor(init: Init<LineBase> = {}) {
-    this.id = init.id ?? createRandomString(6).toUpperCase()
     this.time = init.time ?? new Time()
   }
 }

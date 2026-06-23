@@ -35,13 +35,6 @@ export class Meta {
   }
 
   /**
-   * The first entry with the given id.
-   */
-  byId(id: string): MetaItem | undefined {
-    return this.list.find((meta) => meta.id === id)
-  }
-
-  /**
    * All entries with the given original key.
    */
   byKey(key: string): MetaItem[] {

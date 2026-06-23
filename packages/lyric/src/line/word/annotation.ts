@@ -3,14 +3,7 @@ import type { LanguageTag } from '@root/language'
 
 import { Time } from '@root/time'
 
-import { createRandomString } from '@music-lyric-kit/utils'
-
 export class WordAnnotationContent {
-  /**
-   * Unique identifier of the token.
-   */
-  readonly id: string
-
   /**
    * Time range of the token.
    */
@@ -22,18 +15,12 @@ export class WordAnnotationContent {
   content: string
 
   constructor(init: Init<WordAnnotationContent> = {}) {
-    this.id = init.id ?? createRandomString(6).toUpperCase()
     this.time = init.time
     this.content = init.content ?? ''
   }
 }
 
 export class WordAnnotationItem {
-  /**
-   * Unique identifier of the item.
-   */
-  readonly id: string
-
   /**
    * Time range of the item, independent from its words.
    */
@@ -51,7 +38,6 @@ export class WordAnnotationItem {
   language?: LanguageTag
 
   constructor(init: Init<WordAnnotationItem> = {}) {
-    this.id = init.id ?? createRandomString(6).toUpperCase()
     this.time = init.time
     this.words = init.words ?? []
     this.language = init.language

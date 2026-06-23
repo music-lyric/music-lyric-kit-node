@@ -4,8 +4,6 @@ import type { WordAnnotation } from './annotation'
 
 import { Time } from '@root/time'
 
-import { createRandomString } from '@music-lyric-kit/utils'
-
 export enum WordType {
   /**
    * A normal word carrying text.
@@ -18,11 +16,6 @@ export enum WordType {
 }
 
 export class WordNormal {
-  /**
-   * Unique identifier of the word.
-   */
-  readonly id: string
-
   /**
    * Discriminant marking this as a normal word.
    */
@@ -54,7 +47,6 @@ export class WordNormal {
   stress: boolean
 
   constructor(init: Init<WordNormal> = {}) {
-    this.id = init.id ?? createRandomString(6).toUpperCase()
     this.time = init.time
     this.content = init.content ?? ''
     this.language = init.language
