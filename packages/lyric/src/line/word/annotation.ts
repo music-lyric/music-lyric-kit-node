@@ -45,6 +45,8 @@ export class WordAnnotationItem {
 
   /**
    * Flat text joined from every word.
+   *
+   * Live: recomputed on each access.
    */
   get content(): string {
     let result = ''

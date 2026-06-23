@@ -32,6 +32,8 @@ export class AgentItem {
 
   /**
    * Number of lines performed by this agent.
+   *
+   * Snapshot filled by `calcAgentIndex` at parse time; stale after lines change.
    */
   count: number
 
@@ -56,11 +58,15 @@ export class LineAgent {
 
   /**
    * Index of this agent occurrence among all lines.
+   *
+   * Snapshot filled by `calcAgentIndex` at parse time.
    */
   globalIndex: number
 
   /**
    * Index of this agent occurrence within its block.
+   *
+   * Snapshot filled by `calcAgentIndex` at parse time.
    */
   blockIndex: number
 

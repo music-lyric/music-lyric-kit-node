@@ -62,6 +62,8 @@ export class LineNormalBase extends LineBase {
 
   /**
    * Plain text of the line joined from every word.
+   *
+   * Live: recomputed from words on each access.
    */
   get original(): string {
     let result = ''
@@ -74,7 +76,7 @@ export class LineNormalBase extends LineBase {
 
   #languages?: LanguageTag[]
   /**
-   * Language tags of this line: the value set explicitly, otherwise collected from words.
+   * Language tags of this line: the explicit value, otherwise live-collected from words on each access.
    */
   get languages(): LanguageTag[] {
     if (this.#languages?.length) {

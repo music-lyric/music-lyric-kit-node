@@ -4,6 +4,8 @@ import type { LanguageItem, LanguageTag } from './content'
 export class Language {
   /**
    * All languages with their shares.
+   *
+   * Shares are a snapshot filled by the language transform; stale after lines change.
    */
   list: LanguageItem[]
 

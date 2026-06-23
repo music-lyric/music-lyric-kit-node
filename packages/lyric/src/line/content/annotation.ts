@@ -68,6 +68,8 @@ export type LineAnnotationItemInit<K extends LineAnnotationKind = LineAnnotation
 export class LineAnnotation {
   /**
    * All annotation items in order.
+   *
+   * Derived items are a snapshot from `deriveLineAnnotation`; re-run it after words change.
    */
   list: LineAnnotationItem[]
 
