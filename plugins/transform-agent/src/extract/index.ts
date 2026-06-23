@@ -7,7 +7,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Lyric } from '@music-lyric-kit/lyric'
 
-import { createHash } from './utils'
+import { createHash, isClockTimeColon } from './utils'
 
 export class Extract extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
@@ -50,6 +50,16 @@ export class Extract extends ParserPlugin {
 
       if (!trimmed) {
         currentId = null
+        newLines.push(line)
+        continue
+      }
+
+      // a clock time like 10:30 is not an agent separator; judged from the full line text since syllable splitting can scatter the digits and colon across words.
+      const colonPos = trimmed.search(/[:：]/u)
+      if (colonPos !== -1 && isClockTimeColon(trimmed.slice(0, colonPos), trimmed.slice(colonPos + 1))) {
+        if (currentId) {
+          line.agent = new Lyric.LineAgent({ id: currentId })
+        }
         newLines.push(line)
         continue
       }
