@@ -12,7 +12,7 @@ type WritableKeys<T> = {
 }[keyof T]
 
 /**
- * Constructor init shape: every writable field made optional, plus an optional id
- * so a serialized id can be restored on the classes that carry one.
+ * Constructor init shape: every writable field made optional.
+ * `AgentItem` / `LineAgent` carry a writable `id`, so it flows in here too.
  */
-export type Init<T> = Partial<Pick<T, WritableKeys<T>>> & ('id' extends keyof T ? { id?: string } : unknown)
+export type Init<T> = Partial<Pick<T, WritableKeys<T>>>
