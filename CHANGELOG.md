@@ -1,3 +1,39 @@
+## v0.14.0 (2026-06-23)
+
+### Document
+
+- `lyric`
+  - mark derived values as live or snapshot ([81343f5](https://github.com/music-lyric/music-lyric-kit-node/commit/81343f5))
+
+### Feature
+
+- `lyric`
+  - bump model version ([416bd1e](https://github.com/music-lyric/music-lyric-kit-node/commit/416bd1e))
+  - add ruby phrase start flag ([d34f323](https://github.com/music-lyric/music-lyric-kit-node/commit/d34f323))
+  - add language accessors ([ddcaf95](https://github.com/music-lyric/music-lyric-kit-node/commit/ddcaf95))
+  - add options object constructors to model classes ([15f513f](https://github.com/music-lyric/music-lyric-kit-node/commit/15f513f))
+- `ttml`
+  - parse amll ruby phrase start ([d3f913c](https://github.com/music-lyric/music-lyric-kit-node/commit/d3f913c))
+
+### Fix
+
+- `plugin-format-lrc`
+  - normalize punctuation on syllable word boundaries ([ec5aa4d](https://github.com/music-lyric/music-lyric-kit-node/commit/ec5aa4d))
+- `plugin-transform-agent`
+  - skip clock time in agent match ([1bde58d](https://github.com/music-lyric/music-lyric-kit-node/commit/1bde58d))
+- `plugin-transform-space`
+  - keep numeric separators tight ([3550de9](https://github.com/music-lyric/music-lyric-kit-node/commit/3550de9))
+  - space chained operators and slashes ([5f9fdf9](https://github.com/music-lyric/music-lyric-kit-node/commit/5f9fdf9))
+
+### Refactor
+
+- `lyric`
+  - simplify init type ([d739ec9](https://github.com/music-lyric/music-lyric-kit-node/commit/d739ec9))
+  - remove unused ids ([593cd7f](https://github.com/music-lyric/music-lyric-kit-node/commit/593cd7f))
+  - restructure agents ([5911cfe](https://github.com/music-lyric/music-lyric-kit-node/commit/5911cfe))
+  - restructure line annotations ([2fa7248](https://github.com/music-lyric/music-lyric-kit-node/commit/2fa7248))
+  - rework model constructors and meta accessors ([66de8f2](https://github.com/music-lyric/music-lyric-kit-node/commit/66de8f2))
+
 ## v0.13.0 (2026-06-22)
 
 ### Feature
