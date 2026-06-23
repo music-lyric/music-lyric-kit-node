@@ -13,71 +13,39 @@ export class Meta {
     this.list = init.list ?? []
   }
 
-  private listOf<T extends MetaType>(type: T): Extract<MetaItem, { type: T }>[] {
+  /**
+   * Whether any entry of a meta type exists.
+   */
+  has(type: MetaType): boolean {
+    return this.list.some((meta) => meta.type === type)
+  }
+
+  /**
+   * All entries of a meta type.
+   */
+  all<T extends MetaType>(type: T): Extract<MetaItem, { type: T }>[] {
     return this.list.filter((meta) => meta.type === type) as Extract<MetaItem, { type: T }>[]
   }
 
   /**
-   * All offset meta entries.
+   * The first entry of a meta type.
    */
-  get offsets() {
-    return this.listOf(MetaType.Offset)
+  first<T extends MetaType>(type: T): Extract<MetaItem, { type: T }> | undefined {
+    return this.list.find((meta) => meta.type === type) as Extract<MetaItem, { type: T }> | undefined
   }
 
   /**
-   * All duration meta entries.
+   * The first entry with the given id.
    */
-  get durations() {
-    return this.listOf(MetaType.Duration)
+  byId(id: string): MetaItem | undefined {
+    return this.list.find((meta) => meta.id === id)
   }
 
   /**
-   * All title meta entries.
+   * All entries with the given original key.
    */
-  get titles() {
-    return this.listOf(MetaType.Title)
-  }
-
-  /**
-   * All singer meta entries.
-   */
-  get singers() {
-    return this.listOf(MetaType.Singer)
-  }
-
-  /**
-   * All album meta entries.
-   */
-  get albums() {
-    return this.listOf(MetaType.Album)
-  }
-
-  /**
-   * All creator meta entries.
-   */
-  get creators() {
-    return this.listOf(MetaType.Creator)
-  }
-
-  /**
-   * All author meta entries.
-   */
-  get authors() {
-    return this.listOf(MetaType.Author)
-  }
-
-  /**
-   * All isrc meta entries.
-   */
-  get isrcs() {
-    return this.listOf(MetaType.Isrc)
-  }
-
-  /**
-   * All unknown meta entries.
-   */
-  get unknowns() {
-    return this.listOf(MetaType.Unknown)
+  byKey(key: string): MetaItem[] {
+    return this.list.filter((meta) => meta.key === key)
   }
 }
 
