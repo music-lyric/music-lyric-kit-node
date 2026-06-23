@@ -5,7 +5,7 @@ import { Meta } from './meta'
 import { Language } from './language'
 import { Agent } from './agent'
 
-export const Version = '0.8.0' as const
+export const Version = '0.9.0' as const
 
 export enum InfoType {
   /**
