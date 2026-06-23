@@ -31,8 +31,7 @@ export const appendLineTranslate = (line: Lyric.LineNormal, content: string, lan
 
   const lang = normalizeLanguage(language)
 
-  const item = new Lyric.LineAnnotationItem()
-  item.content = text
+  const item = new Lyric.LineAnnotationItem({ content: text })
   if (lang) {
     item.language = lang
   }
@@ -57,8 +56,7 @@ export const appendLineRoman = (line: Lyric.LineNormal, content: string, languag
     return
   }
 
-  const item = new Lyric.LineAnnotationItem()
-  item.content = text
+  const item = new Lyric.LineAnnotationItem({ content: text })
 
   const lang = normalizeLanguage(language)
   if (lang) {

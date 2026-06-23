@@ -47,9 +47,7 @@ const parseLineAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  const agent = new Lyric.LineAgent()
-  agent.id = raw
-  return agent
+  return new Lyric.LineAgent({ id: raw })
 }
 
 const resolveLineTime = (element: Xml.XmlElement, background: boolean) => {
@@ -69,8 +67,7 @@ const resolveWordSpace = (content: string, isFirst: boolean) => {
   if (isFirst || content.trim()) {
     return null
   }
-  const space = new Lyric.WordSpace()
-  space.count = content.length || 1
+  const space = new Lyric.WordSpace({ count: content.length || 1 })
   return space
 }
 
@@ -88,22 +85,13 @@ const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
 
   const prev = words[words.length - 1]
   if (text.startsWith(' ') && prev?.type !== Lyric.WordType.Space) {
-    const space = new Lyric.WordSpace()
-    space.count = calcStartSpaceCount(text)
-    words.push(space)
+    words.push(new Lyric.WordSpace({ count: calcStartSpaceCount(text) }))
   }
 
-  const normal = new Lyric.WordNormal()
-  normal.content = trimed
-  normal.time = new Lyric.Time()
-  normal.time.start = time.start
-  normal.time.end = time.end
-  words.push(normal)
+  words.push(new Lyric.WordNormal({ content: trimed, time: new Lyric.Time(time.start, time.end) }))
 
   if (text.endsWith(' ')) {
-    const space = new Lyric.WordSpace()
-    space.count = calcEndSpaceCount(text)
-    words.push(space)
+    words.push(new Lyric.WordSpace({ count: calcEndSpaceCount(text) }))
   }
 }
 
@@ -187,9 +175,7 @@ export const parseLine = (element: Xml.XmlElement, background: boolean = false, 
     return null
   }
 
-  const line = new Lyric.LineNormal()
-  line.time.start = time.start
-  line.time.end = time.end
+  const line = new Lyric.LineNormal({ time: new Lyric.Time(time.start, time.end) })
 
   const agent = parseLineAgent(element)
   if (agent) {

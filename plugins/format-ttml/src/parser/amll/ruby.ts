@@ -17,12 +17,7 @@ const parseRubyItems = (container: Xml.XmlElement): Lyric.WordAnnotationContent[
     if (!time) {
       continue
     }
-    const token = new Lyric.WordAnnotationContent()
-    token.content = content
-    token.time = new Lyric.Time()
-    token.time.start = time.start
-    token.time.end = time.end
-    tokens.push(token)
+    tokens.push(new Lyric.WordAnnotationContent({ content, time: new Lyric.Time(time.start, time.end) }))
   }
   return tokens
 }
@@ -51,20 +46,13 @@ export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Word[]): bo
   const start = items[0].time!.start
   const end = items[items.length - 1].time!.end
 
-  const word = new Lyric.WordNormal()
-  word.content = base
-  word.time = new Lyric.Time()
-  word.time.start = start
-  word.time.end = end
+  const ruby = new Lyric.WordAnnotationItem({ words: items, time: new Lyric.Time(start, end) })
 
-  const ruby = new Lyric.WordAnnotationItem()
-  ruby.words = items
-  ruby.time = new Lyric.Time()
-  ruby.time.start = start
-  ruby.time.end = end
-
-  word.annotation = new Lyric.WordAnnotation()
-  word.annotation.ruby = ruby
+  const word = new Lyric.WordNormal({
+    content: base,
+    time: new Lyric.Time(start, end),
+    annotation: new Lyric.WordAnnotation({ ruby }),
+  })
 
   words.push(word)
   return true

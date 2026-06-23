@@ -1,3 +1,4 @@
+import type { Init } from './init'
 import type { Line } from './line'
 import type { Agent } from './agent'
 
@@ -45,30 +46,39 @@ export class Info {
   /**
    * Overall classification of the lyric.
    */
-  type: InfoType = InfoType.Invalid
+  type: InfoType
 
   /**
    * Timing precision of the lyric.
    */
-  timing: InfoTiming = InfoTiming.None
+  timing: InfoTiming
 
   /**
    * Metadata of the lyric.
    */
-  meta: Meta = new Meta()
+  meta: Meta
 
   /**
    * Language distribution of the lyric.
    */
-  language: Language = new Language()
+  language: Language
 
   /**
    * Performing agents referenced by lines.
    */
-  agents: Agent[] = []
+  agents: Agent[]
 
   /**
    * Lyric lines in order.
    */
-  lines: Line[] = []
+  lines: Line[]
+
+  constructor(init: Init<Info> = {}) {
+    this.type = init.type ?? InfoType.Invalid
+    this.timing = init.timing ?? InfoTiming.None
+    this.meta = init.meta ?? new Meta()
+    this.language = init.language ?? new Language()
+    this.agents = init.agents ?? []
+    this.lines = init.lines ?? []
+  }
 }

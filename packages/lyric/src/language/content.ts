@@ -1,3 +1,5 @@
+import type { Init } from '@root/init'
+
 export enum LanguageType {
   /**
    * Simplified Chinese.
@@ -51,11 +53,16 @@ export class LanguageItem {
   /**
    * Language tag.
    */
-  tag: LanguageTag = ''
+  tag: LanguageTag
 
   /**
    * Share within the lyric, ranging from 0 to 100.
    * Recommended to be computed from word-level language counts.
    */
-  percent: number = 0
+  percent: number
+
+  constructor(init: Init<LanguageItem> = {}) {
+    this.tag = init.tag ?? ''
+    this.percent = init.percent ?? 0
+  }
 }

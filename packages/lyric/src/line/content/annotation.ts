@@ -1,3 +1,4 @@
+import type { Init } from '@root/init'
 import type { LanguageTag } from '@root/language'
 import type { Word, WordNormal, WordAnnotationItem } from '../word'
 
@@ -13,14 +14,24 @@ export class LineAnnotationItem {
   /**
    * Original text.
    */
-  content: string = ''
+  content: string
+
+  constructor(init: Init<LineAnnotationItem> = {}) {
+    this.language = init.language
+    this.content = init.content ?? ''
+  }
 }
 
 export class LineUnknownAnnotation extends LineAnnotationItem {
   /**
    * Original annotation type name.
    */
-  key: string = ''
+  key: string
+
+  constructor(init: Init<LineUnknownAnnotation> = {}) {
+    super(init)
+    this.key = init.key ?? ''
+  }
 }
 
 export class LineAnnotation {
@@ -58,10 +69,7 @@ export class LineAnnotation {
     if (!has) {
       return undefined
     }
-    const result = new LineAnnotationItem()
-    result.content = content
-    result.language = language
-    return result
+    return new LineAnnotationItem({ content, language })
   }
 
   /**
@@ -109,9 +117,7 @@ export class LineAnnotation {
           has = true
         }
       }
-      const lineItem = new LineAnnotationItem()
-      lineItem.content = content
-      lineItem.language = language || undefined
+      const lineItem = new LineAnnotationItem({ content, language: language || undefined })
       result.push(lineItem)
     }
     return result
@@ -163,10 +169,7 @@ export class LineAnnotation {
           has = true
         }
       }
-      const lineItem = new LineUnknownAnnotation()
-      lineItem.key = key
-      lineItem.content = content
-      lineItem.language = language
+      const lineItem = new LineUnknownAnnotation({ key, content, language })
       result.push(lineItem)
     }
     return result

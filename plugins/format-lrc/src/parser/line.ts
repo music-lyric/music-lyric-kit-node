@@ -15,9 +15,7 @@ const processNormal = (lines: MatchItem[]) => {
     const time = parseTagTime(line.tag) || 0
     const text = line.content.trim()
 
-    const item = new Lyric.LineNormal()
-    item.time.start = time
-    item.words = processTextToWords(text)
+    const item = new Lyric.LineNormal({ time: new Lyric.Time(time), words: processTextToWords(text) })
 
     result.push(item)
   }
@@ -70,9 +68,7 @@ const processSyllableLine = (line: MatchItem) => {
       }
       const current = words[words.length - 1]
       if (!current || current.type !== Lyric.WordType.Space) {
-        const item = new Lyric.WordSpace()
-        item.count = 1
-        words.push(item)
+        words.push(new Lyric.WordSpace())
       }
     }
 
@@ -80,17 +76,14 @@ const processSyllableLine = (line: MatchItem) => {
       continue
     }
 
-    const item = new Lyric.WordNormal()
-    item.time = new Lyric.Time()
-    item.time.start = time
-    item.time.end = time + duration
-    item.content = removeTextSpaceToOne(content)
+    const item = new Lyric.WordNormal({
+      time: new Lyric.Time(time, time + duration),
+      content: removeTextSpaceToOne(content),
+    })
     words.push(item)
 
     if (content.endsWith(' ')) {
-      const item = new Lyric.WordSpace()
-      item.count = 1
-      words.push(item)
+      words.push(new Lyric.WordSpace())
     }
   }
 
@@ -109,10 +102,7 @@ const processSyllableLine = (line: MatchItem) => {
   const start = first?.time?.start ?? lineTime
   const end = last?.time?.end ?? start
 
-  const target = new Lyric.LineNormal()
-  target.time.start = start
-  target.time.end = end
-  target.words = words
+  const target = new Lyric.LineNormal({ time: new Lyric.Time(start, end), words })
 
   return target
 }

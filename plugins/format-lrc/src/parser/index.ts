@@ -56,18 +56,14 @@ export class Parser extends ParserPlugin {
     const translate = processLines(matchLyric(inputTranslate).line, true)
     for (const item of translate) {
       const current = translateMap.get(item.time.start) || []
-      const annotation = new Lyric.LineAnnotationItem()
-      annotation.content = item.original
-      current.push(annotation)
+      current.push(new Lyric.LineAnnotationItem({ content: item.original }))
       translateMap.set(item.time.start, current)
     }
 
     const roman = processLines(matchLyric(inputRoman).line, true) || []
     for (const item of roman) {
       const current = romanMap.get(item.time.start) || []
-      const annotation = new Lyric.LineAnnotationItem()
-      annotation.content = item.original
-      current.push(annotation)
+      current.push(new Lyric.LineAnnotationItem({ content: item.original }))
       romanMap.set(item.time.start, current)
     }
 

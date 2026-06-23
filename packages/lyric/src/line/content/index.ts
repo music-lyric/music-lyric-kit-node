@@ -1,3 +1,4 @@
+import type { Init } from '@root/init'
 import type { LanguageTag } from '@root/language'
 import type { Word } from '../word'
 
@@ -23,12 +24,17 @@ class LineBase {
   /**
    * Unique identifier of the line.
    */
-  readonly id: string = createRandomString(6).toUpperCase()
+  readonly id: string
 
   /**
    * Time range of the line.
    */
-  time: Time = new Time()
+  time: Time
+
+  constructor(init: Init<LineBase> = {}) {
+    this.id = init.id ?? createRandomString(6).toUpperCase()
+    this.time = init.time ?? new Time()
+  }
 }
 
 export class LineNormalBase extends LineBase {
@@ -45,7 +51,22 @@ export class LineNormalBase extends LineBase {
   /**
    * Words composing the line in order.
    */
-  words: Word[] = []
+  words: Word[]
+
+  /**
+   * Annotations applied to the whole line, derived from words unless set explicitly.
+   */
+  annotation: LineAnnotation
+
+  constructor(init: Init<LineNormalBase> = {}) {
+    super(init)
+    this.agent = init.agent
+    this.words = init.words ?? []
+    this.annotation = init.annotation ?? new LineAnnotation(this)
+    if (init.languages) {
+      this.languages = init.languages
+    }
+  }
 
   /**
    * Plain text of the line joined from every word.
@@ -58,11 +79,6 @@ export class LineNormalBase extends LineBase {
     }
     return result
   }
-
-  /**
-   * Annotations applied to the whole line, derived from words unless set explicitly.
-   */
-  annotation: LineAnnotation = new LineAnnotation(this)
 
   #languages?: LanguageTag[]
   /**
@@ -94,6 +110,11 @@ export class LineNormal extends LineNormalBase {
    * Background lines attached to this line.
    */
   background?: LineNormalBase[]
+
+  constructor(init: Init<LineNormal> = {}) {
+    super(init)
+    this.background = init.background
+  }
 }
 
 export class LineInterlude extends LineBase {

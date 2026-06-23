@@ -107,10 +107,7 @@ export class Extract extends ParserPlugin {
         currentId = id
 
         if (!agentMap.has(id)) {
-          const agent = new Lyric.Agent()
-          agent.id = id
-          agent.names = [name]
-          agentMap.set(id, agent)
+          agentMap.set(id, new Lyric.Agent({ id, names: [name] }))
         } else {
           const exist = agentMap.get(id)!
           if (!exist.names.includes(name)) {
@@ -128,10 +125,7 @@ export class Extract extends ParserPlugin {
         }
       }
 
-      const agent = new Lyric.LineAgent()
-      agent.id = currentId
-
-      line.agent = agent
+      line.agent = new Lyric.LineAgent({ id: currentId })
       newLines.push(line)
     }
 

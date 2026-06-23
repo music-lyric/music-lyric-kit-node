@@ -154,18 +154,16 @@ export const insertSpaceToLine = (line: Lyric.LineNormalBase, target: Set<Insert
     normalWords,
     processed,
     (count) => {
-      const space = new Lyric.WordSpace()
-      space.count = count
-      return space
+      return new Lyric.WordSpace({ count })
     },
     (originalWord, matchedText) => {
-      const normal = new Lyric.WordNormal()
-      normal.content = matchedText
-      normal.time = originalWord.time
-      normal.language = originalWord.language
-      normal.annotation = originalWord.annotation
-      normal.stress = originalWord.stress
-      return normal
+      return new Lyric.WordNormal({
+        content: matchedText,
+        time: originalWord.time,
+        language: originalWord.language,
+        annotation: originalWord.annotation,
+        stress: originalWord.stress,
+      })
     },
     // strip only the literal space, matching the space notion used inside alignElements
     (w) => w.content.replaceAll(' ', ''),

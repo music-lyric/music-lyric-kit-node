@@ -18,15 +18,11 @@ export const processTextToWords = (text: string): Lyric.Word[] => {
     }
 
     if (current.trim() === '') {
-      const item = new Lyric.WordSpace()
-      item.count = 1
-      result.push(item)
+      result.push(new Lyric.WordSpace())
       continue
     }
 
-    const item = new Lyric.WordNormal()
-    item.content = current.trim()
-    result.push(item)
+    result.push(new Lyric.WordNormal({ content: current.trim() }))
   }
 
   return result

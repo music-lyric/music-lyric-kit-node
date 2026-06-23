@@ -1,3 +1,5 @@
+import type { Init } from '@root/init'
+
 export enum AgentType {
   /**
    * A single person.
@@ -21,37 +23,50 @@ export class Agent {
   /**
    * Unique identifier of the agent.
    */
-  id: string = ''
+  id: string
 
   /**
    * Performing type of the agent.
    */
-  type: AgentType = AgentType.Unknown
+  type: AgentType
 
   /**
    * Number of lines performed by this agent.
    */
-  count: number = 0
+  count: number
 
   /**
    * Display names of the agent; a group may carry more than one.
    */
-  names: string[] = []
+  names: string[]
+
+  constructor(init: Init<Agent> = {}) {
+    this.id = init.id ?? ''
+    this.type = init.type ?? AgentType.Unknown
+    this.count = init.count ?? 0
+    this.names = init.names ?? []
+  }
 }
 
 export class LineAgent {
   /**
    * Identifier of the referenced Agent.
    */
-  id: string = ''
+  id: string
 
   /**
    * Index of this agent occurrence among all lines.
    */
-  globalIndex: number = 0
+  globalIndex: number
 
   /**
    * Index of this agent occurrence within its block.
    */
-  blockIndex: number = 0
+  blockIndex: number
+
+  constructor(init: Init<LineAgent> = {}) {
+    this.id = init.id ?? ''
+    this.globalIndex = init.globalIndex ?? 0
+    this.blockIndex = init.blockIndex ?? 0
+  }
 }

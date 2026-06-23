@@ -6,27 +6,15 @@ const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
 const copyWord = (word: Lyric.Word) => {
   if (word.type === Lyric.WordType.Space) {
-    const space = new Lyric.WordSpace()
-    space.count = word.count
-    return space
+    return new Lyric.WordSpace({ count: word.count })
   }
   if (word.type === Lyric.WordType.Normal) {
-    const normal = new Lyric.WordNormal()
-    normal.content = word.content
-
-    if (word.time) {
-      normal.time = new Lyric.Time()
-      normal.time.start = word.time.start
-      normal.time.end = word.time.end
-    }
-
-    if (word.annotation) {
-      normal.annotation = word.annotation
-    }
-
-    normal.stress = word.stress
-
-    return normal
+    return new Lyric.WordNormal({
+      content: word.content,
+      time: word.time ? new Lyric.Time(word.time.start, word.time.end) : undefined,
+      annotation: word.annotation,
+      stress: word.stress,
+    })
   }
 }
 
@@ -238,14 +226,14 @@ export const extractInLine = (line: Lyric.LineNormal) => {
 
   const backgroundLines: Lyric.LineNormalBase[] = []
   for (const item of backgroundGroups) {
-    const result = new Lyric.LineNormalBase()
-
     const normals = item.filter((w) => w.type === Lyric.WordType.Normal)
-    if (normals.length > 0) {
-      result.time.start = normals[0].time?.start ?? 0
-      result.time.end = normals[normals.length - 1].time?.end ?? 0
-    }
-    result.words = item
+    const result = new Lyric.LineNormalBase({
+      time:
+        normals.length > 0
+          ? new Lyric.Time(normals[0].time?.start ?? 0, normals[normals.length - 1].time?.end ?? 0)
+          : undefined,
+      words: item,
+    })
 
     backgroundLines.push(result)
     addBackground(line, result)
@@ -270,9 +258,7 @@ export const extractInLine = (line: Lyric.LineNormal) => {
         if (i >= backgroundLines.length) {
           continue
         }
-        const target = new Lyric.LineAnnotationItem()
-        target.content = backgrounds[i]
-        target.language = item.language
+        const target = new Lyric.LineAnnotationItem({ content: backgrounds[i], language: item.language })
         push(backgroundLines[i], target)
       }
     }

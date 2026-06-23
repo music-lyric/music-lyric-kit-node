@@ -43,10 +43,7 @@ export class Insert extends ParserPlugin {
       const start = 500
       const end = firstLine.time.start
       if (end > start) {
-        const interlude = new Lyric.LineInterlude()
-        interlude.time.start = start
-        interlude.time.end = end
-        newLines.push(interlude)
+        newLines.push(new Lyric.LineInterlude({ time: new Lyric.Time(start, end) }))
       }
     }
 
@@ -60,10 +57,7 @@ export class Insert extends ParserPlugin {
       const duration = next.time.start - start
 
       if (duration > normalThreshold) {
-        const interlude = new Lyric.LineInterlude()
-        interlude.time.start = start
-        interlude.time.end = next.time.start
-        newLines.push(interlude)
+        newLines.push(new Lyric.LineInterlude({ time: new Lyric.Time(start, next.time.start) }))
       }
     }
 

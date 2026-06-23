@@ -1,3 +1,4 @@
+import type { Init } from '@root/init'
 import type { MetaItem } from './content'
 
 import { MetaType } from './content'
@@ -6,7 +7,11 @@ export class Meta {
   /**
    * All meta entries in order.
    */
-  list: MetaItem[] = []
+  list: MetaItem[]
+
+  constructor(init: Init<Meta> = {}) {
+    this.list = init.list ?? []
+  }
 
   private listOf<T extends MetaType>(type: T): Extract<MetaItem, { type: T }>[] {
     return this.list.filter((meta) => meta.type === type) as Extract<MetaItem, { type: T }>[]

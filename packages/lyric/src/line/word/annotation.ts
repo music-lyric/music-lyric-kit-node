@@ -1,3 +1,4 @@
+import type { Init } from '@root/init'
 import type { LanguageTag } from '@root/language'
 
 import { Time } from '@root/time'
@@ -8,7 +9,7 @@ export class WordAnnotationContent {
   /**
    * Unique identifier of the token.
    */
-  readonly id: string = createRandomString(6).toUpperCase()
+  readonly id: string
 
   /**
    * Time range of the token.
@@ -18,14 +19,20 @@ export class WordAnnotationContent {
   /**
    * Text content of the token.
    */
-  content: string = ''
+  content: string
+
+  constructor(init: Init<WordAnnotationContent> = {}) {
+    this.id = init.id ?? createRandomString(6).toUpperCase()
+    this.time = init.time
+    this.content = init.content ?? ''
+  }
 }
 
 export class WordAnnotationItem {
   /**
    * Unique identifier of the item.
    */
-  readonly id: string = createRandomString(6).toUpperCase()
+  readonly id: string
 
   /**
    * Time range of the item, independent from its words.
@@ -35,13 +42,20 @@ export class WordAnnotationItem {
   /**
    * Tokens composing the item in order.
    */
-  words: WordAnnotationContent[] = []
+  words: WordAnnotationContent[]
 
   /**
    * Language or transliteration scheme of this item.
    * Should be set when multiple languages coexist, since line-level aggregation groups items by it.
    */
   language?: LanguageTag
+
+  constructor(init: Init<WordAnnotationItem> = {}) {
+    this.id = init.id ?? createRandomString(6).toUpperCase()
+    this.time = init.time
+    this.words = init.words ?? []
+    this.language = init.language
+  }
 
   /**
    * Flat text joined from every word.
@@ -59,7 +73,12 @@ export class WordUnknownAnnotation extends WordAnnotationItem {
   /**
    * Original annotation type name.
    */
-  key: string = ''
+  key: string
+
+  constructor(init: Init<WordUnknownAnnotation> = {}) {
+    super(init)
+    this.key = init.key ?? ''
+  }
 }
 
 export class WordAnnotation {
@@ -77,4 +96,10 @@ export class WordAnnotation {
    * Unknown annotations keyed by their original type name.
    */
   unknowns?: WordUnknownAnnotation[]
+
+  constructor(init: Init<WordAnnotation> = {}) {
+    this.ruby = init.ruby
+    this.romans = init.romans
+    this.unknowns = init.unknowns
+  }
 }

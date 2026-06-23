@@ -1,10 +1,15 @@
+import type { Init } from '@root/init'
 import type { LanguageItem } from './content'
 
 export class Language {
   /**
    * All languages with their shares.
    */
-  list: LanguageItem[] = []
+  list: LanguageItem[]
+
+  constructor(init: Init<Language> = {}) {
+    this.list = init.list ?? []
+  }
 
   /**
    * The language with the highest share.

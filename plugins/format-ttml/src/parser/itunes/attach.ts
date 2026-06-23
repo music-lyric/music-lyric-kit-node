@@ -167,11 +167,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
       }
     }
 
-    const token = new Lyric.WordAnnotationContent()
-    token.content = content
-    token.time = new Lyric.Time()
-    token.time.start = entry.start
-    token.time.end = entry.end
+    const token = new Lyric.WordAnnotationContent({ content, time: new Lyric.Time(entry.start, entry.end) })
 
     const list = groups.get(entry.target)
     if (list) {
@@ -208,12 +204,10 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
 
   const lang = normalizeLanguage(language)
   for (const [word, tokens] of groups) {
-    const item = new Lyric.WordAnnotationItem()
-    item.words = tokens
-
-    item.time = new Lyric.Time()
-    item.time.start = tokens[0].time!.start
-    item.time.end = tokens[tokens.length - 1].time!.end
+    const item = new Lyric.WordAnnotationItem({
+      words: tokens,
+      time: new Lyric.Time(tokens[0].time!.start, tokens[tokens.length - 1].time!.end),
+    })
 
     if (lang) {
       item.language = lang

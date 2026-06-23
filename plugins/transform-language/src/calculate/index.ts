@@ -70,10 +70,7 @@ export class CalculatePercent extends ParserPlugin {
 
     const list: Lyric.LanguageItem[] = []
     for (const [tag, count] of counts) {
-      const item = new Lyric.LanguageItem()
-      item.tag = tag
-      item.percent = Math.round((count / total) * 10000) / 100
-      list.push(item)
+      list.push(new Lyric.LanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
     }
     list.sort((a, b) => b.percent - a.percent)
 
