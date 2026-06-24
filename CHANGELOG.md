@@ -1,3 +1,25 @@
+## v0.14.1 (2026-06-25)
+
+### Feature
+
+- `plugin-transform-background`
+  - assign bracketed annotations to existing backgrounds ([4ca2b47](https://github.com/music-lyric/music-lyric-kit-node/commit/4ca2b47))
+
+### Fix
+
+- `plugin-format-ttml`
+  - isolate xml parser state per parse ([0ab229f](https://github.com/music-lyric/music-lyric-kit-node/commit/0ab229f))
+  - split background annotations into background lines ([6d5f302](https://github.com/music-lyric/music-lyric-kit-node/commit/6d5f302))
+- `utils`
+  - replace arrays wholesale on deep merge ([b05719a](https://github.com/music-lyric/music-lyric-kit-node/commit/b05719a))
+
+### Performance
+
+- `plugin-transform-pure`
+  - avoid per-line allocations in clean loop ([ab15d0e](https://github.com/music-lyric/music-lyric-kit-node/commit/ab15d0e))
+- `utils`
+  - reduce redundant work on config changes ([47c053d](https://github.com/music-lyric/music-lyric-kit-node/commit/47c053d))
+
 ## v0.14.0 (2026-06-23)
 
 ### Document
