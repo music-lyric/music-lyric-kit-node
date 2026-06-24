@@ -228,18 +228,22 @@ export const extractInLine = (line: Lyric.LineNormal) => {
   for (const item of backgroundGroups) {
     const normals = item.filter((w) => w.type === Lyric.WordType.Normal)
     const result = new Lyric.LineNormalBase({
-      time:
-        normals.length > 0
-          ? new Lyric.Time(normals[0].time?.start ?? 0, normals[normals.length - 1].time?.end ?? 0)
-          : undefined,
+      time: normals.length > 0 ? new Lyric.Time(normals[0].time?.start ?? 0, normals[normals.length - 1].time?.end ?? 0) : undefined,
       words: item,
     })
 
     backgroundLines.push(result)
     addBackground(line, result)
   }
+}
 
-  const splitAnnotation = (kind: Lyric.LineAnnotationKind, items: Lyric.LineAnnotationItem[]) => {
+export const assignBackgroundAnnotation = (line: Lyric.LineNormal) => {
+  const backgroundLines = line.background
+  if (!backgroundLines?.length) {
+    return
+  }
+
+  const split = (kind: Lyric.LineAnnotationKind, items: Lyric.LineAnnotationItem[]) => {
     for (const item of items) {
       if (!item.content.trim()) {
         continue
@@ -258,8 +262,8 @@ export const extractInLine = (line: Lyric.LineNormal) => {
     }
   }
 
-  splitAnnotation(Lyric.LineAnnotationKind.Translate, line.annotation.all(Lyric.LineAnnotationKind.Translate))
-  splitAnnotation(Lyric.LineAnnotationKind.Roman, line.annotation.all(Lyric.LineAnnotationKind.Roman))
+  split(Lyric.LineAnnotationKind.Translate, line.annotation.all(Lyric.LineAnnotationKind.Translate))
+  split(Lyric.LineAnnotationKind.Roman, line.annotation.all(Lyric.LineAnnotationKind.Roman))
 }
 
 export const extractCrossLine = (lines: Lyric.Line[]) => {

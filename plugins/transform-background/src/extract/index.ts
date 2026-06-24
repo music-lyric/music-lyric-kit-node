@@ -7,7 +7,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Lyric } from '@music-lyric-kit/lyric'
 
-import { addBackground, extractCrossLine, extractInLine, isFullLine } from './core'
+import { addBackground, assignBackgroundAnnotation, extractCrossLine, extractInLine, isFullLine } from './core'
 
 export class Extract extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
@@ -52,6 +52,8 @@ export class Extract extends ParserPlugin {
       if (this.config.current.inLine) {
         extractInLine(line)
       }
+
+      assignBackgroundAnnotation(line)
 
       result.push(line)
     }
