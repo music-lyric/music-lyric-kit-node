@@ -50,6 +50,8 @@ export class Clean extends ParserPlugin {
 
     const newLines: Lyric.Line[] = []
 
+    const musicInfo = ctx.params.musicInfo
+
     for (let i = 0; i < linesLength; i++) {
       const line = lines[i]
       if (line.type !== Lyric.LineType.Normal) {
@@ -57,21 +59,17 @@ export class Clean extends ParserPlugin {
         continue
       }
 
-      const musicInfo = ctx.params.musicInfo
-      const extra: string[] = []
-
+      let extra: string[] | undefined
       if (i === 0 && musicInfo && this.config.current.firstLineWithMusicInfo) {
-        const names = processText(musicInfo.name || '')
-        if (names) {
-          extra.push(...names)
-        }
-        const singer = musicInfo.singer?.map((item) => processText(item)).flat()
-        if (singer) {
-          extra.push(...singer)
+        extra = [...processText(musicInfo.name || '')]
+        if (musicInfo.singer) {
+          for (const item of musicInfo.singer) {
+            extra.push(...processText(item))
+          }
         }
       }
 
-      const clean = extra.length ? processText(line.original).join('') : line.original
+      const clean = extra?.length ? processText(line.original).join('') : line.original
       const result = this.matcher.match(clean, extra)
       if (!result) {
         newLines.push(line)
