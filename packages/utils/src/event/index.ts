@@ -40,6 +40,14 @@ export class Event<M extends { [K in keyof M]: (...args: any[]) => any }> {
     }
   }
 
+  /**
+   * Whether the event currently has at least one listener.
+   */
+  has<K extends keyof M>(event: K): boolean {
+    const callbacks = this.currentListeners[event]
+    return !!callbacks && callbacks.length > 0
+  }
+
   clear(): void {
     this.currentListeners = {}
   }

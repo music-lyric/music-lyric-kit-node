@@ -31,6 +31,20 @@ export class ConfigManager<Full, Init, Keys = NestedKeys<Full>> {
   }
 
   /**
+   * Emit an update with the changed paths, diffing only when someone is actually listening.
+   */
+  private emitUpdate(prev: Full) {
+    if (!this.event.has('update')) {
+      return
+    }
+
+    const changed = compareObject(prev, this.now) as Set<Keys>
+    if (changed.size) {
+      this.event.emit('update', changed, this.now)
+    }
+  }
+
+  /**
    * Deep-merge a (partial) config object into the current one. To write by dot-path, use `set` instead.
    * Emits `update` with the changed paths, only when something actually changed.
    */
@@ -42,23 +56,34 @@ export class ConfigManager<Full, Init, Keys = NestedKeys<Full>> {
     const prev = this.now
     this.now = mergeObject(cloneObjectDeep(prev), target)
 
-    const changed = compareObject(prev, this.now) as Set<Keys>
-    if (changed.size) {
-      this.event.emit('update', changed, this.now)
+    this.emitUpdate(prev)
+  }
+
+  /**
+   * Reset to defaults and merge a (partial) patch in one step, emitting at most one `update`.
+   *
+   * Equivalent to `reset` then `update` but avoids the intermediate notification.
+   */
+  apply(target?: Init) {
+    const prev = this.now
+
+    let next = cloneObjectDeep(this.def)
+    if (target) {
+      next = mergeObject(next, target)
     }
+    this.now = next
+
+    this.emitUpdate(prev)
   }
 
   /**
    * Restore every value back to the defaults. Emits `update` (the changed paths) and then `reset`.
    */
   reset() {
-    const prev = cloneObjectDeep(this.now)
+    const prev = this.now
     this.now = cloneObjectDeep(this.def)
 
-    const changed = compareObject(prev, this.now) as Set<Keys>
-    if (changed.size) {
-      this.event.emit('update', changed, this.now)
-    }
+    this.emitUpdate(prev)
 
     this.event.emit('reset', this.now)
   }
@@ -95,10 +120,7 @@ export class ConfigManager<Full, Init, Keys = NestedKeys<Full>> {
 
     this.now = next
 
-    const changed = compareObject(prev, this.now) as Set<Keys>
-    if (changed.size) {
-      this.event.emit('update', changed, this.now)
-    }
+    this.emitUpdate(prev)
   }
 
   /**

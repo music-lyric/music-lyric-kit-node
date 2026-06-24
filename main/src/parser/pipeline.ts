@@ -139,12 +139,8 @@ export class ParserPipeline {
       return
     }
 
-    // reset config first
-    plugin.config.reset()
-
-    if (options) {
-      plugin.config.update(options)
-    }
+    // reset to defaults and apply this run's options in a single update.
+    plugin.config.apply(options)
   }
 
   private exec(plugin: ParserPlugin) {
