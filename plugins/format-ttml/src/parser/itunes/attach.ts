@@ -1,7 +1,8 @@
+import type { ElementGroups } from '@root/utils'
+
 import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
 
-import type { ElementGroups } from '@root/utils'
 import {
   findElementsByLocalName,
   getChildElementsByLocalName,
@@ -42,6 +43,37 @@ const readReplacementWords = (text: Xml.XmlElement): Lyric.Word[] => {
   return plain ? parseTextToWords(plain) : []
 }
 
+const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds: string[] } => {
+  let main = ''
+  const backgrounds: string[] = []
+  for (const child of text.children) {
+    if (child.type === Xml.XmlNodeType.Element && child.local === 'span' && getAttributeByName(child, 'role', true) === 'x-bg') {
+      backgrounds.push(getTextContent(child))
+      continue
+    }
+    main += getTextContent(child)
+  }
+  return { main, backgrounds }
+}
+
+const attachBackgroundTexts = (
+  line: Lyric.LineNormal,
+  backgrounds: string[],
+  attach: (background: Lyric.LineNormalBase, content: string) => void,
+) => {
+  const list = line.background
+  if (!list?.length) {
+    return
+  }
+  for (let i = 0; i < backgrounds.length && i < list.length; i++) {
+    const content = backgrounds[i].trim()
+    if (!content) {
+      continue
+    }
+    attach(list[i], content)
+  }
+}
+
 const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>) => {
   eachAnnotationText(blocks, lineMap, (text, line, language, type) => {
     // replacement overrides the original wording (e.g. traditional to simplified).
@@ -52,8 +84,11 @@ const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.Li
       }
       return
     }
+    // separate the x-bg pieces so they land on background lines instead of the main translation.
+    const { main, backgrounds } = splitBackgroundText(text)
     // head subtitle wins over an inline x-translation of the same language.
-    appendLineTranslate(line, getTextContent(text), language, true)
+    appendLineTranslate(line, main, language, true)
+    attachBackgroundTexts(line, backgrounds, (background, content) => appendLineTranslate(background, content, language, true))
   })
 }
 
@@ -225,7 +260,10 @@ const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNo
     if (hasTimedSpans(text) && attachWordRomans(text, line, language)) {
       return
     }
-    appendLineRoman(line, getTextContent(text), language)
+    // separate the x-bg pieces so they land on background lines instead of the main roman.
+    const { main, backgrounds } = splitBackgroundText(text)
+    appendLineRoman(line, main, language)
+    attachBackgroundTexts(line, backgrounds, (background, content) => appendLineRoman(background, content, language))
   })
 }
 

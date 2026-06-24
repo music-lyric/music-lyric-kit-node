@@ -23,7 +23,7 @@ export const normalizeLanguage = (language?: string): string | undefined => {
   return value
 }
 
-export const appendLineTranslate = (line: Lyric.LineNormal, content: string, language?: string, fromItunes: boolean = false) => {
+export const appendLineTranslate = (line: Lyric.LineNormalBase, content: string, language?: string, fromItunes: boolean = false) => {
   const text = content.trim()
   if (!text) {
     return
@@ -46,7 +46,7 @@ export const appendLineTranslate = (line: Lyric.LineNormal, content: string, lan
   }
 }
 
-export const appendLineRoman = (line: Lyric.LineNormal, content: string, language?: string) => {
+export const appendLineRoman = (line: Lyric.LineNormalBase, content: string, language?: string) => {
   const text = content.trim()
   if (!text) {
     return
