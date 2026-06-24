@@ -9,8 +9,6 @@ const CHECK_REGEXP = /xmlns:itunes|iTunesMetadata|itunes:timing=/iu
 const AMLL_HINT_REGEXP = /xmlns:amll|amll:meta/iu
 
 export class ItunesParser extends ParserPlugin {
-  private parser = new Xml.Parser()
-
   override get id() {
     return 'TTML-ITUNES-PARSER'
   }
@@ -38,7 +36,7 @@ export class ItunesParser extends ParserPlugin {
       return
     }
 
-    const root = this.parser.parse(input)
+    const root = new Xml.Parser().parse(input)
     // invalid xml parses to null; leave the result untouched.
     if (!root) {
       return

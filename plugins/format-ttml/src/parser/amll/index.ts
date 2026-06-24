@@ -47,8 +47,6 @@ const parseMetas = (metas: Xml.XmlElement[]) => {
 }
 
 export class AmllParser extends ParserPlugin {
-  private parser = new Xml.Parser()
-
   override get id() {
     return 'TTML-AMLL-PARSER'
   }
@@ -76,7 +74,7 @@ export class AmllParser extends ParserPlugin {
       return
     }
 
-    const root = this.parser.parse(input)
+    const root = new Xml.Parser().parse(input)
     // invalid xml parses to null; leave the result untouched.
     if (!root) {
       return
