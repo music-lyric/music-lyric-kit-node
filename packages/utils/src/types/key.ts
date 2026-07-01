@@ -2,23 +2,23 @@ type IsPlainObject<T> = T extends object
   ? T extends Date | RegExp | Map<any, any> | Set<any> | Function | readonly any[]
     ? false
     : T extends { [key: string]: any }
-    ? true
-    : false
+      ? true
+      : false
   : false
 
 type SplitKey<S extends string, D extends string = '.', Result extends string[] = []> = S extends `${infer Head}${D}${infer Rest}`
   ? SplitKey<Rest, D, [...Result, Head]>
   : S extends ''
-  ? Result
-  : [...Result, S]
+    ? Result
+    : [...Result, S]
 
 type PathValueByKeys<T, Keys extends readonly string[]> = Keys extends [infer Head, ...infer Tail]
   ? Head extends keyof T
     ? Tail extends []
       ? T[Head]
       : T[Head] extends null | undefined
-      ? undefined
-      : PathValueByKeys<T[Head], Extract<Tail, string[]>>
+        ? undefined
+        : PathValueByKeys<T[Head], Extract<Tail, string[]>>
     : undefined
   : T
 

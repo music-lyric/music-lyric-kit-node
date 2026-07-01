@@ -177,12 +177,7 @@ const applyLineRole = (
 /**
  * Fill the words of a line body, either from plain text or from timed spans.
  */
-const fillBodyWords = (
-  body: Lyric.LineNormal | Lyric.LineBackground,
-  element: Xml.XmlElement,
-  background: boolean,
-  options?: ParseSpanOptions,
-) => {
+const fillBodyWords = (body: Lyric.LineNormal | Lyric.LineBackground, element: Xml.XmlElement, background: boolean, options?: ParseSpanOptions) => {
   const content = body.content ?? (body.content = Lyric.makeLineContent())
   if (!hasChildElementByLocalName(element, 'span')) {
     content.words = parseTextToWords(getTextContent(element).trim())

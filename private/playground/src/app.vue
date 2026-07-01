@@ -38,64 +38,69 @@
       <div :class="[$style.backdrop, { [$style.backdropShow]: sidebarOpen }]" @click="closeSidebar"></div>
 
       <main :class="$style.content">
-      <section :class="$style.section">
-        <div :class="$style.panelHead">
-          <h2 :class="$style.panelTitle">{{ t('panel.input') }}</h2>
-          <Segmented v-model="parser.format.value" :options="formatOptions" />
-        </div>
-
-        <div :class="$style.fields">
-          <div :class="$style.infoGrid">
-            <LabeledInput v-model="parser.songName.value" :label="t('field.songName')" :placeholder="t('placeholder.songName')" />
-            <LabeledInput v-model="parser.singers.value" :label="t('field.singers')" :placeholder="t('placeholder.singers')" :hint="t('hint.singers')" />
+        <section :class="$style.section">
+          <div :class="$style.panelHead">
+            <h2 :class="$style.panelTitle">{{ t('panel.input') }}</h2>
+            <Segmented v-model="parser.format.value" :options="formatOptions" />
           </div>
 
-          <div v-if="parser.format.value === 'lrc'" :class="$style.inputGrid">
-            <LabeledTextarea v-model="parser.original.value" :label="t('field.original')" :placeholder="t('placeholder.original')" />
-            <LabeledTextarea v-model="parser.translate.value" :label="t('field.translate')" :placeholder="t('placeholder.translate')" />
-            <LabeledTextarea v-model="parser.roman.value" :label="t('field.roman')" :placeholder="t('placeholder.roman')" />
-          </div>
-          <div v-else>
-            <LabeledTextarea v-model="parser.ttml.value" :label="t('field.ttml')" :placeholder="t('placeholder.ttml')" tall />
-          </div>
-        </div>
+          <div :class="$style.fields">
+            <div :class="$style.infoGrid">
+              <LabeledInput v-model="parser.songName.value" :label="t('field.songName')" :placeholder="t('placeholder.songName')" />
+              <LabeledInput
+                v-model="parser.singers.value"
+                :label="t('field.singers')"
+                :placeholder="t('placeholder.singers')"
+                :hint="t('hint.singers')"
+              />
+            </div>
 
-        <div :class="$style.actions">
-          <div :class="$style.engine">
-            <span :class="$style.engineLabel">{{ t('label.engine') }}</span>
-            <Segmented v-model="parser.engine.value" :options="engineOptions" size="sm" />
+            <div v-if="parser.format.value === 'lrc'" :class="$style.inputGrid">
+              <LabeledTextarea v-model="parser.original.value" :label="t('field.original')" :placeholder="t('placeholder.original')" />
+              <LabeledTextarea v-model="parser.translate.value" :label="t('field.translate')" :placeholder="t('placeholder.translate')" />
+              <LabeledTextarea v-model="parser.roman.value" :label="t('field.roman')" :placeholder="t('placeholder.roman')" />
+            </div>
+            <div v-else>
+              <LabeledTextarea v-model="parser.ttml.value" :label="t('field.ttml')" :placeholder="t('placeholder.ttml')" tall />
+            </div>
           </div>
-          <button :class="$style.parseBtn" :disabled="parser.parsing.value" @click="parser.parse">{{ t('action.parse') }}</button>
-        </div>
-      </section>
 
-      <div :class="$style.divider"></div>
-
-      <section :class="$style.section">
-        <div :class="$style.panelHead">
-          <h2 :class="$style.panelTitle">{{ t('panel.result') }}</h2>
-          <div :class="$style.resultMeta">
-            <span v-if="parser.elapsed.value" :class="$style.timing">{{ parser.elapsed.value.toFixed(2) }}ms</span>
-            <span v-if="parser.result.value" :class="$style.size" :title="t('result.sizeHint')">
-              {{ formatBytes(parser.inputSize.value) }}
-              <span :class="$style.sizeArrow">→</span>
-              {{ formatBytes(parser.bufferSize.value) }}
-            </span>
-            <span v-if="parser.result.value" :class="$style.badge">{{ parser.resultType.value }} / v{{ parser.resultVersion.value }}</span>
+          <div :class="$style.actions">
+            <div :class="$style.engine">
+              <span :class="$style.engineLabel">{{ t('label.engine') }}</span>
+              <Segmented v-model="parser.engine.value" :options="engineOptions" size="sm" />
+            </div>
+            <button :class="$style.parseBtn" :disabled="parser.parsing.value" @click="parser.parse">{{ t('action.parse') }}</button>
           </div>
-        </div>
+        </section>
 
-        <div :class="$style.resultBody">
-          <div v-if="parser.error.value" :class="$style.error">{{ t(parser.error.value) }}</div>
-          <template v-else-if="parser.result.value">
-            <ResultMetas :meta="parser.result.value.meta" />
-            <ResultLanguages :languages="parser.result.value.languages" />
-            <ResultAgents :agents="parser.result.value.agents" :lines="parser.result.value.lines" />
-            <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
-          </template>
-          <div v-else :class="$style.empty">{{ t('result.empty') }}</div>
-        </div>
-      </section>
+        <div :class="$style.divider"></div>
+
+        <section :class="$style.section">
+          <div :class="$style.panelHead">
+            <h2 :class="$style.panelTitle">{{ t('panel.result') }}</h2>
+            <div :class="$style.resultMeta">
+              <span v-if="parser.elapsed.value" :class="$style.timing">{{ parser.elapsed.value.toFixed(2) }}ms</span>
+              <span v-if="parser.result.value" :class="$style.size" :title="t('result.sizeHint')">
+                {{ formatBytes(parser.inputSize.value) }}
+                <span :class="$style.sizeArrow">→</span>
+                {{ formatBytes(parser.bufferSize.value) }}
+              </span>
+              <span v-if="parser.result.value" :class="$style.badge">{{ parser.resultType.value }} / v{{ parser.resultVersion.value }}</span>
+            </div>
+          </div>
+
+          <div :class="$style.resultBody">
+            <div v-if="parser.error.value" :class="$style.error">{{ t(parser.error.value) }}</div>
+            <template v-else-if="parser.result.value">
+              <ResultMetas :meta="parser.result.value.meta" />
+              <ResultLanguages :languages="parser.result.value.languages" />
+              <ResultAgents :agents="parser.result.value.agents" :lines="parser.result.value.lines" />
+              <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
+            </template>
+            <div v-else :class="$style.empty">{{ t('result.empty') }}</div>
+          </div>
+        </section>
       </main>
     </div>
   </div>

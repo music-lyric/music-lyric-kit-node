@@ -251,10 +251,7 @@ export const extractInLine = (line: Lyric.LineNormal) => {
   for (const item of backgroundGroups) {
     const normals = item.filter(Lyric.isWordNormal).map((w) => w.body.value)
     const result = Lyric.makeLineBackground({
-      time:
-        normals.length > 0
-          ? Lyric.makeTime({ start: normals[0].time?.start ?? 0, end: normals[normals.length - 1].time?.end ?? 0 })
-          : undefined,
+      time: normals.length > 0 ? Lyric.makeTime({ start: normals[0].time?.start ?? 0, end: normals[normals.length - 1].time?.end ?? 0 }) : undefined,
       content: { words: item },
     })
 

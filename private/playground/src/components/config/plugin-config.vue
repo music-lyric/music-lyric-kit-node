@@ -29,12 +29,7 @@
         </label>
 
         <div v-if="states[def.key].enabled && def.fields.length" :class="$style.fields">
-          <ConfigField
-            v-for="field in def.fields"
-            :key="field.key"
-            :field="field"
-            v-model="states[def.key].values[field.key]"
-          />
+          <ConfigField v-for="field in def.fields" :key="field.key" :field="field" v-model="states[def.key].values[field.key]" />
         </div>
       </section>
     </div>

@@ -81,9 +81,7 @@ export class Infer extends ParserPlugin {
 
     // kana presence marks a Japanese document, so its han characters are Japanese rather than Chinese
     const japanese = kanaCount > 0 && kanaCount >= (kanaCount + hanCount) * JAPANESE_KANA_RATIO
-    const hanLanguage = japanese
-      ? Lyric.LanguageType.Japanese
-      : (detectChineseVariant(hanText) ?? Lyric.LanguageType.ChineseSimplified)
+    const hanLanguage = japanese ? Lyric.LanguageType.Japanese : (detectChineseVariant(hanText) ?? Lyric.LanguageType.ChineseSimplified)
     const latinLanguage = detectLatinLanguage(latinText)
 
     // second pass: apply the resolved language to every collected word

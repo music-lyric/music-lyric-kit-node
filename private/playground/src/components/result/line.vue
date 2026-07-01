@@ -9,11 +9,7 @@
             <span v-if="word.ruby" :class="$style.ruby" :title="word.ruby.title">{{ word.ruby.text }}</span>
             <span v-for="(r, ri) in word.romans" :key="`r${ri}`" :class="$style.wordRoman" :title="r.title">{{ r.text }}</span>
             <span v-for="(u, ui) in word.unknowns" :key="`u${ui}`" :class="$style.wordUnknown" :title="u.title">{{ u.text }}</span>
-            <span
-              :class="[$style.word, { [$style.hasTime]: word.hasTime, [$style.stress]: word.stress }]"
-              :title="word.title"
-              >{{ word.text }}</span
-            >
+            <span :class="[$style.word, { [$style.hasTime]: word.hasTime, [$style.stress]: word.stress }]" :title="word.title">{{ word.text }}</span>
           </span>
           <span v-else :class="$style.space">{{ word.text }}</span>
         </template>
