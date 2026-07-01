@@ -3,9 +3,6 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent } from '@root/utils'
 
-/**
- * Apply iTunesMetadata songwriters to the structured meta as credits.
- */
 export const applyItunesMetas = (meta: Lyric.Meta, songwriters: Xml.XmlElement[]) => {
   const names: string[] = []
   for (const element of songwriters) {

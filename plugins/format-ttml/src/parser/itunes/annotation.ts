@@ -1,5 +1,7 @@
 import { Lyric } from '@music-lyric-kit/lyric'
 
+import { ensureAnnotation } from '@root/utils'
+
 /**
  * Normalize a language tag to lower case.
  *
@@ -38,8 +40,7 @@ export const appendLineTranslate = (
 
   const item = Lyric.makeLineAnnotationTranslate({ content: text, language: lang || undefined })
 
-  const lineContent = line.content ?? (line.content = Lyric.makeLineContent())
-  const annotation = lineContent.annotation ?? (lineContent.annotation = Lyric.makeLineAnnotation())
+  const annotation = ensureAnnotation(line)
   const list = annotation.translates
   const index = list.findIndex((entry) => normalizeLanguage(entry.language) === lang)
 
@@ -63,7 +64,6 @@ export const appendLineRoman = (line: Lyric.LineNormal | Lyric.LineBackground, c
 
   const item = Lyric.makeLineAnnotationRoman({ content: text, language: lang || undefined })
 
-  const lineContent = line.content ?? (line.content = Lyric.makeLineContent())
-  const annotation = lineContent.annotation ?? (lineContent.annotation = Lyric.makeLineAnnotation())
+  const annotation = ensureAnnotation(line)
   annotation.romans.push(item)
 }

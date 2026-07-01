@@ -2,7 +2,15 @@ import { Lyric } from '@music-lyric-kit/lyric'
 import { Xml } from '@music-lyric-kit/utils'
 
 import { parseTime } from '@music-lyric-kit/utils'
-import { findElementsByLocalName, hasChildElementByLocalName, getAttributeByName, getTextContent, parseTextToWords, parseSpanTime } from '@root/utils'
+import {
+  findElementsByLocalName,
+  hasChildElementByLocalName,
+  getAttributeByName,
+  getTextContent,
+  parseTextToWords,
+  parseSpanTime,
+  ensureContent,
+} from '@root/utils'
 import { appendLineTranslate, appendLineRoman } from './annotation'
 
 export interface ParseSpanOptions {
@@ -162,7 +170,7 @@ const applyLineRole = (
     if (background || !('backgrounds' in line)) {
       return
     }
-    const bg = parseLine(span, true, options)
+    const bg = parseBackgroundLine(span, options)
     if (bg) {
       line.backgrounds.push(bg)
       options?.onBackground?.(span, bg)
@@ -185,11 +193,8 @@ const applyLineRole = (
   }
 }
 
-/**
- * Fill the words of a line body, either from plain text or from timed spans.
- */
 const fillBodyWords = (body: Lyric.LineNormal | Lyric.LineBackground, element: Xml.XmlElement, background: boolean, options?: ParseSpanOptions) => {
-  const content = body.content ?? (body.content = Lyric.makeLineContent())
+  const content = ensureContent(body)
   if (!hasChildElementByLocalName(element, 'span')) {
     content.words = parseTextToWords(getTextContent(element).trim())
     return
@@ -197,13 +202,7 @@ const fillBodyWords = (body: Lyric.LineNormal | Lyric.LineBackground, element: X
   content.words = parseSpanWords(element, (span, role) => applyLineRole(body, span, role, background, options), options)
 }
 
-export function parseLine(element: Xml.XmlElement, background?: false, options?: ParseSpanOptions): Lyric.Line | null
-export function parseLine(element: Xml.XmlElement, background: true, options?: ParseSpanOptions): Lyric.LineBackground | null
-export function parseLine(
-  element: Xml.XmlElement,
-  background: boolean = false,
-  options?: ParseSpanOptions,
-): Lyric.Line | Lyric.LineBackground | null {
+const resolveLineBase = (element: Xml.XmlElement, background: boolean) => {
   const time = resolveLineTime(element, background)
   if (!time) {
     return null
@@ -213,27 +212,40 @@ export function parseLine(
     return null
   }
 
-  const agent = parseLineAgent(element)
+  return { time, agent: parseLineAgent(element) }
+}
 
-  if (background) {
-    const body = Lyric.makeLineBackground({ time: Lyric.makeTime({ start: time.start, end: time.end }) })
-    if (agent) {
-      const content = body.content ?? (body.content = Lyric.makeLineContent())
-      content.agent = agent
-    }
-    fillBodyWords(body, element, true, options)
-    return body
+const parseBackgroundLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.LineBackground | null => {
+  const base = resolveLineBase(element, true)
+  if (!base) {
+    return null
   }
 
-  const line = Lyric.makeLineNormal({}, { start: time.start, end: time.end })
+  const body = Lyric.makeLineBackground({ time: Lyric.makeTime(base.time) })
+  if (base.agent) {
+    ensureContent(body).agent = base.agent
+  }
+
+  fillBodyWords(body, element, true, options)
+  return body
+}
+
+const parseNormalLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.Line | null => {
+  const base = resolveLineBase(element, false)
+  if (!base) {
+    return null
+  }
+
+  const line = Lyric.makeLineNormal({}, base.time)
   if (!Lyric.isLineNormal(line)) {
     return null
   }
+
   const body = line.body.value
-  if (agent) {
-    const content = body.content ?? (body.content = Lyric.makeLineContent())
-    content.agent = agent
+  if (base.agent) {
+    ensureContent(body).agent = base.agent
   }
+
   fillBodyWords(body, element, false, options)
   return line
 }
@@ -261,7 +273,7 @@ export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): P
 
   const elements = findElementsByLocalName(body, 'p')
   for (const element of elements) {
-    const line = parseLine(element, false, lineOptions)
+    const line = parseNormalLine(element, lineOptions)
     if (!line || !Lyric.isLineNormal(line)) {
       continue
     }

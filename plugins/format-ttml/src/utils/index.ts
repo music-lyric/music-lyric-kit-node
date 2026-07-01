@@ -27,9 +27,6 @@ export const parseTextToWords = (text: string): Lyric.Word[] => {
   return result
 }
 
-/**
- * Detect per-word timing by finding any timed word in the line.
- */
 export const hasWordTiming = (line?: Lyric.Line) => {
   if (!line || !Lyric.isLineNormal(line)) {
     return false
@@ -40,4 +37,13 @@ export const hasWordTiming = (line?: Lyric.Line) => {
     }
   }
   return false
+}
+
+export const ensureContent = (line: Lyric.LineNormal | Lyric.LineBackground): Lyric.LineContent => {
+  return line.content ?? (line.content = Lyric.makeLineContent())
+}
+
+export const ensureAnnotation = (line: Lyric.LineNormal | Lyric.LineBackground): Lyric.LineAnnotation => {
+  const content = ensureContent(line)
+  return content.annotation ?? (content.annotation = Lyric.makeLineAnnotation())
 }

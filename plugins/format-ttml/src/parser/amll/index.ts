@@ -8,9 +8,6 @@ import { interceptRubySpan } from './ruby'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
 
-/**
- * Apply one amll:meta element to the structured meta.
- */
 const applyAmllMeta = (meta: Lyric.Meta, element: Xml.XmlElement) => {
   const key = getAttributeByName(element, 'key', true)
   const value = getAttributeByName(element, 'value', true)

@@ -10,6 +10,7 @@ import {
   getAttributeByName,
   getTextContent,
   parseTextToWords,
+  ensureContent,
 } from '@root/utils'
 import { parseSpanWords } from './line'
 import { appendLineTranslate, appendLineRoman, normalizeLanguage } from './annotation'
@@ -98,7 +99,7 @@ const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.Li
     if (type === 'replacement') {
       const words = readReplacementWords(text)
       if (words.length) {
-        const content = line.content ?? (line.content = Lyric.makeLineContent())
+        const content = ensureContent(line)
         content.words = words
       }
       return
@@ -272,7 +273,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
     }
 
     word.annotation ??= Lyric.makeWordAnnotation()
-    word.annotation.romans = [...(word.annotation.romans || []), item]
+    word.annotation.romans.push(item)
   }
 
   return true

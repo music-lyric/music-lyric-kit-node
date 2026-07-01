@@ -35,11 +35,6 @@ export interface TtmlDocument {
   groups: ElementGroups
 }
 
-/**
- * Parse a TTML document tree into the base result.
- *
- * A dialect layers its own content on top of the returned base.
- */
 export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions): TtmlDocument => {
   const body = findElementsByLocalName(root, 'body', true)[0]
   const metadata = findElementsByLocalName(root, 'metadata', true)[0]
