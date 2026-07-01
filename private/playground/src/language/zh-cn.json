@@ -88,5 +88,6 @@
   "result.interlude": "间奏",
   "result.background": "背景人声",
   "result.empty": "暂无结果",
-  "result.inferFailed": "无法推断歌词格式"
+  "result.inferFailed": "无法推断歌词格式",
+  "result.sizeHint": "原始输入 → 编码后 protobuf"
 }

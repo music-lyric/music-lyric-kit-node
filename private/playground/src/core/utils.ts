@@ -17,3 +17,18 @@ export const formatDuration = (ms: number): string => {
 export const getAgentColor = (index: number): string => {
   return AGENT_COLORS[index % AGENT_COLORS.length]
 }
+
+/**
+ * Format a byte count into a human-readable size string with a B/KB/MB/GB unit.
+ */
+export const formatBytes = (bytes: number): string => {
+  if (bytes < 1024) return `${bytes} B`
+  const units = ['KB', 'MB', 'GB']
+  let value = bytes
+  let index = -1
+  do {
+    value /= 1024
+    index++
+  } while (value >= 1024 && index < units.length - 1)
+  return `${value.toFixed(2)} ${units[index]}`
+}

@@ -88,5 +88,6 @@
   "result.interlude": "Interlude",
   "result.background": "Background",
   "result.empty": "No result yet.",
-  "result.inferFailed": "Could not infer lyric format."
+  "result.inferFailed": "Could not infer lyric format.",
+  "result.sizeHint": "Raw input → encoded protobuf"
 }

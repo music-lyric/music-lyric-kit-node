@@ -11,8 +11,19 @@ import { usePluginConfig } from '@root/composables/usePluginConfig'
 
 type MusicInfo = { name: string; singer: string[] } | undefined
 
+type Content = string | { original: string; translate: string; roman: string }
+
 const read = (key: string, fallback = '') => localStorage.getItem(key) ?? fallback
 const write = (key: string, value: string) => localStorage.setItem(key, value)
+
+/**
+ * Measure the UTF-8 byte size of the raw parser input.
+ */
+const measureInput = (input: Content): number => {
+  const encoder = new TextEncoder()
+  if (typeof input === 'string') return encoder.encode(input).length
+  return encoder.encode(input.original).length + encoder.encode(input.translate).length + encoder.encode(input.roman).length
+}
 
 export const useParser = () => {
   const { states: pluginStates } = usePluginConfig()
@@ -33,6 +44,8 @@ export const useParser = () => {
   const resultVersion = ref<string | number>('')
   const inferredFormat = ref('')
   const elapsed = ref(0)
+  const inputSize = ref(0)
+  const bufferSize = ref(0)
   const error = ref('')
   const parsing = ref(false)
 
@@ -93,9 +106,12 @@ export const useParser = () => {
     parsing.value = true
     error.value = ''
     result.value = null
+    inputSize.value = 0
+    bufferSize.value = 0
 
     try {
       const input = content()
+      inputSize.value = measureInput(input)
       const start = performance.now()
       const parsed = engine.value === 'client' ? parseWithClient(input, musicInfo.value) : parseWithPipeline(input, musicInfo.value)
       elapsed.value = performance.now() - start
@@ -106,6 +122,12 @@ export const useParser = () => {
         error.value = 'result.inferFailed'
         return
       }
+
+      const buffer = Lyric.encodeInfo(parsed.info)
+      bufferSize.value = buffer.length
+      console.log('parse buffer length: ', buffer.length)
+      console.log('parse buffer body: ', buffer)
+      console.log('parse buffer hex: ', buffer.toHex())
 
       inferredFormat.value = parsed.format
       result.value = parsed.info
@@ -132,6 +154,8 @@ export const useParser = () => {
     resultVersion,
     inferredFormat,
     elapsed,
+    inputSize,
+    bufferSize,
     error,
     parsing,
     parse,

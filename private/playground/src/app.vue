@@ -76,6 +76,11 @@
           <h2 :class="$style.panelTitle">{{ t('panel.result') }}</h2>
           <div :class="$style.resultMeta">
             <span v-if="parser.elapsed.value" :class="$style.timing">{{ parser.elapsed.value.toFixed(2) }}ms</span>
+            <span v-if="parser.result.value" :class="$style.size" :title="t('result.sizeHint')">
+              {{ formatBytes(parser.inputSize.value) }}
+              <span :class="$style.sizeArrow">→</span>
+              {{ formatBytes(parser.bufferSize.value) }}
+            </span>
             <span v-if="parser.result.value" :class="$style.badge">{{ parser.resultType.value }} / v{{ parser.resultVersion.value }}</span>
           </div>
         </div>
@@ -111,6 +116,7 @@ import PluginConfig from '@root/components/config/plugin-config.vue'
 import { computed, onMounted, ref } from 'vue'
 import { useParser } from '@root/composables/useParser'
 import { useI18n } from '@root/composables/useI18n'
+import { formatBytes } from '@root/core/utils'
 
 const version = __APP_VERSION__
 
@@ -456,6 +462,19 @@ onMounted(parser.parse)
   font-family: var(--font-mono);
   font-size: 12px;
   color: var(--color-text-muted);
+}
+
+.size {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.sizeArrow {
+  color: var(--color-text-secondary);
 }
 
 .badge {
