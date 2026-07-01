@@ -43,12 +43,23 @@ const readReplacementWords = (text: Xml.XmlElement): Lyric.Word[] => {
   return plain ? parseTextToWords(plain) : []
 }
 
-const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds: string[] } => {
+interface BackgroundText {
+  /**
+   * Text content of the x-bg span.
+   */
+  content: string
+  /**
+   * The `for` attribute referencing a background line by its itunes:key.
+   */
+  key?: string
+}
+
+const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds: BackgroundText[] } => {
   let main = ''
-  const backgrounds: string[] = []
+  const backgrounds: BackgroundText[] = []
   for (const child of text.children) {
     if (child.type === Xml.XmlNodeType.Element && child.local === 'span' && getAttributeByName(child, 'role', true) === 'x-bg') {
-      backgrounds.push(getTextContent(child))
+      backgrounds.push({ content: getTextContent(child), key: getAttributeByName(child, 'for') })
       continue
     }
     main += getTextContent(child)
@@ -58,23 +69,30 @@ const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds:
 
 const attachBackgroundTexts = (
   line: Lyric.LineNormal,
-  backgrounds: string[],
+  backgrounds: BackgroundText[],
+  backgroundMap: Map<string, Lyric.LineBackground>,
   attach: (background: Lyric.LineBackground, content: string) => void,
 ) => {
   const list = line.backgrounds
   if (!list.length) {
     return
   }
-  for (let i = 0; i < backgrounds.length && i < list.length; i++) {
-    const content = backgrounds[i].trim()
+  for (let i = 0; i < backgrounds.length; i++) {
+    const content = backgrounds[i].content.trim()
     if (!content) {
       continue
     }
-    attach(list[i], content)
+    // match by the `for` key when present, otherwise fall back to document order.
+    const key = backgrounds[i].key
+    const target = (key && backgroundMap.get(key)) || list[i]
+    if (!target) {
+      continue
+    }
+    attach(target, content)
   }
 }
 
-const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>) => {
+const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, backgroundMap: Map<string, Lyric.LineBackground>) => {
   eachAnnotationText(blocks, lineMap, (text, line, language, type) => {
     // replacement overrides the original wording (e.g. traditional to simplified).
     if (type === 'replacement') {
@@ -89,7 +107,7 @@ const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.Li
     const { main, backgrounds } = splitBackgroundText(text)
     // head subtitle wins over an inline x-translation of the same language.
     appendLineTranslate(line, main, language, true)
-    attachBackgroundTexts(line, backgrounds, (background, content) => appendLineTranslate(background, content, language, true))
+    attachBackgroundTexts(line, backgrounds, backgroundMap, (background, content) => appendLineTranslate(background, content, language, true))
   })
 }
 
@@ -260,7 +278,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
   return true
 }
 
-const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>) => {
+const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, backgroundMap: Map<string, Lyric.LineBackground>) => {
   eachAnnotationText(blocks, lineMap, (text, line, language) => {
     if (hasTimedSpans(text) && attachWordRomans(text, line, language)) {
       return
@@ -268,7 +286,7 @@ const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNo
     // separate the x-bg pieces so they land on background lines instead of the main roman.
     const { main, backgrounds } = splitBackgroundText(text)
     appendLineRoman(line, main, language)
-    attachBackgroundTexts(line, backgrounds, (background, content) => appendLineRoman(background, content, language))
+    attachBackgroundTexts(line, backgrounds, backgroundMap, (background, content) => appendLineRoman(background, content, language))
   })
 }
 
@@ -277,10 +295,14 @@ const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNo
  *
  * Shared by every TTML dialect, since amll is itunes plus its own amll:meta.
  */
-export const attachHeadAnnotations = (groups: ElementGroups, lineMap: Map<string, Lyric.LineNormal>) => {
+export const attachHeadAnnotations = (
+  groups: ElementGroups,
+  lineMap: Map<string, Lyric.LineNormal>,
+  backgroundMap: Map<string, Lyric.LineBackground>,
+) => {
   if (!lineMap.size) {
     return
   }
-  attachTranslate(groups.get('translation') ?? [], lineMap)
-  attachRoman(groups.get('transliteration') ?? [], lineMap)
+  attachTranslate(groups.get('translation') ?? [], lineMap, backgroundMap)
+  attachRoman(groups.get('transliteration') ?? [], lineMap, backgroundMap)
 }

@@ -12,6 +12,12 @@ export interface ParseSpanOptions {
    * Returns true when the hook has consumed the span.
    */
   onSpan?: (span: Xml.XmlElement, words: Lyric.Word[]) => boolean
+  /**
+   * Observe each parsed background line together with its source span.
+   *
+   * Used to index background lines by their itunes:key.
+   */
+  onBackground?: (span: Xml.XmlElement, background: Lyric.LineBackground) => void
 }
 
 export interface ProcessLinesResult {
@@ -23,6 +29,10 @@ export interface ProcessLinesResult {
    * Lines indexed by their itunes:key, for attaching head annotations.
    */
   lineMap: Map<string, Lyric.LineNormal>
+  /**
+   * Background lines indexed by their itunes:key, for attaching background annotations.
+   */
+  backgroundMap: Map<string, Lyric.LineBackground>
 }
 
 const calcEndSpaceCount = (content: string) => {
@@ -155,6 +165,7 @@ const applyLineRole = (
     const bg = parseLine(span, true, options)
     if (bg) {
       line.backgrounds.push(bg)
+      options?.onBackground?.(span, bg)
     }
     return
   }
@@ -230,14 +241,27 @@ export function parseLine(
 export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): ProcessLinesResult => {
   const lines: Lyric.Line[] = []
   const lineMap = new Map<string, Lyric.LineNormal>()
+  const backgroundMap = new Map<string, Lyric.LineBackground>()
 
   if (!body) {
-    return { lines, lineMap }
+    return { lines, lineMap, backgroundMap }
+  }
+
+  // index every background line by its itunes:key while keeping any caller hook.
+  const lineOptions: ParseSpanOptions = {
+    ...options,
+    onBackground: (span, background) => {
+      options?.onBackground?.(span, background)
+      const key = getAttributeByName(span, 'key', true)
+      if (key) {
+        backgroundMap.set(key, background)
+      }
+    },
   }
 
   const elements = findElementsByLocalName(body, 'p')
   for (const element of elements) {
-    const line = parseLine(element, false, options)
+    const line = parseLine(element, false, lineOptions)
     if (!line || !Lyric.isLineNormal(line)) {
       continue
     }
@@ -248,5 +272,5 @@ export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): P
     }
   }
 
-  return { lines, lineMap }
+  return { lines, lineMap, backgroundMap }
 }
