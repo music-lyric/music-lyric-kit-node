@@ -85,7 +85,7 @@
           <template v-else-if="parser.result.value">
             <ResultMetas :meta="parser.result.value.meta" />
             <ResultLanguages :languages="parser.result.value.languages" />
-            <ResultAgents :agents="parser.result.value.agents" />
+            <ResultAgents :agents="parser.result.value.agents" :lines="parser.result.value.lines" />
             <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
           </template>
           <div v-else :class="$style.empty">{{ t('result.empty') }}</div>

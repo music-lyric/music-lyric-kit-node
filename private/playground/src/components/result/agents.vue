@@ -5,7 +5,7 @@
       <span v-for="(agent, i) in agents" :key="agent.id" :class="$style.tag">
         <span :class="$style.dot" :style="{ background: getAgentColor(i) }"></span>
         {{ agent.names.join(' / ') }}
-        <span :class="$style.count">{{ agent.count }} {{ t('result.lines') }}</span>
+        <span :class="$style.count">{{ counts.get(agent.id) ?? 0 }} {{ t('result.lines') }}</span>
       </span>
     </div>
   </div>
@@ -14,12 +14,15 @@
 <script setup lang="ts">
 import { Lyric } from 'music-lyric-kit'
 
+import { computed } from 'vue'
 import { getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-defineProps<{ agents: Lyric.AgentItem[] }>()
+const props = defineProps<{ agents: Lyric.AgentItem[]; lines: Lyric.Line[] }>()
 
 const { t } = useI18n()
+
+const counts = computed(() => Lyric.getAgentLineCounts(props.lines))
 </script>
 
 <style module lang="scss">

@@ -14,7 +14,7 @@
           <span :class="$style.interludeLabel">{{ t('result.interlude') }}</span>
           <span :class="$style.interludeDots"></span>
         </div>
-        <ResultLine v-else :line="item.body" :agents="agents" />
+        <ResultLine v-else :line="item.line" :agents="agents" />
       </template>
     </div>
   </div>
@@ -38,7 +38,7 @@ const { t } = useI18n()
 const items = computed(() =>
   props.lines.map((line) => {
     if (Lyric.isLineNormal(line)) {
-      return { kind: 'normal' as const, body: line.body.value }
+      return { kind: 'normal' as const, line }
     }
     const time = Lyric.getLineTime(line)
     return { kind: 'interlude' as const, time: `${formatTime(time?.start ?? 0)} ~ ${formatTime(time?.end ?? 0)}` }

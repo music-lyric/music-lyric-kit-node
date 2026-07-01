@@ -40,18 +40,28 @@ import { useI18n } from '@root/composables/useI18n'
 defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
-  line: Lyric.LineNormal | Lyric.LineBackground
+  line: Lyric.Line | Lyric.LineBackground
   agents: Lyric.AgentItem[]
   isBg?: boolean
 }>()
 
 const { t } = useI18n()
 
+// A Line wrapper carries the body oneof; a LineBackground carries its content directly.
+const content = computed<Lyric.LineContent | undefined>(() => {
+  const line = props.line
+  if ('body' in line) {
+    return line.body.case === 'normal' ? line.body.value.content : undefined
+  }
+  return line.content
+})
+
 const timeStr = computed(() => `${formatTime(props.line.time?.start ?? 0)} ~ ${formatTime(props.line.time?.end ?? 0)}`)
 
 const agentInfo = computed(() => {
-  if (!props.line.agent) return null
-  const index = props.agents.findIndex((item) => item.id === props.line.agent!.id)
+  const agent = content.value?.agent
+  if (!agent) return null
+  const index = props.agents.findIndex((item) => item.id === agent.id)
   if (index < 0) return null
   return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
@@ -74,7 +84,7 @@ const words = computed(() => {
     unknowns?: { text: string; title: string }[]
   }[] = []
 
-  for (const word of props.line.words) {
+  for (const word of content.value?.words ?? []) {
     if (Lyric.isWordSpace(word)) {
       result.push({ type: 'space', text: ' '.repeat(word.body.value.count) })
       continue
@@ -107,7 +117,7 @@ const words = computed(() => {
 const wordAnno = computed(() => {
   let roman = false
   let unknown = false
-  for (const word of props.line.words) {
+  for (const word of content.value?.words ?? []) {
     if (!Lyric.isWordNormal(word)) {
       continue
     }
@@ -125,11 +135,14 @@ const wordAnno = computed(() => {
   return { roman, unknown }
 })
 
-const backgrounds = computed(() => ('backgrounds' in props.line ? props.line.backgrounds : []))
+const backgrounds = computed<Lyric.LineBackground[]>(() => {
+  const line = props.line
+  return 'body' in line && line.body.case === 'normal' ? line.body.value.backgrounds : []
+})
 
 const extended = computed(() => {
   const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
-  const annotation = props.line.annotation
+  const annotation = content.value?.annotation
 
   for (const item of annotation?.translates ?? []) {
     result.push({ kind: 'translate', text: item.content })
