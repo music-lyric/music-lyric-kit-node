@@ -28,7 +28,7 @@ export class Generator {
       throw new Error('format not found')
     }
 
-    const init = new Lyric.Info()
+    const init = Lyric.makeInfo({ type: Lyric.InfoType.INVALID, timing: Lyric.InfoTiming.NONE })
     const context = new GeneratorContext(params, init)
 
     const plugins: GeneratorPlugin[] = []

@@ -54,7 +54,7 @@ export class Clean extends ParserPlugin {
 
     for (let i = 0; i < linesLength; i++) {
       const line = lines[i]
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         newLines.push(line)
         continue
       }
@@ -69,7 +69,7 @@ export class Clean extends ParserPlugin {
         }
       }
 
-      const clean = extra?.length ? processText(line.original).join('') : line.original
+      const clean = extra?.length ? processText(Lyric.getLineText(line)).join('') : Lyric.getLineText(line)
       const result = this.matcher.match(clean, extra)
       if (!result) {
         newLines.push(line)

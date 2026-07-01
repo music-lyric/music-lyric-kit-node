@@ -8,24 +8,25 @@ const renderItem = (key: string, content: string) => {
 export const exportMeta = (info: Lyric.Info) => {
   const result: string[] = []
 
-  for (const item of info.meta.list) {
-    switch (item.type) {
-      case Lyric.MetaType.Offset:
-        result.push(renderItem('offset', item.value.toString()))
-        break
-      case Lyric.MetaType.Title:
-        result.push(renderItem('ti', item.value))
-        break
-      case Lyric.MetaType.Singer:
-        result.push(renderItem('ar', item.value))
-        break
-      case Lyric.MetaType.Album:
-        result.push(renderItem('al', item.value))
-        break
-      case Lyric.MetaType.Duration:
-        result.push(renderItem('length', formatTime(item.value)))
-        break
-    }
+  const meta = info.meta
+  if (!meta) {
+    return result
+  }
+
+  if (meta.offset) {
+    result.push(renderItem('offset', meta.offset.toString()))
+  }
+  for (const title of meta.titles) {
+    result.push(renderItem('ti', title.value))
+  }
+  for (const artist of meta.artists) {
+    result.push(renderItem('ar', artist.value))
+  }
+  for (const album of meta.albums) {
+    result.push(renderItem('al', album.value))
+  }
+  if (meta.duration) {
+    result.push(renderItem('length', formatTime(meta.duration)))
   }
 
   return result

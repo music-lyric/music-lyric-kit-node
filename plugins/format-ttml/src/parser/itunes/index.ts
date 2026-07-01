@@ -42,12 +42,12 @@ export class ItunesParser extends ParserPlugin {
       return
     }
 
-    const { lines, metas, agents, timing } = parseDocument(root)
+    const { lines, meta, agents, timing } = parseDocument(root)
 
-    ctx.result.type = Lyric.InfoType.Normal
+    ctx.result.type = Lyric.InfoType.VALID
     ctx.result.timing = timing
     ctx.result.lines = lines
-    ctx.result.meta.list = metas
-    ctx.result.agent.list = agents
+    ctx.result.meta = meta
+    ctx.result.agents = agents
   }
 }

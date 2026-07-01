@@ -24,9 +24,9 @@
     </div>
   </div>
 
-  <div v-if="!isBg && line.background?.length" :class="$style.background">
+  <div v-if="!isBg && backgrounds.length" :class="$style.background">
     <div :class="$style.bgLabel">{{ t('result.background') }}</div>
-    <ResultLine v-for="(bg, i) in line.background" :key="i" :line="bg" :agents="agents" is-bg />
+    <ResultLine v-for="(bg, i) in backgrounds" :key="i" :line="bg" :agents="agents" is-bg />
   </div>
 </template>
 
@@ -40,14 +40,14 @@ import { useI18n } from '@root/composables/useI18n'
 defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
-  line: Lyric.LineNormal
+  line: Lyric.LineNormal | Lyric.LineBackground
   agents: Lyric.AgentItem[]
   isBg?: boolean
 }>()
 
 const { t } = useI18n()
 
-const timeStr = computed(() => `${formatTime(props.line.time.start)} ~ ${formatTime(props.line.time.end)}`)
+const timeStr = computed(() => `${formatTime(props.line.time?.start ?? 0)} ~ ${formatTime(props.line.time?.end ?? 0)}`)
 
 const agentInfo = computed(() => {
   if (!props.line.agent) return null
@@ -56,22 +56,37 @@ const agentInfo = computed(() => {
   return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
 
-const annoItem = (item: Lyric.WordAnnotationItem) => {
+const annoItem = (item: { words: Lyric.WordAnnotationContent[]; time?: Lyric.Time; language?: string }) => {
   const timed = !!item.time && (item.time.start > 0 || item.time.end > 0)
   const time = timed ? `${formatTime(item.time!.start)} ~ ${formatTime(item.time!.end)}` : ''
-  return { text: item.content, title: [item.language, time].filter(Boolean).join(' · ') }
+  return { text: Lyric.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
 }
 
-const words = computed(() =>
-  props.line.words.map((word) => {
-    if (word.type === Lyric.WordType.Space) {
-      return { type: 'space' as const, text: ' '.repeat((word as Lyric.WordSpace).count) }
+const words = computed(() => {
+  const result: {
+    type: 'word' | 'space'
+    text: string
+    hasTime?: boolean
+    stress?: boolean
+    title?: string
+    ruby?: { text: string; title: string } | null
+    romans?: { text: string; title: string }[]
+    unknowns?: { text: string; title: string }[]
+  }[] = []
+
+  for (const word of props.line.words) {
+    if (Lyric.isWordSpace(word)) {
+      result.push({ type: 'space', text: ' '.repeat(word.body.value.count) })
+      continue
     }
-    const w = word as Lyric.WordNormal
+    if (!Lyric.isWordNormal(word)) {
+      continue
+    }
+    const w = word.body.value
     const hasTime = !!w.time && (w.time.start > 0 || w.time.end > 0)
     const anno = w.annotation
-    return {
-      type: 'word' as const,
+    result.push({
+      type: 'word',
       text: w.content,
       hasTime,
       stress: w.stress,
@@ -82,56 +97,50 @@ const words = computed(() =>
         const base = annoItem(u)
         return { text: base.text, title: [u.key, base.title].filter(Boolean).join(' · ') }
       }),
-    }
-  }),
-)
+    })
+  }
+
+  return result
+})
 
 // word-level annotations are rendered per syllable, so skip the line-level (aggregated) duplicate of the same kind.
 const wordAnno = computed(() => {
   let roman = false
-  let ruby = false
   let unknown = false
   for (const word of props.line.words) {
-    if (word.type !== Lyric.WordType.Normal) {
+    if (!Lyric.isWordNormal(word)) {
       continue
     }
-    const anno = (word as Lyric.WordNormal).annotation
+    const anno = word.body.value.annotation
     if (!anno) {
       continue
     }
-    if (anno.romans?.length) {
+    if (anno.romans.length) {
       roman = true
     }
-    if (anno.ruby) {
-      ruby = true
-    }
-    if (anno.unknowns?.length) {
+    if (anno.unknowns.length) {
       unknown = true
     }
   }
-  return { roman, ruby, unknown }
+  return { roman, unknown }
 })
+
+const backgrounds = computed(() => ('backgrounds' in props.line ? props.line.backgrounds : []))
 
 const extended = computed(() => {
   const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
   const annotation = props.line.annotation
 
-  for (const item of annotation.all(Lyric.LineAnnotationKind.Translate)) {
+  for (const item of annotation?.translates ?? []) {
     result.push({ kind: 'translate', text: item.content })
   }
   if (!wordAnno.value.roman) {
-    for (const item of annotation.all(Lyric.LineAnnotationKind.Roman)) {
+    for (const item of annotation?.romans ?? []) {
       result.push({ kind: 'roman', text: item.content })
     }
   }
-  if (!wordAnno.value.ruby) {
-    const ruby = annotation.first(Lyric.LineAnnotationKind.Ruby)
-    if (ruby) {
-      result.push({ kind: 'other', text: `[ruby] ${ruby.content}` })
-    }
-  }
   if (!wordAnno.value.unknown) {
-    for (const item of annotation.all(Lyric.LineAnnotationKind.Unknown)) {
+    for (const item of annotation?.unknowns ?? []) {
       result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
     }
   }

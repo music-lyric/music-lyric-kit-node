@@ -7,7 +7,7 @@ import { ConfigManager } from '@music-lyric-kit/utils'
 import { ParserPlugin, ParserContext, PluginStage } from '@music-lyric-kit/core'
 import { Lyric } from '@music-lyric-kit/lyric'
 
-import { addBackground, assignBackgroundAnnotation, extractCrossLine, extractInLine, isFullLine } from './core'
+import { addBackground, assignBackgroundAnnotation, extractCrossLine, extractInLine, isFullLine, toBackground } from './core'
 
 export class Extract extends ParserPlugin {
   override config = new ConfigManager<ExtractConfig, DeepPartial<ExtractConfig>>(DEFAULT_CONFIG)
@@ -36,24 +36,24 @@ export class Extract extends ParserPlugin {
     for (let i = 0; i < processed.length; i++) {
       const line = processed[i]
 
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         result.push(line)
         continue
       }
 
-      if (this.config.current.fullLine && isFullLine(line)) {
+      if (this.config.current.fullLine && isFullLine(line.body.value)) {
         const prev = result.length > 0 ? result[result.length - 1] : null
-        if (prev && prev.type === Lyric.LineType.Normal) {
-          addBackground(prev, line)
+        if (prev && Lyric.isLineNormal(prev)) {
+          addBackground(prev.body.value, toBackground(line.body.value))
           continue
         }
       }
 
       if (this.config.current.inLine) {
-        extractInLine(line)
+        extractInLine(line.body.value)
       }
 
-      assignBackgroundAnnotation(line)
+      assignBackgroundAnnotation(line.body.value)
 
       result.push(line)
     }

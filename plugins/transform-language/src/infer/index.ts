@@ -40,16 +40,17 @@ export class Infer extends ParserPlugin {
     let latinText = ''
 
     // first pass: resolve each word's dominant script and gather document-level signals
-    const handleLine = (line: Lyric.LineNormalBase) => {
-      for (const word of line.words) {
-        if (word.type !== Lyric.WordType.Normal) {
+    const handleLine = (line: Lyric.LineNormal | Lyric.LineBackground) => {
+      for (const word of line.content?.words ?? []) {
+        if (!Lyric.isWordNormal(word)) {
           continue
         }
-        if (word.language && !override) {
+        const value = word.body.value
+        if (value.language && !override) {
           continue
         }
 
-        const counts = analyzeScripts(word.content)
+        const counts = analyzeScripts(value.content)
         const script = dominantScript(counts)
         if (!script) {
           continue
@@ -58,21 +59,22 @@ export class Infer extends ParserPlugin {
         kanaCount += counts.kana
         hanCount += counts.han
         if (script === 'han') {
-          hanText += word.content
+          hanText += value.content
         } else if (script === 'latin') {
-          latinText += word.content
+          latinText += value.content
         }
 
-        targets.push({ word, script })
+        targets.push({ word: value, script })
       }
     }
 
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
-      handleLine(line)
-      for (const background of line.background || []) {
+      const body = line.body.value
+      handleLine(body)
+      for (const background of body.backgrounds) {
         handleLine(background)
       }
     }

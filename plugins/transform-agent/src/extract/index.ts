@@ -33,20 +33,22 @@ export class Extract extends ParserPlugin {
     const newLines: Lyric.Line[] = []
 
     const agentMap = new Map<string, Lyric.AgentItem>()
-    for (const item of ctx.result.agent.list) {
+    for (const item of ctx.result.agents) {
       agentMap.set(item.id, item)
     }
 
     let currentId: string | null = null
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         currentId = null
         newLines.push(line)
         continue
       }
 
-      const words = line.words
-      const trimmed = line.original.trim()
+      const body = line.body.value
+      const content = body.content ?? (body.content = Lyric.makeLineContent())
+      const words = content.words
+      const trimmed = Lyric.getLineText(line).trim()
 
       if (!trimmed) {
         currentId = null
@@ -58,23 +60,28 @@ export class Extract extends ParserPlugin {
       const colonPos = trimmed.search(/[:：]/u)
       if (colonPos !== -1 && isClockTimeColon(trimmed.slice(0, colonPos), trimmed.slice(colonPos + 1))) {
         if (currentId) {
-          line.agent = new Lyric.LineAgent({ id: currentId })
+          content.agent = Lyric.makeLineAgent({ id: currentId })
         }
         newLines.push(line)
         continue
       }
 
       const colonWordIndex = words.findIndex((item) => {
-        if (item.type !== Lyric.WordType.Normal) {
+        if (!Lyric.isWordNormal(item)) {
           return false
         }
 
-        const text = item.content.trim()
+        const text = item.body.value.content.trim()
         return text.includes('：') || text.includes(':')
       })
 
       if (colonWordIndex !== -1) {
-        const colonWord = words[colonWordIndex] as Lyric.WordNormal
+        const colonItem = words[colonWordIndex]
+        if (!Lyric.isWordNormal(colonItem)) {
+          newLines.push(line)
+          continue
+        }
+        const colonWord = colonItem.body.value
         const colonText = colonWord.content.trim()
 
         const colonIndex1 = colonText.indexOf('：')
@@ -88,9 +95,7 @@ export class Extract extends ParserPlugin {
         const beforeColon = colonText.slice(0, colonIndex)
         const afterColon = colonText.slice(colonIndex + 1).trim()
 
-        const nameParts = words.slice(0, colonWordIndex).map((item) => {
-          return item.type === Lyric.WordType.Space ? ' '.repeat(item.count) : item.content
-        })
+        const nameParts = words.slice(0, colonWordIndex).map((item) => Lyric.getWordText(item))
 
         if (beforeColon) {
           nameParts.push(beforeColon)
@@ -107,9 +112,9 @@ export class Extract extends ParserPlugin {
         if (this.config.current.replace) {
           if (afterColon) {
             colonWord.content = afterColon
-            line.words = words.slice(colonWordIndex)
+            content.words = words.slice(colonWordIndex)
           } else {
-            line.words = words.slice(colonWordIndex + 1)
+            content.words = words.slice(colonWordIndex + 1)
           }
         }
 
@@ -117,7 +122,7 @@ export class Extract extends ParserPlugin {
         currentId = id
 
         if (!agentMap.has(id)) {
-          agentMap.set(id, new Lyric.AgentItem({ id, names: [name] }))
+          agentMap.set(id, Lyric.makeAgentItem({ id, names: [name] }))
         } else {
           const exist = agentMap.get(id)!
           if (!exist.names.includes(name)) {
@@ -125,7 +130,7 @@ export class Extract extends ParserPlugin {
           }
         }
 
-        if (!line.words.length) {
+        if (!content.words.length) {
           continue
         }
       } else {
@@ -135,12 +140,12 @@ export class Extract extends ParserPlugin {
         }
       }
 
-      line.agent = new Lyric.LineAgent({ id: currentId })
+      content.agent = Lyric.makeLineAgent({ id: currentId })
       newLines.push(line)
     }
 
     ctx.result.lines = newLines
-    ctx.result.agent.list = [...agentMap.values()]
+    ctx.result.agents = [...agentMap.values()]
 
     ctx.syncLineTimeWithWord()
   }

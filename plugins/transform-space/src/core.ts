@@ -162,24 +162,24 @@ export function alignElements<T, R>(
   return result
 }
 
-export const insertSpaceToLine = (line: Lyric.LineNormalBase, target: Set<InsertTextSpaceTypes>): void => {
+export const insertSpaceToLine = (line: Lyric.LineNormal | Lyric.LineBackground, target: Set<InsertTextSpaceTypes>): void => {
   if (!line || !line.words || line.words.length === 0) {
     return
   }
 
-  const full = line.original
+  const full = Lyric.getWordsText(line.words)
   const processed = insertSpace(full, target)
 
-  const normalWords = line.words.filter((w) => w.type === Lyric.WordType.Normal) as Lyric.WordNormal[]
+  const normalWords = line.words.filter(Lyric.isWordNormal).map((w) => w.body.value)
 
   const newWords = alignElements<Lyric.WordNormal, Lyric.Word>(
     normalWords,
     processed,
     (count) => {
-      return new Lyric.WordSpace({ count })
+      return Lyric.makeWordSpace({ count })
     },
     (originalWord, matchedText) => {
-      return new Lyric.WordNormal({
+      return Lyric.makeWordNormal({
         content: matchedText,
         time: originalWord.time,
         language: originalWord.language,
@@ -194,10 +194,15 @@ export const insertSpaceToLine = (line: Lyric.LineNormalBase, target: Set<Insert
   line.words = newWords
 }
 
-export const insertSpaceToExtended = (line: Lyric.LineNormalBase, target: Set<InsertTextSpaceTypes>): void => {
-  for (const item of line.annotation.list) {
-    if (item.kind === Lyric.LineAnnotationKind.Translate || item.kind === Lyric.LineAnnotationKind.Roman) {
-      item.content = insertSpace(item.content, target)
-    }
+export const insertSpaceToExtended = (line: Lyric.LineNormal | Lyric.LineBackground, target: Set<InsertTextSpaceTypes>): void => {
+  const annotation = line.annotation
+  if (!annotation) {
+    return
+  }
+  for (const item of annotation.translates) {
+    item.content = insertSpace(item.content, target)
+  }
+  for (const item of annotation.romans) {
+    item.content = insertSpace(item.content, target)
   }
 }

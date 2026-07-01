@@ -19,11 +19,11 @@
   },
   "main": "./dist/index.comm.js",
   "module": "./dist/index.ecma.js",
-  "types": "./dist/index.ecma.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "dev": "./src/index.ts",
-      "types": "./dist/index.ecma.d.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.ecma.js",
       "require": "./dist/index.comm.js"
     }
@@ -32,6 +32,7 @@
     "dist"
   ],
   "dependencies": {
-    "@music-lyric-kit/utils": "workspace:*"
+    "@bufbuild/protobuf": "^2.12.1",
+    "music-lyric-model": "^2.0.0"
   }
 }

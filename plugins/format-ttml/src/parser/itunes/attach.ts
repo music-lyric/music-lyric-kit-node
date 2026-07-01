@@ -59,10 +59,10 @@ const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds:
 const attachBackgroundTexts = (
   line: Lyric.LineNormal,
   backgrounds: string[],
-  attach: (background: Lyric.LineNormalBase, content: string) => void,
+  attach: (background: Lyric.LineBackground, content: string) => void,
 ) => {
-  const list = line.background
-  if (!list?.length) {
+  const list = line.backgrounds
+  if (!list.length) {
     return
   }
   for (let i = 0; i < backgrounds.length && i < list.length; i++) {
@@ -80,7 +80,8 @@ const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.Li
     if (type === 'replacement') {
       const words = readReplacementWords(text)
       if (words.length) {
-        line.words = words
+        const content = line.content ?? (line.content = Lyric.makeLineContent())
+        content.words = words
       }
       return
     }
@@ -117,13 +118,14 @@ const findBodyWordByTime = (
   let best: Lyric.WordNormal | undefined
   let bestOverlap = 0
   for (const word of words) {
-    if (word.type !== Lyric.WordType.Normal || !word.time) {
+    if (!Lyric.isWordNormal(word) || !word.body.value.time) {
       continue
     }
-    const overlap = Math.min(end, word.time.end) - Math.max(start, word.time.start)
+    const time = word.body.value.time
+    const overlap = Math.min(end, time.end) - Math.max(start, time.start)
     if (overlap > bestOverlap) {
       bestOverlap = overlap
-      best = word
+      best = word.body.value
     }
   }
   return best
@@ -133,7 +135,7 @@ const hasWordSpaceBetween = (words: Lyric.Word[], a: number, b: number): boolean
   const lo = Math.min(a, b)
   const hi = Math.max(a, b)
   for (let i = lo + 1; i < hi; i++) {
-    if (words[i].type === Lyric.WordType.Space) {
+    if (Lyric.isWordSpace(words[i])) {
       return true
     }
   }
@@ -149,16 +151,17 @@ interface RomanEntry {
 }
 
 const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language?: string): boolean => {
-  const words = line.words
+  const words = line.content?.words ?? []
 
   const indexMap = new Map<Lyric.WordNormal, number>()
   const startMap = new Map<number, Lyric.WordNormal>()
   for (let i = 0; i < words.length; i++) {
     const word = words[i]
-    if (word.type === Lyric.WordType.Normal) {
-      indexMap.set(word, i)
-      if (word.time) {
-        startMap.set(word.time.start, word)
+    if (Lyric.isWordNormal(word)) {
+      const value = word.body.value
+      indexMap.set(value, i)
+      if (value.time) {
+        startMap.set(value.time.start, value)
       }
     }
   }
@@ -167,19 +170,21 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
   const entries: RomanEntry[] = []
   for (let i = 0; i < roman.length; i++) {
     const span = roman[i]
-    if (span.type !== Lyric.WordType.Normal || !span.time) {
+    if (!Lyric.isWordNormal(span) || !span.body.value.time) {
       continue
     }
-    const target = findBodyWordByTime(words, startMap, span.time.start, span.time.end)
+    const value = span.body.value
+    const target = findBodyWordByTime(words, startMap, value.time!.start, value.time!.end)
     if (!target) {
       continue
     }
+    const next = roman[i + 1]
     entries.push({
-      content: span.content,
-      start: span.time.start,
-      end: span.time.end,
+      content: value.content,
+      start: value.time!.start,
+      end: value.time!.end,
       target,
-      boundary: roman[i + 1]?.type === Lyric.WordType.Space,
+      boundary: !!next && Lyric.isWordSpace(next),
     })
   }
 
@@ -202,7 +207,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
       }
     }
 
-    const token = new Lyric.WordAnnotationContent({ content, time: new Lyric.Time(entry.start, entry.end) })
+    const token = Lyric.makeWordAnnotationContent({ content, time: Lyric.makeTime({ start: entry.start, end: entry.end }) })
 
     const list = groups.get(entry.target)
     if (list) {
@@ -239,16 +244,16 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
 
   const lang = normalizeLanguage(language)
   for (const [word, tokens] of groups) {
-    const item = new Lyric.WordAnnotationItem({
+    const item = Lyric.makeWordAnnotationRoman({
       words: tokens,
-      time: new Lyric.Time(tokens[0].time!.start, tokens[tokens.length - 1].time!.end),
+      time: Lyric.makeTime({ start: tokens[0].time!.start, end: tokens[tokens.length - 1].time!.end }),
     })
 
     if (lang) {
       item.language = lang
     }
 
-    word.annotation ??= new Lyric.WordAnnotation()
+    word.annotation ??= Lyric.makeWordAnnotation()
     word.annotation.romans = [...(word.annotation.romans || []), item]
   }
 

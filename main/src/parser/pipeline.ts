@@ -122,7 +122,7 @@ export class ParserPipeline {
     this.input = input
     this.format = this.input.format || ''
 
-    const init = new Lyric.Info()
+    const init = Lyric.makeInfo({ type: Lyric.InfoType.INVALID, timing: Lyric.InfoTiming.NONE })
     this.context = new ParserContext({ content: this.input.content, musicInfo: this.input.musicInfo }, init)
 
     this.agent = new Agent(this)
@@ -220,7 +220,6 @@ export class ParserPipeline {
       this.context.finalizeAnnotation()
       this.context.syncLineTimeWithWord()
       this.context.sort()
-      this.context.calcAgentIndex()
       this.context.syncLineTimeWithBackground()
       this.done = true
     }

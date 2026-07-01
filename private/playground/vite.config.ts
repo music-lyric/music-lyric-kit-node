@@ -1,7 +1,8 @@
 import type { Plugin } from 'vite'
 
-import { join } from 'node:path'
+import { join, dirname } from 'node:path'
 import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 
 import VuePlugin from '@vitejs/plugin-vue'
 import PathPlugin from 'vite-tsconfig-paths'
@@ -11,6 +12,10 @@ import { buildConfig } from '../config/vite'
 const cwd = process.cwd()
 const src = join(cwd, 'src')
 const root = join(cwd, '..', '..')
+
+// music-lyric-model ships only dist, but the `dev` resolve condition points packages at their src; pin it to the built entry.
+const require = createRequire(import.meta.url)
+const modelEntry = join(dirname(require.resolve('music-lyric-model')), 'index.ecma.js')
 
 const rootPkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8')) as { version: string }
 
@@ -40,6 +45,9 @@ export default buildConfig({
     plugins: [VuePlugin(), RootAlias(), PathPlugin({ root })],
     resolve: {
       conditions: ['dev'],
+      alias: {
+        'music-lyric-model': modelEntry,
+      },
     },
     define: {
       __APP_VERSION__: JSON.stringify(rootPkg.version),

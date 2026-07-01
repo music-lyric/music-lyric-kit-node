@@ -9,36 +9,40 @@ export const exportLines = (info: Lyric.Info) => {
   const roman = []
 
   for (const line of info.lines) {
-    if (line.type !== Lyric.LineType.Normal) {
+    if (!Lyric.isLineNormal(line)) {
       continue
     }
+    const body = line.body.value
 
-    const lineTime = `[${formatTime(line.time.start)}]`
+    const lineTime = `[${formatTime(line.time?.start ?? 0)}]`
 
-    if (info.timing === Lyric.InfoTiming.Syllable) {
-      const content = line.words
-      const items = content.map((item) => {
-        if (item.type === Lyric.WordType.Space) {
-          return ' '.repeat(item.count)
+    if (info.timing === Lyric.InfoTiming.WORD) {
+      const items = (body.content?.words ?? []).map((item) => {
+        if (Lyric.isWordNormal(item)) {
+          const time = formatTime(item.body.value.time?.start ?? 0)
+          return `<${time}>${item.body.value.content}`
         }
-        const time = formatTime(item.time?.start ?? 0)
-        return `<${time}>${item.content}`
+        if (Lyric.isWordSpace(item)) {
+          return ' '.repeat(item.body.value.count)
+        }
+        return ''
       })
 
       const syllableLine = `${lineTime}${items.join('')}`
       syllable.push(syllableLine)
 
-      const originalLine = `${lineTime}${line.original}`
+      const originalLine = `${lineTime}${Lyric.getLineText(line)}`
       original.push(originalLine)
     } else {
-      const target = `${lineTime}${line.original}`
+      const target = `${lineTime}${Lyric.getLineText(line)}`
       original.push(target)
     }
 
-    for (const item of line.annotation.all(Lyric.LineAnnotationKind.Translate)) {
+    const annotation = body.content?.annotation
+    for (const item of annotation?.translates ?? []) {
       translate.push(`${lineTime}${item.content}`)
     }
-    for (const item of line.annotation.all(Lyric.LineAnnotationKind.Roman)) {
+    for (const item of annotation?.romans ?? []) {
       roman.push(`${lineTime}${item.content}`)
     }
   }

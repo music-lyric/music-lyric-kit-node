@@ -38,12 +38,12 @@ export class Insert extends ParserPlugin {
 
     const newLines: Lyric.Line[] = []
 
-    const firstLine = lines[0]
-    if (firstLine.time.start > firstThreshold) {
+    const firstStart = Lyric.getLineTime(lines[0])?.start ?? 0
+    if (firstStart > firstThreshold) {
       const start = 500
-      const end = firstLine.time.start
+      const end = firstStart
       if (end > start) {
-        newLines.push(new Lyric.LineInterlude({ time: new Lyric.Time(start, end) }))
+        newLines.push(Lyric.makeLineInterlude({ start, end }))
       }
     }
 
@@ -53,11 +53,13 @@ export class Insert extends ParserPlugin {
 
       newLines.push(current)
 
-      const start = current.time.end + 100
-      const duration = next.time.start - start
+      const currentEnd = Lyric.getLineTime(current)?.end ?? 0
+      const nextStart = Lyric.getLineTime(next)?.start ?? 0
+      const start = currentEnd + 100
+      const duration = nextStart - start
 
       if (duration > normalThreshold) {
-        newLines.push(new Lyric.LineInterlude({ time: new Lyric.Time(start, next.time.start) }))
+        newLines.push(Lyric.makeLineInterlude({ start, end: nextStart }))
       }
     }
 

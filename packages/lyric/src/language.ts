@@ -1,5 +1,6 @@
-import type { Init } from '@root/init'
-
+/**
+ * Well-known language tags used across the kit.
+ */
 export enum LanguageType {
   /**
    * Simplified Chinese.
@@ -47,22 +48,7 @@ export enum LanguageType {
   Portuguese = 'pt',
 }
 
+/**
+ * A language tag: a well-known LanguageType or any other tag string.
+ */
 export type LanguageTag = LanguageType | (string & {})
-
-export class LanguageItem {
-  /**
-   * Language tag.
-   */
-  tag: LanguageTag
-
-  /**
-   * Share within the lyric, ranging from 0 to 100.
-   * Recommended to be computed from word-level language counts.
-   */
-  percent: number
-
-  constructor(init: Init<LanguageItem> = {}) {
-    this.tag = init.tag ?? ''
-    this.percent = init.percent ?? 0
-  }
-}

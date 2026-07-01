@@ -6,7 +6,7 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { hasWordTiming, findElementsByLocalName, collectElementsByLocalName } from '@root/utils'
 import { parseLines } from './line'
-import { parseAgents, parseItunesMetas } from './meta'
+import { parseAgents, applyItunesMetas } from './meta'
 import { attachHeadAnnotations } from './attach'
 
 // head element local names collected in one pass and reused by every consumer.
@@ -16,11 +16,11 @@ export interface TtmlDocument {
   /**
    * Parsed lines, with head iTunesMetadata annotations already attached.
    */
-  lines: Lyric.LineNormal[]
+  lines: Lyric.Line[]
   /**
-   * Metas read from the iTunesMetadata head.
+   * Structured meta read from the iTunesMetadata head.
    */
-  metas: Lyric.MetaItem[]
+  meta: Lyric.Meta
   /**
    * Performing agents declared in the head.
    */
@@ -49,11 +49,14 @@ export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions):
   const groups = metadata ? collectElementsByLocalName(metadata, HEAD_BLOCKS) : (new Map() as ElementGroups)
   attachHeadAnnotations(groups, lineMap)
 
+  const meta = Lyric.makeMeta()
+  applyItunesMetas(meta, groups.get('songwriter') ?? [])
+
   return {
     lines,
-    metas: parseItunesMetas(groups.get('songwriter') ?? []),
+    meta,
     agents: parseAgents(groups.get('agent') ?? []),
-    timing: hasWordTiming(lines[0]) ? Lyric.InfoTiming.Syllable : Lyric.InfoTiming.Line,
+    timing: hasWordTiming(lines[0]) ? Lyric.InfoTiming.WORD : Lyric.InfoTiming.LINE,
     groups,
   }
 }

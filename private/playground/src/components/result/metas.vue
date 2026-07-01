@@ -34,45 +34,50 @@ interface MetaRow {
   mono?: boolean
 }
 
-const props = defineProps<{ metas: Lyric.MetaItem[] }>()
+const props = defineProps<{ meta?: Lyric.Meta }>()
 
 const { t } = useI18n()
 
-const toRow = (meta: Lyric.MetaItem): MetaRow => {
-  switch (meta.type) {
-    case Lyric.MetaType.Duration:
-      return { label: meta.type, values: [formatDuration(meta.value)] }
-    case Lyric.MetaType.Offset:
-      return { label: meta.type, values: [`${meta.value}ms`] }
-    case Lyric.MetaType.Creator:
-      return { label: meta.value.role || meta.type, values: meta.value.name }
-    case Lyric.MetaType.Unknown:
-      return { label: meta.key, values: [String(meta.value)], mono: true }
-    default:
-      return { label: meta.type, values: [String(meta.value)] }
-  }
-}
-
 const rows = computed<MetaRow[]>(() => {
-  const known: Lyric.MetaItem[] = []
-  const unknown: Lyric.MetaItem[] = []
-  for (const meta of props.metas) {
-    ;(meta.type === Lyric.MetaType.Unknown ? unknown : known).push(meta)
+  const meta = props.meta
+  if (!meta) {
+    return []
   }
 
-  // one row per label, every value of that label trailing as its own chip; unknowns sink to the bottom.
-  const merged = new Map<string, MetaRow>()
-  for (const meta of [...known, ...unknown]) {
-    const row = toRow(meta)
-    const existing = merged.get(row.label)
-    if (existing) {
-      existing.values.push(...row.values)
-    } else {
-      merged.set(row.label, row)
+  const result: MetaRow[] = []
+
+  const pushTexts = (label: string, items: Lyric.MetaText[]) => {
+    if (items.length) {
+      result.push({ label, values: items.map((item) => item.value) })
     }
   }
 
-  return [...merged.values()]
+  pushTexts('title', meta.titles)
+  pushTexts('artist', meta.artists)
+  pushTexts('album', meta.albums)
+  pushTexts('author', meta.authors)
+  if (meta.duration) {
+    result.push({ label: 'duration', values: [formatDuration(meta.duration)] })
+  }
+  if (meta.offset) {
+    result.push({ label: 'offset', values: [`${meta.offset}ms`] })
+  }
+  if (meta.isrcs.length) {
+    result.push({ label: 'isrc', values: [...meta.isrcs] })
+  }
+  for (const credit of meta.credits) {
+    result.push({ label: credit.role || 'creator', values: credit.names.map((name) => name.value) })
+  }
+  for (const reference of meta.references) {
+    if (reference.ids.length) {
+      result.push({ label: reference.platform, values: [...reference.ids], mono: true })
+    }
+  }
+  for (const unknown of meta.unknowns) {
+    result.push({ label: unknown.key, values: [unknown.value], mono: true })
+  }
+
+  return result
 })
 </script>
 

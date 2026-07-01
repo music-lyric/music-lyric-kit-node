@@ -18,7 +18,7 @@ export interface ProcessLinesResult {
   /**
    * Parsed normal lines in document order.
    */
-  lines: Lyric.LineNormal[]
+  lines: Lyric.Line[]
   /**
    * Lines indexed by their itunes:key, for attaching head annotations.
    */
@@ -47,7 +47,7 @@ const parseLineAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  return new Lyric.LineAgent({ id: raw })
+  return Lyric.makeLineAgent({ id: raw })
 }
 
 const resolveLineTime = (element: Xml.XmlElement, background: boolean) => {
@@ -67,7 +67,7 @@ const resolveWordSpace = (content: string, isFirst: boolean) => {
   if (isFirst || content.trim()) {
     return null
   }
-  const space = new Lyric.WordSpace({ count: content.length || 1 })
+  const space = Lyric.makeWordSpace({ count: content.length || 1 })
   return space
 }
 
@@ -84,14 +84,14 @@ const appendWordSpan = (words: Lyric.Word[], element: Xml.XmlElement): void => {
   }
 
   const prev = words[words.length - 1]
-  if (text.startsWith(' ') && prev?.type !== Lyric.WordType.Space) {
-    words.push(new Lyric.WordSpace({ count: calcStartSpaceCount(text) }))
+  if (text.startsWith(' ') && (!prev || !Lyric.isWordSpace(prev))) {
+    words.push(Lyric.makeWordSpace({ count: calcStartSpaceCount(text) }))
   }
 
-  words.push(new Lyric.WordNormal({ content: trimed, time: new Lyric.Time(time.start, time.end) }))
+  words.push(Lyric.makeWordNormal({ content: trimed, time: Lyric.makeTime({ start: time.start, end: time.end }) }))
 
   if (text.endsWith(' ')) {
-    words.push(new Lyric.WordSpace({ count: calcEndSpaceCount(text) }))
+    words.push(Lyric.makeWordSpace({ count: calcEndSpaceCount(text) }))
   }
 }
 
@@ -141,15 +141,20 @@ export const parseSpanWords = (
   return words
 }
 
-const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: string, background: boolean, options?: ParseSpanOptions) => {
+const applyLineRole = (
+  line: Lyric.LineNormal | Lyric.LineBackground,
+  span: Xml.XmlElement,
+  role: string,
+  background: boolean,
+  options?: ParseSpanOptions,
+) => {
   if (role === 'x-bg') {
-    if (background) {
+    if (background || !('backgrounds' in line)) {
       return
     }
     const bg = parseLine(span, true, options)
     if (bg) {
-      line.background ??= []
-      line.background.push(bg)
+      line.backgrounds.push(bg)
     }
     return
   }
@@ -169,34 +174,66 @@ const applyLineRole = (line: Lyric.LineNormal, span: Xml.XmlElement, role: strin
   }
 }
 
-export const parseLine = (element: Xml.XmlElement, background: boolean = false, options?: ParseSpanOptions): Lyric.LineNormal | null => {
+/**
+ * Fill the words of a line body, either from plain text or from timed spans.
+ */
+const fillBodyWords = (
+  body: Lyric.LineNormal | Lyric.LineBackground,
+  element: Xml.XmlElement,
+  background: boolean,
+  options?: ParseSpanOptions,
+) => {
+  const content = body.content ?? (body.content = Lyric.makeLineContent())
+  if (!hasChildElementByLocalName(element, 'span')) {
+    content.words = parseTextToWords(getTextContent(element).trim())
+    return
+  }
+  content.words = parseSpanWords(element, (span, role) => applyLineRole(body, span, role, background, options), options)
+}
+
+export function parseLine(element: Xml.XmlElement, background?: false, options?: ParseSpanOptions): Lyric.Line | null
+export function parseLine(element: Xml.XmlElement, background: true, options?: ParseSpanOptions): Lyric.LineBackground | null
+export function parseLine(
+  element: Xml.XmlElement,
+  background: boolean = false,
+  options?: ParseSpanOptions,
+): Lyric.Line | Lyric.LineBackground | null {
   const time = resolveLineTime(element, background)
   if (!time) {
     return null
   }
 
-  const line = new Lyric.LineNormal({ time: new Lyric.Time(time.start, time.end) })
+  if (!hasChildElementByLocalName(element, 'span') && !getTextContent(element).trim().length) {
+    return null
+  }
 
   const agent = parseLineAgent(element)
-  if (agent) {
-    line.agent = agent
-  }
 
-  if (!hasChildElementByLocalName(element, 'span')) {
-    const text = getTextContent(element).trim()
-    if (!text.length) {
-      return null
+  if (background) {
+    const body = Lyric.makeLineBackground({ time: Lyric.makeTime({ start: time.start, end: time.end }) })
+    if (agent) {
+      const content = body.content ?? (body.content = Lyric.makeLineContent())
+      content.agent = agent
     }
-    line.words = parseTextToWords(text)
-    return line
+    fillBodyWords(body, element, true, options)
+    return body
   }
 
-  line.words = parseSpanWords(element, (span, role) => applyLineRole(line, span, role, background, options), options)
+  const line = Lyric.makeLineNormal({}, { start: time.start, end: time.end })
+  if (!Lyric.isLineNormal(line)) {
+    return null
+  }
+  const body = line.body.value
+  if (agent) {
+    const content = body.content ?? (body.content = Lyric.makeLineContent())
+    content.agent = agent
+  }
+  fillBodyWords(body, element, false, options)
   return line
 }
 
 export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): ProcessLinesResult => {
-  const lines: Lyric.LineNormal[] = []
+  const lines: Lyric.Line[] = []
   const lineMap = new Map<string, Lyric.LineNormal>()
 
   if (!body) {
@@ -206,13 +243,13 @@ export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): P
   const elements = findElementsByLocalName(body, 'p')
   for (const element of elements) {
     const line = parseLine(element, false, options)
-    if (!line) {
+    if (!line || !Lyric.isLineNormal(line)) {
       continue
     }
     lines.push(line)
     const key = getAttributeByName(element, 'key', true)
     if (key) {
-      lineMap.set(key, line)
+      lineMap.set(key, line.body.value)
     }
   }
 

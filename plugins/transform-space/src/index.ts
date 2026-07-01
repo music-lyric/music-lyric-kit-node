@@ -38,7 +38,7 @@ export class Insert extends ParserPlugin {
 
     const target = processTypes(this.config.current.types)
 
-    const handleLine = (line: Lyric.LineNormalBase) => {
+    const handleLine = (line: Lyric.LineNormal | Lyric.LineBackground) => {
       if (enableOriginal) {
         insertSpaceToLine(line, target)
       }
@@ -48,11 +48,12 @@ export class Insert extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
-      handleLine(line)
-      for (const background of line.background || []) {
+      const body = line.body.value
+      handleLine(body)
+      for (const background of body.backgrounds) {
         handleLine(background)
       }
     }

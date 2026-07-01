@@ -83,10 +83,10 @@
         <div :class="$style.resultBody">
           <div v-if="parser.error.value" :class="$style.error">{{ t(parser.error.value) }}</div>
           <template v-else-if="parser.result.value">
-            <ResultMetas :metas="parser.result.value.meta.list" />
-            <ResultLanguages :languages="parser.result.value.language.list" />
-            <ResultAgents :agents="parser.result.value.agent.list" />
-            <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agent.list" />
+            <ResultMetas :meta="parser.result.value.meta" />
+            <ResultLanguages :languages="parser.result.value.languages" />
+            <ResultAgents :agents="parser.result.value.agents" />
+            <ResultLines :lines="parser.result.value.lines" :agents="parser.result.value.agents" />
           </template>
           <div v-else :class="$style.empty">{{ t('result.empty') }}</div>
         </div>

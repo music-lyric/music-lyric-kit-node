@@ -1,6 +1,6 @@
-import type { Lyric } from 'music-lyric-kit'
 import type { Format, Engine } from '@root/core/constants'
 
+import { Lyric } from 'music-lyric-kit'
 import { PLUGIN_DEFS } from '@root/core/plugins'
 import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
 
@@ -109,7 +109,7 @@ export const useParser = () => {
 
       inferredFormat.value = parsed.format
       result.value = parsed.info
-      resultType.value = String(parsed.info.type)
+      resultType.value = Lyric.InfoType[parsed.info.type] ?? String(parsed.info.type)
       resultVersion.value = parsed.info.version
     } catch (e: any) {
       error.value = e?.message || String(e)

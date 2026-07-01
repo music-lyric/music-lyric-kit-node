@@ -4,19 +4,24 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
-export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean = true, removeEnd: boolean = true): void => {
-  const words = line.words
+export const removeBrackets = (line: Lyric.LineNormal | Lyric.LineBackground, removeStart: boolean = true, removeEnd: boolean = true): void => {
+  const content = line.content
+  if (!content) {
+    return
+  }
+  const words = content.words
 
   if (removeStart) {
     for (let i = 0; i < words.length; i++) {
       const word = words[i]
-      if (word.type !== Lyric.WordType.Normal) {
+      if (!Lyric.isWordNormal(word)) {
         continue
       }
 
-      if (isOpenBracket(word.content.charAt(0))) {
-        word.content = word.content.substring(1)
-        if (!word.content) words.splice(i, 1)
+      const value = word.body.value
+      if (isOpenBracket(value.content.charAt(0))) {
+        value.content = value.content.substring(1)
+        if (!value.content) words.splice(i, 1)
       }
       break
     }
@@ -25,20 +30,21 @@ export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean 
   if (removeEnd) {
     for (let i = words.length - 1; i >= 0; i--) {
       const word = words[i]
-      if (word.type !== Lyric.WordType.Normal) {
+      if (!Lyric.isWordNormal(word)) {
         continue
       }
 
-      const lastCharIdx = word.content.length - 1
-      if (isCloseBracket(word.content.charAt(lastCharIdx))) {
-        word.content = word.content.slice(0, -1)
-        if (!word.content) words.splice(i, 1)
+      const value = word.body.value
+      const lastCharIdx = value.content.length - 1
+      if (isCloseBracket(value.content.charAt(lastCharIdx))) {
+        value.content = value.content.slice(0, -1)
+        if (!value.content) words.splice(i, 1)
       }
       break
     }
   }
 
-  const stripBrackets = (items: Lyric.LineAnnotationItem[]) => {
+  const stripBrackets = (items: { content: string }[]) => {
     for (const item of items) {
       if (!item.content.trim()) continue
 
@@ -55,6 +61,9 @@ export const removeBrackets = (line: Lyric.LineNormalBase, removeStart: boolean 
     }
   }
 
-  stripBrackets(line.annotation.all(Lyric.LineAnnotationKind.Translate))
-  stripBrackets(line.annotation.all(Lyric.LineAnnotationKind.Roman))
+  const annotation = content.annotation
+  if (annotation) {
+    stripBrackets(annotation.translates)
+    stripBrackets(annotation.romans)
+  }
 }

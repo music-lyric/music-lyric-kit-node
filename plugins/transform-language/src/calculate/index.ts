@@ -35,30 +35,35 @@ export class CalculatePercent extends ParserPlugin {
     let total = 0
 
     // CJK weighs per character while Latin and Cyrillic weigh per word, so letter-rich scripts do not inflate their share
-    const handleLine = (line: Lyric.LineNormalBase) => {
-      for (const word of line.words) {
-        if (word.type !== Lyric.WordType.Normal || !word.language) {
+    const handleLine = (line: Lyric.LineNormal | Lyric.LineBackground) => {
+      for (const word of line.content?.words ?? []) {
+        if (!Lyric.isWordNormal(word)) {
+          continue
+        }
+        const value = word.body.value
+        if (!value.language) {
           continue
         }
 
-        const unit = isCjkLanguage(word.language) ? countCjkChars(word.content) : countLatinWords(word.content)
+        const unit = isCjkLanguage(value.language) ? countCjkChars(value.content) : countLatinWords(value.content)
         if (unit <= 0) {
           continue
         }
 
-        counts.set(word.language, (counts.get(word.language) ?? 0) + unit)
+        counts.set(value.language, (counts.get(value.language) ?? 0) + unit)
         total += unit
       }
     }
 
     // background vocals are ad-libs by default, so they stay out of the language share unless opted in
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
-      handleLine(line)
+      const body = line.body.value
+      handleLine(body)
       if (includeBackground) {
-        for (const background of line.background || []) {
+        for (const background of body.backgrounds) {
           handleLine(background)
         }
       }
@@ -70,11 +75,11 @@ export class CalculatePercent extends ParserPlugin {
 
     const list: Lyric.LanguageItem[] = []
     for (const [tag, count] of counts) {
-      list.push(new Lyric.LanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
+      list.push(Lyric.makeLanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
     }
     list.sort((a, b) => b.percent - a.percent)
 
-    ctx.result.language.list = list
+    ctx.result.languages = list
   }
 }
 

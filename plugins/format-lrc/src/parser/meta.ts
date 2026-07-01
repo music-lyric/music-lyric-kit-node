@@ -3,34 +3,44 @@ import type { MatchItem } from './utils'
 import { Lyric } from '@music-lyric-kit/lyric'
 import { parseTime } from '@music-lyric-kit/utils'
 
-const processItem = (key: string, rawKey: string, value: string): Lyric.MetaItem => {
+/**
+ * Apply one parsed meta tag to the structured meta container.
+ */
+const applyMeta = (meta: Lyric.Meta, key: string, rawKey: string, value: string) => {
   switch (key) {
     case 'offset':
-      return Lyric.createMetaItem(Lyric.MetaType.Offset, rawKey, Number(value) || 0)
+      meta.offset = Number(value) || 0
+      return
     case 'length':
     case 'duration':
-      return Lyric.createMetaItem(Lyric.MetaType.Duration, rawKey, parseTime(value) || 0)
+      meta.duration = parseTime(value) || 0
+      return
     case 'ti':
     case 'title':
-      return Lyric.createMetaItem(Lyric.MetaType.Title, rawKey, value.trim())
+      meta.titles.push(Lyric.makeMetaText({ value }))
+      return
     case 'ar':
     case 'artist':
-      return Lyric.createMetaItem(Lyric.MetaType.Singer, rawKey, value.trim())
+      meta.artists.push(Lyric.makeMetaText({ value }))
+      return
     case 'al':
     case 'album':
-      return Lyric.createMetaItem(Lyric.MetaType.Album, rawKey, value.trim())
+      meta.albums.push(Lyric.makeMetaText({ value }))
+      return
     case 'by':
-      return Lyric.createMetaItem(Lyric.MetaType.Author, rawKey, value.trim())
+      meta.authors.push(Lyric.makeMetaText({ value }))
+      return
     case 'isrc':
-      return Lyric.createMetaItem(Lyric.MetaType.Isrc, rawKey, value.trim())
+      meta.isrcs.push(value)
+      return
   }
-  return Lyric.createMetaItem(Lyric.MetaType.Unknown, rawKey, value.trim())
+  meta.unknowns.push(Lyric.makeMetaUnknown({ key: rawKey, value }))
 }
 
 const LYRIC_META_REGEXP = /^\s*\[\s*([A-Za-z0-9_-]+)\s*:\s*([^\]]*)\s*\]\s*$/
 
-export const processMetas = (metas: MatchItem[]) => {
-  const result: Lyric.MetaItem[] = []
+export const processMetas = (metas: MatchItem[]): Lyric.Meta => {
+  const result = Lyric.makeMeta()
 
   for (const meta of metas) {
     if (!meta.tag) {
@@ -49,9 +59,7 @@ export const processMetas = (metas: MatchItem[]) => {
       continue
     }
 
-    const target = processItem(key, rawKey, value)
-
-    result.push(target)
+    applyMeta(result, key, rawKey, value)
   }
 
   return result

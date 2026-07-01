@@ -17,11 +17,11 @@ export const parseTextToWords = (text: string): Lyric.Word[] => {
     }
 
     if (current.trim() === '') {
-      result.push(new Lyric.WordSpace())
+      result.push(Lyric.makeWordSpace({ count: 1 }))
       continue
     }
 
-    result.push(new Lyric.WordNormal({ content: current.trim() }))
+    result.push(Lyric.makeWordNormal({ content: current.trim() }))
   }
 
   return result
@@ -30,12 +30,12 @@ export const parseTextToWords = (text: string): Lyric.Word[] => {
 /**
  * Detect per-word timing by finding any timed word in the line.
  */
-export const hasWordTiming = (line?: Lyric.LineNormal) => {
-  if (!line) {
+export const hasWordTiming = (line?: Lyric.Line) => {
+  if (!line || !Lyric.isLineNormal(line)) {
     return false
   }
-  for (const word of line.words) {
-    if (word.type === Lyric.WordType.Normal && (word.time?.start ?? 0) > 0) {
+  for (const word of line.body.value.content?.words ?? []) {
+    if (Lyric.isWordNormal(word) && (word.body.value.time?.start ?? 0) > 0) {
       return true
     }
   }

@@ -3,9 +3,12 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent } from '@root/utils'
 
-const parseSongwriters = (elements: Xml.XmlElement[]): Lyric.MetaItem | undefined => {
+/**
+ * Apply iTunesMetadata songwriters to the structured meta as credits.
+ */
+export const applyItunesMetas = (meta: Lyric.Meta, songwriters: Xml.XmlElement[]) => {
   const names: string[] = []
-  for (const element of elements) {
+  for (const element of songwriters) {
     const name = getTextContent(element).trim()
     if (name) {
       names.push(name)
@@ -13,33 +16,27 @@ const parseSongwriters = (elements: Xml.XmlElement[]): Lyric.MetaItem | undefine
   }
 
   if (!names.length) {
-    return undefined
+    return
   }
 
-  return Lyric.createMetaItem(Lyric.MetaType.Creator, 'songWriter', { role: 'songWriter', name: names })
-}
-
-export const parseItunesMetas = (songwriters: Xml.XmlElement[]): Lyric.MetaItem[] => {
-  const result: Lyric.MetaItem[] = []
-
-  const creator = parseSongwriters(songwriters)
-  if (creator) {
-    result.push(creator)
-  }
-
-  return result
+  meta.credits.push(
+    Lyric.makeMetaCredit({
+      role: 'songWriter',
+      names: names.map((name) => Lyric.makeMetaText({ value: name })),
+    }),
+  )
 }
 
 const resolveAgentType = (type: string): Lyric.AgentType => {
   switch (type) {
     case 'person':
-      return Lyric.AgentType.Person
+      return Lyric.AgentType.PERSON
     case 'group':
-      return Lyric.AgentType.Group
+      return Lyric.AgentType.GROUP
     case 'other':
-      return Lyric.AgentType.Other
+      return Lyric.AgentType.OTHER
     default:
-      return Lyric.AgentType.Unknown
+      return Lyric.AgentType.UNKNOWN
   }
 }
 
@@ -62,7 +59,7 @@ const parseAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  return new Lyric.AgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
+  return Lyric.makeAgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
 }
 
 export const parseAgents = (agents: Xml.XmlElement[]) => {

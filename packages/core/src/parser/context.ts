@@ -43,64 +43,57 @@ export class ParserContext implements BaseContext {
    * Sort all lines and their background lines by start time in ascending order.
    */
   sort() {
-    const lines = this.result?.lines
-    if (!lines?.length) {
-      return
-    }
-
-    const compare = (a: Lyric.Line, b: Lyric.Line) => a.time.start - b.time.start
-    lines.sort(compare)
-
-    for (let i = 0, len = lines.length; i < len; i++) {
-      const line = lines[i]
-      if (line.type !== Lyric.LineType.Normal || !line.background?.length) {
-        continue
-      }
-      line.background.sort(compare)
-    }
+    Lyric.sortLinesByTime(this.result)
   }
 
   /**
    * Sync each line's start/end time to match the time range of its first and last normal word.
    */
-  syncLineTimeWithWord(lines?: Lyric.Line[]) {
-    const result = this.result
-    for (const line of lines || result.lines || []) {
-      if (line.type !== Lyric.LineType.Normal) {
+  syncLineTimeWithWord() {
+    for (const line of this.result.lines) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
-
-      if (line.background) {
-        this.syncLineTimeWithWord(line.background)
+      const body = line.body.value
+      this.syncTimeWithWord(line, body.content?.words ?? [])
+      for (const background of body.backgrounds) {
+        this.syncTimeWithWord(background, background.content?.words ?? [])
       }
+    }
+  }
 
-      const words = line.words
-
-      let first: Lyric.WordNormal | null = null
-      let last: Lyric.WordNormal | null = null
-      for (let i = 0, len = words.length; i < len; i++) {
-        const word = words[i]
-        if (word.type !== Lyric.WordType.Normal) {
-          continue
-        }
-        if (!first) {
-          first = word
-        }
-        last = word
-      }
-
-      if (!first || !last) {
+  /**
+   * Sync a time holder's range to the first and last normal word of the given words.
+   */
+  private syncTimeWithWord(holder: { time?: Lyric.Time }, words: Lyric.Word[]) {
+    let first: Lyric.WordNormal | null = null
+    let last: Lyric.WordNormal | null = null
+    for (let i = 0, len = words.length; i < len; i++) {
+      const word = words[i]
+      if (!Lyric.isWordNormal(word)) {
         continue
       }
-
-      const startTime = first.time?.start || 0
-      const endTime = last.time?.end || 0
-      if (startTime <= 0 || endTime <= 0) {
-        continue
+      if (!first) {
+        first = word.body.value
       }
+      last = word.body.value
+    }
 
-      line.time.start = startTime
-      line.time.end = endTime
+    if (!first || !last) {
+      return
+    }
+
+    const startTime = first.time?.start || 0
+    const endTime = last.time?.end || 0
+    if (startTime <= 0 || endTime <= 0) {
+      return
+    }
+
+    if (holder.time) {
+      holder.time.start = startTime
+      holder.time.end = endTime
+    } else {
+      holder.time = Lyric.makeTime({ start: startTime, end: endTime })
     }
   }
 
@@ -109,16 +102,16 @@ export class ParserContext implements BaseContext {
    */
   syncLineTimeWithBackground() {
     for (const line of this.result.lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
+        continue
+      }
+      const body = line.body.value
+      if (!body.backgrounds.length || !line.time) {
         continue
       }
 
-      if (!line.background?.length) {
-        continue
-      }
-
-      const last = line.background[line.background.length - 1]
-      if (!last) {
+      const last = body.backgrounds[body.backgrounds.length - 1]
+      if (!last?.time) {
         continue
       }
 
@@ -129,91 +122,57 @@ export class ParserContext implements BaseContext {
   /**
    * Remove leading and trailing space words from each line's word list.
    */
-  cleanWord(lines?: Lyric.Line[]) {
-    const result = this.result
-    for (const line of lines || result?.lines || []) {
-      if (line.type !== Lyric.LineType.Normal) {
+  cleanWord() {
+    for (const line of this.result.lines) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
+      const body = line.body.value
+      this.cleanContentWord(body.content)
+      for (const background of body.backgrounds) {
+        this.cleanContentWord(background.content)
+      }
+    }
+  }
 
-      if (line.background) {
-        this.cleanWord(line.background)
-      }
+  /**
+   * Trim leading and trailing space words of one line content.
+   */
+  private cleanContentWord(content: Lyric.LineContent | undefined) {
+    if (!content) {
+      return
+    }
+    const words = content.words
+    if (!words.length) {
+      return
+    }
 
-      const words = line.words
-      if (!words.length) {
-        continue
-      }
+    while (words.length > 0 && Lyric.isWordSpace(words[words.length - 1])) {
+      words.pop()
+    }
 
-      while (words.length > 0 && words[words.length - 1].type === Lyric.WordType.Space) {
-        words.pop()
-      }
-
-      let startCount = 0
-      while (startCount < words.length && words[startCount].type === Lyric.WordType.Space) {
-        startCount++
-      }
-      if (startCount > 0) {
-        words.splice(0, startCount)
-      }
+    let startCount = 0
+    while (startCount < words.length && Lyric.isWordSpace(words[startCount])) {
+      startCount++
+    }
+    if (startCount > 0) {
+      words.splice(0, startCount)
     }
   }
 
   /**
    * Build line annotations from words for every line and its background lines.
    */
-  finalizeAnnotation(lines?: Lyric.Line[]) {
-    const result = this.result
-    for (const line of lines || result?.lines || []) {
-      if (line.type !== Lyric.LineType.Normal) {
+  finalizeAnnotation() {
+    for (const line of this.result.lines) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
-
-      if (line.background) {
-        this.finalizeAnnotation(line.background)
+      const body = line.body.value
+      Lyric.refreshLineAnnotation(body)
+      for (const background of body.backgrounds) {
+        Lyric.refreshLineAnnotation(background)
       }
-
-      Lyric.deriveLineAnnotation(line)
-    }
-  }
-
-  /**
-   * Calculate global index, block index for each line's agent, and total line count for each agent.
-   */
-  calcAgentIndex() {
-    const result = this.result
-    if (!Array.isArray(result?.lines) || !Array.isArray(result?.agent?.list)) {
-      return
-    }
-
-    const globalIndex = new Map<string, number>()
-    const idIndex = new Map<string, number>()
-
-    let id: string | null = null
-    let blockIndex = 0
-
-    for (const line of result.lines) {
-      if (line.type !== Lyric.LineType.Normal || !line.agent) {
-        continue
-      }
-
-      const current = line.agent.id
-
-      const gi = globalIndex.get(current) ?? 0
-      line.agent.globalIndex = gi
-      globalIndex.set(current, gi + 1)
-
-      if (current !== id) {
-        blockIndex = 0
-        id = current
-      }
-      line.agent.blockIndex = blockIndex++
-
-      idIndex.set(current, (idIndex.get(current) ?? 0) + 1)
-    }
-
-    for (const agent of result.agent.list) {
-      agent.count = idIndex.get(agent.id) ?? 0
     }
   }
 }

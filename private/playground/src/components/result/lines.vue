@@ -8,13 +8,13 @@
     <div v-if="!lines.length" :class="$style.empty">{{ t('result.noLines') }}</div>
 
     <div v-else :class="$style.list">
-      <template v-for="(line, i) in lines" :key="i">
-        <div v-if="line.type === Lyric.LineType.Interlude" :class="$style.interlude">
-          <span :class="$style.interludeTime">{{ interludeTime(line as Lyric.LineInterlude) }}</span>
+      <template v-for="(item, i) in items" :key="i">
+        <div v-if="item.kind === 'interlude'" :class="$style.interlude">
+          <span :class="$style.interludeTime">{{ item.time }}</span>
           <span :class="$style.interludeLabel">{{ t('result.interlude') }}</span>
           <span :class="$style.interludeDots"></span>
         </div>
-        <ResultLine v-else :line="line as Lyric.LineNormal" :agents="agents" />
+        <ResultLine v-else :line="item.body" :agents="agents" />
       </template>
     </div>
   </div>
@@ -24,17 +24,26 @@
 import { Lyric } from 'music-lyric-kit'
 import ResultLine from './line.vue'
 
+import { computed } from 'vue'
 import { formatTime } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-defineProps<{
+const props = defineProps<{
   lines: Lyric.Line[]
   agents: Lyric.AgentItem[]
 }>()
 
 const { t } = useI18n()
 
-const interludeTime = (line: Lyric.LineInterlude) => `${formatTime(line.time.start)} ~ ${formatTime(line.time.end)}`
+const items = computed(() =>
+  props.lines.map((line) => {
+    if (Lyric.isLineNormal(line)) {
+      return { kind: 'normal' as const, body: line.body.value }
+    }
+    const time = Lyric.getLineTime(line)
+    return { kind: 'interlude' as const, time: `${formatTime(time?.start ?? 0)} ~ ${formatTime(time?.end ?? 0)}` }
+  }),
+)
 </script>
 
 <style module lang="scss">

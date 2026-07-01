@@ -23,7 +23,12 @@ export const normalizeLanguage = (language?: string): string | undefined => {
   return value
 }
 
-export const appendLineTranslate = (line: Lyric.LineNormalBase, content: string, language?: string, fromItunes: boolean = false) => {
+export const appendLineTranslate = (
+  line: Lyric.LineNormal | Lyric.LineBackground,
+  content: string,
+  language?: string,
+  fromItunes: boolean = false,
+) => {
   const text = content.trim()
   if (!text) {
     return
@@ -31,10 +36,12 @@ export const appendLineTranslate = (line: Lyric.LineNormalBase, content: string,
 
   const lang = normalizeLanguage(language)
 
-  const item = Lyric.createLineAnnotationItem(Lyric.LineAnnotationKind.Translate, { content: text, language: lang || undefined })
+  const item = Lyric.makeLineAnnotationTranslate({ content: text, language: lang || undefined })
 
-  const list = line.annotation.list
-  const index = list.findIndex((entry) => entry.kind === Lyric.LineAnnotationKind.Translate && normalizeLanguage(entry.language) === lang)
+  const lineContent = line.content ?? (line.content = Lyric.makeLineContent())
+  const annotation = lineContent.annotation ?? (lineContent.annotation = Lyric.makeLineAnnotation())
+  const list = annotation.translates
+  const index = list.findIndex((entry) => normalizeLanguage(entry.language) === lang)
 
   if (index < 0) {
     list.push(item)
@@ -46,7 +53,7 @@ export const appendLineTranslate = (line: Lyric.LineNormalBase, content: string,
   }
 }
 
-export const appendLineRoman = (line: Lyric.LineNormalBase, content: string, language?: string) => {
+export const appendLineRoman = (line: Lyric.LineNormal | Lyric.LineBackground, content: string, language?: string) => {
   const text = content.trim()
   if (!text) {
     return
@@ -54,7 +61,9 @@ export const appendLineRoman = (line: Lyric.LineNormalBase, content: string, lan
 
   const lang = normalizeLanguage(language)
 
-  const item = Lyric.createLineAnnotationItem(Lyric.LineAnnotationKind.Roman, { content: text, language: lang || undefined })
+  const item = Lyric.makeLineAnnotationRoman({ content: text, language: lang || undefined })
 
-  line.annotation.list.push(item)
+  const lineContent = line.content ?? (line.content = Lyric.makeLineContent())
+  const annotation = lineContent.annotation ?? (lineContent.annotation = Lyric.makeLineAnnotation())
+  annotation.romans.push(item)
 }

@@ -23,15 +23,16 @@ export class Clean extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
 
-      if (!line.background?.length) {
+      const backgrounds = line.body.value.backgrounds
+      if (!backgrounds.length) {
         continue
       }
 
-      for (const item of line.background) {
+      for (const item of backgrounds) {
         removeBrackets(item)
       }
     }

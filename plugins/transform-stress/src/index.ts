@@ -30,24 +30,26 @@ export class Mark extends ParserPlugin {
       return
     }
 
-    const handleMark = (line: Lyric.LineNormalBase) => {
+    const handleMark = (line: Lyric.LineNormal | Lyric.LineBackground) => {
       for (const word of line.words) {
-        if (word.type !== Lyric.WordType.Normal) {
+        if (!Lyric.isWordNormal(word)) {
           continue
         }
-        if (word.time && word.time.duration > this.config.current.checkTime) {
-          word.stress = true
+        const value = word.body.value
+        if (value.time && Lyric.getTimeDuration(value.time) > this.config.current.checkTime) {
+          value.stress = true
         }
       }
     }
 
     for (const line of lines) {
-      if (line.type !== Lyric.LineType.Normal) {
+      if (!Lyric.isLineNormal(line)) {
         continue
       }
 
-      handleMark(line)
-      for (const background of line.background || []) {
+      const body = line.body.value
+      handleMark(body)
+      for (const background of body.backgrounds) {
         handleMark(background)
       }
     }
