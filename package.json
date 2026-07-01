@@ -8,6 +8,7 @@
     "dev": "turbo watch dev",
     "build": "turbo run build",
     "build:force": "turbo run build --force",
+    "format": "prettier --write .",
     "change-log:build": "tsx scripts/change-log/build.ts",
     "change-log:match": "tsx scripts/change-log/match.ts",
     "version": "tsx scripts/version.ts",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@types/node": "^25.0.3",
     "@types/semver": "^7.7.1",
+    "prettier": "^3.9.4",
     "semver": "^7.8.4",
     "tsx": "^4.21.0",
     "turbo": "^2.7.1",
