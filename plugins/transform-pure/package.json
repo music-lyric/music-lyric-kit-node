@@ -1,6 +1,6 @@
 {
   "name": "@music-lyric-kit/plugin-transform-pure",
-  "version": "0.14.1",
+  "version": "0.15.0",
   "author": "folltoshe",
   "type": "module",
   "description": "Music Lyric Kit - Transform Pure Plugin",

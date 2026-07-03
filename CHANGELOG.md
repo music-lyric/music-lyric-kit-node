@@ -1,3 +1,21 @@
+## v0.15.0 (2026-07-04)
+
+### Feature
+
+- display input and encoded sizes ([3c3f4fc](https://github.com/music-lyric/music-lyric-kit-node/commit/3c3f4fc))
+- bump lyric model version ([9bd8cc6](https://github.com/music-lyric/music-lyric-kit-node/commit/9bd8cc6))
+- `plugin-format-ttml`
+  - match background annotations by key ([616486f](https://github.com/music-lyric/music-lyric-kit-node/commit/616486f))
+
+### Fix
+
+- render error in playground result ([9833c1f](https://github.com/music-lyric/music-lyric-kit-node/commit/9833c1f))
+
+### Refactor
+
+- `plugin-format-ttml`
+  - simplify line parsing and annotations ([c351966](https://github.com/music-lyric/music-lyric-kit-node/commit/c351966))
+
 ## v0.14.1 (2026-06-25)
 
 ### Feature
