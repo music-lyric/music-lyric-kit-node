@@ -46,16 +46,16 @@ export class ExtractCreator extends ParserPlugin {
       return
     }
 
-    const meta = ctx.result.meta ?? (ctx.result.meta = Lyric.makeMeta())
-    const newLines: Lyric.Line[] = []
+    const meta = ctx.result.meta ?? (ctx.result.meta = Lyric.Runtime.makeMeta())
+    const newLines: Lyric.Runtime.Line[] = []
 
     for (const line of lines) {
-      if (!Lyric.isLineNormal(line)) {
+      if (!Lyric.Runtime.isLineNormal(line)) {
         newLines.push(line)
         continue
       }
 
-      const target = extractCreator(Lyric.getLineText(line))
+      const target = extractCreator(Lyric.Runtime.getLineText(line))
       if (!target) {
         newLines.push(line)
         continue
@@ -73,9 +73,9 @@ export class ExtractCreator extends ParserPlugin {
         const names = splitNameWithRule(name, this.config.current.split)
         if (names.length > 0) {
           meta.credits.push(
-            Lyric.makeMetaCredit({
+            Lyric.Runtime.makeMetaCredit({
               role,
-              names: names.map((item) => Lyric.makeMetaText({ value: item })),
+              names: names.map((item) => Lyric.Runtime.makeMetaText({ content: item })),
             }),
           )
         }

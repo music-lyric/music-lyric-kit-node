@@ -16,19 +16,19 @@ export interface TtmlDocument {
   /**
    * Parsed lines, with head iTunesMetadata annotations already attached.
    */
-  lines: Lyric.Line[]
+  lines: Lyric.Runtime.Line[]
   /**
    * Structured meta read from the iTunesMetadata head.
    */
-  meta: Lyric.Meta
+  meta: Lyric.Runtime.Meta
   /**
    * Performing agents declared in the head.
    */
-  agents: Lyric.AgentItem[]
+  agents: Lyric.Runtime.AgentItem[]
   /**
    * Whether the lines carry per-word timing.
    */
-  timing: Lyric.InfoTiming
+  timing: Lyric.Common.Timing
   /**
    * Head elements grouped by local name, for dialects that read further from them.
    */
@@ -44,14 +44,14 @@ export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions):
   const groups = metadata ? collectElementsByLocalName(metadata, HEAD_BLOCKS) : (new Map() as ElementGroups)
   attachHeadAnnotations(groups, lineMap, backgroundMap)
 
-  const meta = Lyric.makeMeta()
+  const meta = Lyric.Runtime.makeMeta()
   applyItunesMetas(meta, groups.get('songwriter') ?? [])
 
   return {
     lines,
     meta,
     agents: parseAgents(groups.get('agent') ?? []),
-    timing: hasWordTiming(lines[0]) ? Lyric.InfoTiming.WORD : Lyric.InfoTiming.LINE,
+    timing: hasWordTiming(lines[0]) ? Lyric.Common.Timing.WORD : Lyric.Common.Timing.LINE,
     groups,
   }
 }

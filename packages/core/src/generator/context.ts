@@ -5,7 +5,7 @@ import type { BaseContext } from '@root/plugin'
 export type GeneratorResult = string | Object | Uint8Array
 
 export interface GeneratorParams {
-  content: Lyric.Info
+  content: Lyric.Runtime.Info
 }
 
 export class GeneratorContext implements BaseContext {

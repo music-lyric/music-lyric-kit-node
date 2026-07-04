@@ -15,9 +15,9 @@ import {
 import { parseSpanWords } from './line'
 import { appendLineTranslate, appendLineRoman, normalizeLanguage } from './annotation'
 
-type AnnotationTextHandler = (text: Xml.XmlElement, line: Lyric.LineNormal, language?: string, type?: string) => void
+type AnnotationTextHandler = (text: Xml.XmlElement, line: Lyric.Runtime.LineNormal, language?: string, type?: string) => void
 
-const eachAnnotationText = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, handle: AnnotationTextHandler) => {
+const eachAnnotationText = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.Runtime.LineNormal>, handle: AnnotationTextHandler) => {
   for (const item of blocks) {
     const language = getAttributeByName(item, 'lang', true)
     const type = getAttributeByName(item, 'type')
@@ -36,7 +36,7 @@ const eachAnnotationText = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric
   }
 }
 
-const readReplacementWords = (text: Xml.XmlElement): Lyric.Word[] => {
+const readReplacementWords = (text: Xml.XmlElement): Lyric.Runtime.Word[] => {
   if (hasChildElementByLocalName(text, 'span')) {
     return parseSpanWords(text)
   }
@@ -69,10 +69,10 @@ const splitBackgroundText = (text: Xml.XmlElement): { main: string; backgrounds:
 }
 
 const attachBackgroundTexts = (
-  line: Lyric.LineNormal,
+  line: Lyric.Runtime.LineNormal,
   backgrounds: BackgroundText[],
-  backgroundMap: Map<string, Lyric.LineBackground>,
-  attach: (background: Lyric.LineBackground, content: string) => void,
+  backgroundMap: Map<string, Lyric.Runtime.LineBackground>,
+  attach: (background: Lyric.Runtime.LineBackground, content: string) => void,
 ) => {
   const list = line.backgrounds
   if (!list.length) {
@@ -93,7 +93,11 @@ const attachBackgroundTexts = (
   }
 }
 
-const attachTranslate = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, backgroundMap: Map<string, Lyric.LineBackground>) => {
+const attachTranslate = (
+  blocks: Xml.XmlElement[],
+  lineMap: Map<string, Lyric.Runtime.LineNormal>,
+  backgroundMap: Map<string, Lyric.Runtime.LineBackground>,
+) => {
   eachAnnotationText(blocks, lineMap, (text, line, language, type) => {
     // replacement overrides the original wording (e.g. traditional to simplified).
     if (type === 'replacement') {
@@ -123,21 +127,21 @@ const hasTimedSpans = (text: Xml.XmlElement): boolean => {
 }
 
 const findBodyWordByTime = (
-  words: Lyric.Word[],
-  startMap: Map<number, Lyric.WordNormal>,
+  words: Lyric.Runtime.Word[],
+  startMap: Map<number, Lyric.Runtime.WordNormal>,
   start: number,
   end: number,
-): Lyric.WordNormal | undefined => {
+): Lyric.Runtime.WordNormal | undefined => {
   // roman spans align to body words by exact start time (1:1 in practice).
   const exact = startMap.get(start)
   if (exact) {
     return exact
   }
   // otherwise fall back to the largest time overlap.
-  let best: Lyric.WordNormal | undefined
+  let best: Lyric.Runtime.WordNormal | undefined
   let bestOverlap = 0
   for (const word of words) {
-    if (!Lyric.isWordNormal(word) || !word.body.value.time) {
+    if (!Lyric.Runtime.isWordNormal(word) || !word.body.value.time) {
       continue
     }
     const time = word.body.value.time
@@ -150,11 +154,11 @@ const findBodyWordByTime = (
   return best
 }
 
-const hasWordSpaceBetween = (words: Lyric.Word[], a: number, b: number): boolean => {
+const hasWordSpaceBetween = (words: Lyric.Runtime.Word[], a: number, b: number): boolean => {
   const lo = Math.min(a, b)
   const hi = Math.max(a, b)
   for (let i = lo + 1; i < hi; i++) {
-    if (Lyric.isWordSpace(words[i])) {
+    if (Lyric.Runtime.isWordSpace(words[i])) {
       return true
     }
   }
@@ -165,18 +169,18 @@ interface RomanEntry {
   content: string
   start: number
   end: number
-  target: Lyric.WordNormal
+  target: Lyric.Runtime.WordNormal
   boundary: boolean
 }
 
-const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language?: string): boolean => {
+const attachWordRomans = (text: Xml.XmlElement, line: Lyric.Runtime.LineNormal, language?: string): boolean => {
   const words = line.content?.words ?? []
 
-  const indexMap = new Map<Lyric.WordNormal, number>()
-  const startMap = new Map<number, Lyric.WordNormal>()
+  const indexMap = new Map<Lyric.Runtime.WordNormal, number>()
+  const startMap = new Map<number, Lyric.Runtime.WordNormal>()
   for (let i = 0; i < words.length; i++) {
     const word = words[i]
-    if (Lyric.isWordNormal(word)) {
+    if (Lyric.Runtime.isWordNormal(word)) {
       const value = word.body.value
       indexMap.set(value, i)
       if (value.time) {
@@ -189,7 +193,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
   const entries: RomanEntry[] = []
   for (let i = 0; i < roman.length; i++) {
     const span = roman[i]
-    if (!Lyric.isWordNormal(span) || !span.body.value.time) {
+    if (!Lyric.Runtime.isWordNormal(span) || !span.body.value.time) {
       continue
     }
     const value = span.body.value
@@ -203,7 +207,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
       start: value.time!.start,
       end: value.time!.end,
       target,
-      boundary: !!next && Lyric.isWordSpace(next),
+      boundary: !!next && Lyric.Runtime.isWordSpace(next),
     })
   }
 
@@ -211,7 +215,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
     return false
   }
 
-  const groups = new Map<Lyric.WordNormal, Lyric.WordAnnotationContent[]>()
+  const groups = new Map<Lyric.Runtime.WordNormal, Lyric.Runtime.WordAnnotationContent[]>()
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i]
     const next = entries[i + 1]
@@ -226,7 +230,7 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
       }
     }
 
-    const token = Lyric.makeWordAnnotationContent({ content, time: Lyric.makeTime({ start: entry.start, end: entry.end }) })
+    const token = Lyric.Runtime.makeWordAnnotationContent({ content, time: Lyric.Common.makeTime({ start: entry.start, end: entry.end }) })
 
     const list = groups.get(entry.target)
     if (list) {
@@ -236,8 +240,8 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
     }
   }
 
-  let head: Lyric.WordAnnotationContent | undefined
-  let tail: Lyric.WordAnnotationContent | undefined
+  let head: Lyric.Runtime.WordAnnotationContent | undefined
+  let tail: Lyric.Runtime.WordAnnotationContent | undefined
   let headIndex = Infinity
   let tailIndex = -Infinity
   for (const [word, tokens] of groups) {
@@ -263,23 +267,27 @@ const attachWordRomans = (text: Xml.XmlElement, line: Lyric.LineNormal, language
 
   const lang = normalizeLanguage(language)
   for (const [word, tokens] of groups) {
-    const item = Lyric.makeWordAnnotationRoman({
+    const item = Lyric.Runtime.makeWordAnnotationRoman({
       words: tokens,
-      time: Lyric.makeTime({ start: tokens[0].time!.start, end: tokens[tokens.length - 1].time!.end }),
+      time: Lyric.Common.makeTime({ start: tokens[0].time!.start, end: tokens[tokens.length - 1].time!.end }),
     })
 
     if (lang) {
       item.language = lang
     }
 
-    word.annotation ??= Lyric.makeWordAnnotation()
+    word.annotation ??= Lyric.Runtime.makeWordAnnotation()
     word.annotation.romans.push(item)
   }
 
   return true
 }
 
-const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNormal>, backgroundMap: Map<string, Lyric.LineBackground>) => {
+const attachRoman = (
+  blocks: Xml.XmlElement[],
+  lineMap: Map<string, Lyric.Runtime.LineNormal>,
+  backgroundMap: Map<string, Lyric.Runtime.LineBackground>,
+) => {
   eachAnnotationText(blocks, lineMap, (text, line, language) => {
     if (hasTimedSpans(text) && attachWordRomans(text, line, language)) {
       return
@@ -298,8 +306,8 @@ const attachRoman = (blocks: Xml.XmlElement[], lineMap: Map<string, Lyric.LineNo
  */
 export const attachHeadAnnotations = (
   groups: ElementGroups,
-  lineMap: Map<string, Lyric.LineNormal>,
-  backgroundMap: Map<string, Lyric.LineBackground>,
+  lineMap: Map<string, Lyric.Runtime.LineNormal>,
+  backgroundMap: Map<string, Lyric.Runtime.LineBackground>,
 ) => {
   if (!lineMap.size) {
     return

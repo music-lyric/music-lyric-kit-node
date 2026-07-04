@@ -29,18 +29,18 @@ import { formatTime } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
 const props = defineProps<{
-  lines: Lyric.Line[]
-  agents: Lyric.AgentItem[]
+  lines: Lyric.Runtime.Line[]
+  agents: Lyric.Runtime.AgentItem[]
 }>()
 
 const { t } = useI18n()
 
 const items = computed(() =>
   props.lines.map((line) => {
-    if (Lyric.isLineNormal(line)) {
+    if (Lyric.Runtime.isLineNormal(line)) {
       return { kind: 'normal' as const, line }
     }
-    const time = Lyric.getLineTime(line)
+    const time = Lyric.Runtime.getLineTime(line)
     return { kind: 'interlude' as const, time: `${formatTime(time?.start ?? 0)} ~ ${formatTime(time?.end ?? 0)}` }
   }),
 )

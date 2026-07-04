@@ -30,20 +30,21 @@ export class Extract extends ParserPlugin {
       return
     }
 
-    const result: Lyric.Line[] = []
+    const result: Lyric.Runtime.Line[] = []
 
     const processed = this.config.current.crossLine ? extractCrossLine(lines) : lines
     for (let i = 0; i < processed.length; i++) {
       const line = processed[i]
 
-      if (!Lyric.isLineNormal(line)) {
+      if (!Lyric.Runtime.isLineNormal(line)) {
         result.push(line)
         continue
       }
 
       if (this.config.current.fullLine && isFullLine(line.body.value)) {
         const prev = result.length > 0 ? result[result.length - 1] : null
-        if (prev && Lyric.isLineNormal(prev)) {
+        if (prev && Lyric.Runtime.isLineNormal(prev)) {
+          // @ts-expect-error
           addBackground(prev.body.value, toBackground(line.body.value))
           continue
         }

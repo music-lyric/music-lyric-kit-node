@@ -36,14 +36,14 @@ export class Insert extends ParserPlugin {
 
     const { first: firstThreshold, normal: normalThreshold } = this.config.current.checkTime
 
-    const newLines: Lyric.Line[] = []
+    const newLines: Lyric.Runtime.Line[] = []
 
-    const firstStart = Lyric.getLineTime(lines[0])?.start ?? 0
+    const firstStart = Lyric.Runtime.getLineTime(lines[0])?.start ?? 0
     if (firstStart > firstThreshold) {
       const start = 500
       const end = firstStart
       if (end > start) {
-        newLines.push(Lyric.makeLineInterlude({ start, end }))
+        newLines.push(Lyric.Runtime.makeLineInterlude({ start, end }))
       }
     }
 
@@ -53,13 +53,13 @@ export class Insert extends ParserPlugin {
 
       newLines.push(current)
 
-      const currentEnd = Lyric.getLineTime(current)?.end ?? 0
-      const nextStart = Lyric.getLineTime(next)?.start ?? 0
+      const currentEnd = Lyric.Runtime.getLineTime(current)?.end ?? 0
+      const nextStart = Lyric.Runtime.getLineTime(next)?.start ?? 0
       const start = currentEnd + 100
       const duration = nextStart - start
 
       if (duration > normalThreshold) {
-        newLines.push(Lyric.makeLineInterlude({ start, end: nextStart }))
+        newLines.push(Lyric.Runtime.makeLineInterlude({ start, end: nextStart }))
       }
     }
 

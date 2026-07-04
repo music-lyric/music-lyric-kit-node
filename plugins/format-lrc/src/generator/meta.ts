@@ -5,7 +5,7 @@ const renderItem = (key: string, content: string) => {
   return `[${key}:${content}]`
 }
 
-export const exportMeta = (info: Lyric.Info) => {
+export const exportMeta = (info: Lyric.Runtime.Info) => {
   const result: string[] = []
 
   const meta = info.meta
@@ -17,13 +17,13 @@ export const exportMeta = (info: Lyric.Info) => {
     result.push(renderItem('offset', meta.offset.toString()))
   }
   for (const title of meta.titles) {
-    result.push(renderItem('ti', title.value))
+    result.push(renderItem('ti', title.content))
   }
   for (const artist of meta.artists) {
-    result.push(renderItem('ar', artist.value))
+    result.push(renderItem('ar', artist.content))
   }
   for (const album of meta.albums) {
-    result.push(renderItem('al', album.value))
+    result.push(renderItem('al', album.content))
   }
   if (meta.duration) {
     result.push(renderItem('length', formatTime(meta.duration)))

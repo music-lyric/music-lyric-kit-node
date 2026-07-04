@@ -3,8 +3,8 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent, parseSpanTime } from '@root/utils'
 
-const parseRubyItems = (container: Xml.XmlElement): Lyric.WordAnnotationContent[] => {
-  const tokens: Lyric.WordAnnotationContent[] = []
+const parseRubyItems = (container: Xml.XmlElement): Lyric.Runtime.WordAnnotationContent[] => {
+  const tokens: Lyric.Runtime.WordAnnotationContent[] = []
   for (const span of getChildElementsByLocalName(container, 'span')) {
     if (getAttributeByName(span, 'ruby', true) !== 'text') {
       continue
@@ -17,18 +17,18 @@ const parseRubyItems = (container: Xml.XmlElement): Lyric.WordAnnotationContent[
     if (!time) {
       continue
     }
-    tokens.push(Lyric.makeWordAnnotationContent({ content, time: Lyric.makeTime({ start: time.start, end: time.end }) }))
+    tokens.push(Lyric.Runtime.makeWordAnnotationContent({ content, time: Lyric.Common.makeTime({ start: time.start, end: time.end }) }))
   }
   return tokens
 }
 
-export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Word[]): boolean => {
+export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Runtime.Word[]): boolean => {
   if (getAttributeByName(span, 'ruby', true) !== 'container') {
     return false
   }
 
   let base = ''
-  let items: Lyric.WordAnnotationContent[] = []
+  let items: Lyric.Runtime.WordAnnotationContent[] = []
   for (const child of getChildElementsByLocalName(span, 'span')) {
     const kind = getAttributeByName(child, 'ruby', true)
     if (kind === 'base') {
@@ -47,12 +47,12 @@ export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Word[]): bo
   const end = items[items.length - 1].time!.end
 
   const phraseStart = getAttributeByName(span, 'rubyPhraseStart', true) === 'true'
-  const ruby = Lyric.makeWordAnnotationRuby({ words: items, time: Lyric.makeTime({ start, end }), phraseStart })
+  const ruby = Lyric.Runtime.makeWordAnnotationRuby({ words: items, time: Lyric.Common.makeTime({ start, end }), phraseStart })
 
-  const word = Lyric.makeWordNormal({
+  const word = Lyric.Runtime.makeWordNormal({
     content: base,
-    time: Lyric.makeTime({ start, end }),
-    annotation: Lyric.makeWordAnnotation({ ruby }),
+    time: Lyric.Common.makeTime({ start, end }),
+    annotation: Lyric.Runtime.makeWordAnnotation({ ruby }),
   })
 
   words.push(word)

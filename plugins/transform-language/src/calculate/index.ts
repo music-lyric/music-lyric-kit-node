@@ -35,9 +35,9 @@ export class CalculatePercent extends ParserPlugin {
     let total = 0
 
     // CJK weighs per character while Latin and Cyrillic weigh per word, so letter-rich scripts do not inflate their share
-    const handleLine = (line: Lyric.LineNormal | Lyric.LineBackground) => {
+    const handleLine = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
       for (const word of line.content?.words ?? []) {
-        if (!Lyric.isWordNormal(word)) {
+        if (!Lyric.Runtime.isWordNormal(word)) {
           continue
         }
         const value = word.body.value
@@ -57,7 +57,7 @@ export class CalculatePercent extends ParserPlugin {
 
     // background vocals are ad-libs by default, so they stay out of the language share unless opted in
     for (const line of lines) {
-      if (!Lyric.isLineNormal(line)) {
+      if (!Lyric.Runtime.isLineNormal(line)) {
         continue
       }
       const body = line.body.value
@@ -73,9 +73,9 @@ export class CalculatePercent extends ParserPlugin {
       return
     }
 
-    const list: Lyric.LanguageItem[] = []
+    const list: Lyric.Runtime.LanguageItem[] = []
     for (const [tag, count] of counts) {
-      list.push(Lyric.makeLanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
+      list.push(Lyric.Runtime.makeLanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
     }
     list.sort((a, b) => b.percent - a.percent)
 

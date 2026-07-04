@@ -26,7 +26,7 @@ export const normalizeLanguage = (language?: string): string | undefined => {
 }
 
 export const appendLineTranslate = (
-  line: Lyric.LineNormal | Lyric.LineBackground,
+  line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
   content: string,
   language?: string,
   fromItunes: boolean = false,
@@ -38,7 +38,7 @@ export const appendLineTranslate = (
 
   const lang = normalizeLanguage(language)
 
-  const item = Lyric.makeLineAnnotationTranslate({ content: text, language: lang || undefined })
+  const item = Lyric.Runtime.makeLineAnnotationTranslate({ content: text, language: lang || undefined })
 
   const annotation = ensureAnnotation(line)
   const list = annotation.translates
@@ -54,7 +54,7 @@ export const appendLineTranslate = (
   }
 }
 
-export const appendLineRoman = (line: Lyric.LineNormal | Lyric.LineBackground, content: string, language?: string) => {
+export const appendLineRoman = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground, content: string, language?: string) => {
   const text = content.trim()
   if (!text) {
     return
@@ -62,7 +62,7 @@ export const appendLineRoman = (line: Lyric.LineNormal | Lyric.LineBackground, c
 
   const lang = normalizeLanguage(language)
 
-  const item = Lyric.makeLineAnnotationRoman({ content: text, language: lang || undefined })
+  const item = Lyric.Runtime.makeLineAnnotationRoman({ content: text, language: lang || undefined })
 
   const annotation = ensureAnnotation(line)
   annotation.romans.push(item)

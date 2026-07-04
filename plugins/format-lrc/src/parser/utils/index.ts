@@ -4,11 +4,11 @@ import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 export * from './time'
 export * from './match'
 
-export const processTextToWords = (text: string): Lyric.Word[] => {
+export const processTextToWords = (text: string): Lyric.Runtime.Word[] => {
   const normalized = removeTextSpaceToOne(text).trim()
   const words = normalized.split(/(\s+)/g)
 
-  const result: Lyric.Word[] = []
+  const result: Lyric.Runtime.Word[] = []
 
   for (let i = 0; i < words.length; i++) {
     const current = words[i]
@@ -18,11 +18,11 @@ export const processTextToWords = (text: string): Lyric.Word[] => {
     }
 
     if (current.trim() === '') {
-      result.push(Lyric.makeWordSpace({ count: 1 }))
+      result.push(Lyric.Runtime.makeWordSpace({ count: 1 }))
       continue
     }
 
-    result.push(Lyric.makeWordNormal({ content: current.trim() }))
+    result.push(Lyric.Runtime.makeWordNormal({ content: current.trim() }))
   }
 
   return result

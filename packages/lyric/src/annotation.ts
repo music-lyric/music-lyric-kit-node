@@ -1,6 +1,4 @@
-import type { LineBackground, LineNormal } from 'music-lyric-model'
-
-import { deriveLineRomans, deriveLineUnknowns, makeLineAnnotation } from 'music-lyric-model'
+import { Runtime } from 'music-lyric-model'
 
 /**
  * Refresh derived items of an array while preserving explicit ones.
@@ -20,14 +18,14 @@ const refreshDerived = <T extends { derived: boolean }>(items: T[], derive: () =
  * Refreshes derived items while preserving explicit ones, so it is safe to call repeatedly.
  * Word-level ruby has no line-level counterpart and is intentionally dropped.
  */
-export const refreshLineAnnotation = (line: LineNormal | LineBackground): void => {
+export const refreshLineAnnotation = (line: Runtime.LineNormal | Runtime.LineBackground): void => {
   const content = line.content
   if (!content) {
     return
   }
-  const annotation = content.annotation ?? (content.annotation = makeLineAnnotation())
+  const annotation = content.annotation ?? (content.annotation = Runtime.makeLineAnnotation())
   const words = content.words
 
-  annotation.romans = refreshDerived(annotation.romans, () => deriveLineRomans(words))
-  annotation.unknowns = refreshDerived(annotation.unknowns, () => deriveLineUnknowns(words))
+  annotation.romans = refreshDerived(annotation.romans, () => Runtime.deriveLineRomans(words))
+  annotation.unknowns = refreshDerived(annotation.unknowns, () => Runtime.deriveLineUnknowns(words))
 }

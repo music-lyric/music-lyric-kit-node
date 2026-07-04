@@ -3,11 +3,11 @@ import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 
 export * from './xml'
 
-export const parseTextToWords = (text: string): Lyric.Word[] => {
+export const parseTextToWords = (text: string): Lyric.Runtime.Word[] => {
   const normalized = removeTextSpaceToOne(text).trim()
   const words = normalized.split(/(\s+)/g)
 
-  const result: Lyric.Word[] = []
+  const result: Lyric.Runtime.Word[] = []
 
   for (let i = 0; i < words.length; i++) {
     const current = words[i]
@@ -17,33 +17,33 @@ export const parseTextToWords = (text: string): Lyric.Word[] => {
     }
 
     if (current.trim() === '') {
-      result.push(Lyric.makeWordSpace({ count: 1 }))
+      result.push(Lyric.Runtime.makeWordSpace({ count: 1 }))
       continue
     }
 
-    result.push(Lyric.makeWordNormal({ content: current.trim() }))
+    result.push(Lyric.Runtime.makeWordNormal({ content: current.trim() }))
   }
 
   return result
 }
 
-export const hasWordTiming = (line?: Lyric.Line) => {
-  if (!line || !Lyric.isLineNormal(line)) {
+export const hasWordTiming = (line?: Lyric.Runtime.Line) => {
+  if (!line || !Lyric.Runtime.isLineNormal(line)) {
     return false
   }
   for (const word of line.body.value.content?.words ?? []) {
-    if (Lyric.isWordNormal(word) && (word.body.value.time?.start ?? 0) > 0) {
+    if (Lyric.Runtime.isWordNormal(word) && (word.body.value.time?.start ?? 0) > 0) {
       return true
     }
   }
   return false
 }
 
-export const ensureContent = (line: Lyric.LineNormal | Lyric.LineBackground): Lyric.LineContent => {
-  return line.content ?? (line.content = Lyric.makeLineContent())
+export const ensureContent = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground): Lyric.Runtime.LineContent => {
+  return line.content ?? (line.content = Lyric.Runtime.makeLineContent())
 }
 
-export const ensureAnnotation = (line: Lyric.LineNormal | Lyric.LineBackground): Lyric.LineAnnotation => {
+export const ensureAnnotation = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground): Lyric.Runtime.LineAnnotation => {
   const content = ensureContent(line)
-  return content.annotation ?? (content.annotation = Lyric.makeLineAnnotation())
+  return content.annotation ?? (content.annotation = Lyric.Runtime.makeLineAnnotation())
 }

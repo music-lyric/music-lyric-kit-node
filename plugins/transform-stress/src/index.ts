@@ -30,20 +30,20 @@ export class Mark extends ParserPlugin {
       return
     }
 
-    const handleMark = (line: Lyric.LineNormal | Lyric.LineBackground) => {
-      for (const word of line.words) {
-        if (!Lyric.isWordNormal(word)) {
+    const handleMark = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
+      for (const word of line.content?.words || []) {
+        if (!Lyric.Runtime.isWordNormal(word)) {
           continue
         }
         const value = word.body.value
-        if (value.time && Lyric.getTimeDuration(value.time) > this.config.current.checkTime) {
+        if (value.time && Lyric.Common.getTimeDuration(value.time) > this.config.current.checkTime) {
           value.stress = true
         }
       }
     }
 
     for (const line of lines) {
-      if (!Lyric.isLineNormal(line)) {
+      if (!Lyric.Runtime.isLineNormal(line)) {
         continue
       }
 

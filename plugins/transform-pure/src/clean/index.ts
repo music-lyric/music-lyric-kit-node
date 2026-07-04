@@ -48,13 +48,13 @@ export class Clean extends ParserPlugin {
       return
     }
 
-    const newLines: Lyric.Line[] = []
+    const newLines: Lyric.Runtime.Line[] = []
 
     const musicInfo = ctx.params.musicInfo
 
     for (let i = 0; i < linesLength; i++) {
       const line = lines[i]
-      if (!Lyric.isLineNormal(line)) {
+      if (!Lyric.Runtime.isLineNormal(line)) {
         newLines.push(line)
         continue
       }
@@ -69,7 +69,7 @@ export class Clean extends ParserPlugin {
         }
       }
 
-      const clean = extra?.length ? processText(Lyric.getLineText(line)).join('') : Lyric.getLineText(line)
+      const clean = extra?.length ? processText(Lyric.Runtime.getLineText(line)).join('') : Lyric.Runtime.getLineText(line)
       const result = this.matcher.match(clean, extra)
       if (!result) {
         newLines.push(line)

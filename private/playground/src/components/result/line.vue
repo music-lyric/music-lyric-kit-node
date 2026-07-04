@@ -36,15 +36,15 @@ import { useI18n } from '@root/composables/useI18n'
 defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
-  line: Lyric.Line | Lyric.LineBackground
-  agents: Lyric.AgentItem[]
+  line: Lyric.Runtime.Line | Lyric.Runtime.LineBackground
+  agents: Lyric.Runtime.AgentItem[]
   isBg?: boolean
 }>()
 
 const { t } = useI18n()
 
 // A Line wrapper carries the body oneof; a LineBackground carries its content directly.
-const content = computed<Lyric.LineContent | undefined>(() => {
+const content = computed<Lyric.Runtime.LineContent | undefined>(() => {
   const line = props.line
   if ('body' in line) {
     return line.body.case === 'normal' ? line.body.value.content : undefined
@@ -62,10 +62,10 @@ const agentInfo = computed(() => {
   return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
 
-const annoItem = (item: { words: Lyric.WordAnnotationContent[]; time?: Lyric.Time; language?: string }) => {
+const annoItem = (item: { words: Lyric.Runtime.WordAnnotationContent[]; time?: Lyric.Common.Time; language?: string }) => {
   const timed = !!item.time && (item.time.start > 0 || item.time.end > 0)
   const time = timed ? `${formatTime(item.time!.start)} ~ ${formatTime(item.time!.end)}` : ''
-  return { text: Lyric.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
+  return { text: Lyric.Runtime.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
 }
 
 const words = computed(() => {
@@ -81,11 +81,11 @@ const words = computed(() => {
   }[] = []
 
   for (const word of content.value?.words ?? []) {
-    if (Lyric.isWordSpace(word)) {
+    if (Lyric.Runtime.isWordSpace(word)) {
       result.push({ type: 'space', text: ' '.repeat(word.body.value.count) })
       continue
     }
-    if (!Lyric.isWordNormal(word)) {
+    if (!Lyric.Runtime.isWordNormal(word)) {
       continue
     }
     const w = word.body.value
@@ -100,8 +100,7 @@ const words = computed(() => {
       ruby: anno?.ruby ? annoItem(anno.ruby) : null,
       romans: (anno?.romans ?? []).map(annoItem),
       unknowns: (anno?.unknowns ?? []).map((u) => {
-        const base = annoItem(u)
-        return { text: base.text, title: [u.key, base.title].filter(Boolean).join(' · ') }
+        return { text: u.value, title: u.key }
       }),
     })
   }
@@ -114,7 +113,7 @@ const wordAnno = computed(() => {
   let roman = false
   let unknown = false
   for (const word of content.value?.words ?? []) {
-    if (!Lyric.isWordNormal(word)) {
+    if (!Lyric.Runtime.isWordNormal(word)) {
       continue
     }
     const anno = word.body.value.annotation
@@ -131,7 +130,7 @@ const wordAnno = computed(() => {
   return { roman, unknown }
 })
 
-const backgrounds = computed<Lyric.LineBackground[]>(() => {
+const backgrounds = computed<Lyric.Runtime.LineBackground[]>(() => {
   const line = props.line
   return 'body' in line && line.body.case === 'normal' ? line.body.value.backgrounds : []
 })
@@ -150,7 +149,7 @@ const extended = computed(() => {
   }
   if (!wordAnno.value.unknown) {
     for (const item of annotation?.unknowns ?? []) {
-      result.push({ kind: 'other', text: `[${item.key}] ${item.content}` })
+      result.push({ kind: 'other', text: `[${item.key}] ${item.value}` })
     }
   }
 

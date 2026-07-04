@@ -34,7 +34,7 @@ interface MetaRow {
   mono?: boolean
 }
 
-const props = defineProps<{ meta?: Lyric.Meta }>()
+const props = defineProps<{ meta?: Lyric.Runtime.Meta }>()
 
 const { t } = useI18n()
 
@@ -46,9 +46,9 @@ const rows = computed<MetaRow[]>(() => {
 
   const result: MetaRow[] = []
 
-  const pushTexts = (label: string, items: Lyric.MetaText[]) => {
+  const pushTexts = (label: string, items: Lyric.Runtime.MetaText[]) => {
     if (items.length) {
-      result.push({ label, values: items.map((item) => item.value) })
+      result.push({ label, values: items.map((item) => item.content) })
     }
   }
 
@@ -66,7 +66,7 @@ const rows = computed<MetaRow[]>(() => {
     result.push({ label: 'isrc', values: [...meta.isrcs] })
   }
   for (const credit of meta.credits) {
-    result.push({ label: credit.role || 'creator', values: credit.names.map((name) => name.value) })
+    result.push({ label: credit.role || 'creator', values: credit.names.map((name) => name.content) })
   }
   for (const reference of meta.references) {
     if (reference.ids.length) {

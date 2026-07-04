@@ -8,7 +8,7 @@ import { interceptRubySpan } from './ruby'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
 
-const applyAmllMeta = (meta: Lyric.Meta, element: Xml.XmlElement) => {
+const applyAmllMeta = (meta: Lyric.Runtime.Meta, element: Xml.XmlElement) => {
   const key = getAttributeByName(element, 'key', true)
   const value = getAttributeByName(element, 'value', true)
 
@@ -19,27 +19,27 @@ const applyAmllMeta = (meta: Lyric.Meta, element: Xml.XmlElement) => {
   const text = value.trim()
   switch (key) {
     case 'musicName':
-      meta.titles.push(Lyric.makeMetaText({ value: text }))
+      meta.titles.push(Lyric.Runtime.makeMetaText({ content: text }))
       return
     case 'artists':
-      meta.artists.push(Lyric.makeMetaText({ value: text }))
+      meta.artists.push(Lyric.Runtime.makeMetaText({ content: text }))
       return
     case 'album':
-      meta.albums.push(Lyric.makeMetaText({ value: text }))
+      meta.albums.push(Lyric.Runtime.makeMetaText({ content: text }))
       return
     case 'isrc':
       meta.isrcs.push(text)
       return
     case 'ttmlAuthorGithubLogin':
-      meta.authors.push(Lyric.makeMetaText({ value: text }))
+      meta.authors.push(Lyric.Runtime.makeMetaText({ content: text }))
       return
     default:
       // keep every other amll:meta (platform ids, github id, ...) under its original key for round-trip
-      meta.unknowns.push(Lyric.makeMetaUnknown({ key, value: text }))
+      meta.unknowns.push(Lyric.Runtime.makeMetaUnknown({ key, value: text }))
   }
 }
 
-const applyAmllMetas = (meta: Lyric.Meta, metas: Xml.XmlElement[]) => {
+const applyAmllMetas = (meta: Lyric.Runtime.Meta, metas: Xml.XmlElement[]) => {
   for (const element of metas) {
     applyAmllMeta(meta, element)
   }
@@ -84,7 +84,7 @@ export class AmllParser extends ParserPlugin {
     // amll is itunes plus its own amll:meta layered on top.
     applyAmllMetas(meta, groups.get('meta') ?? [])
 
-    ctx.result.type = Lyric.InfoType.VALID
+    ctx.result.type = Lyric.Runtime.InfoType.VALID
     ctx.result.timing = timing
     ctx.result.lines = lines
     ctx.result.meta = meta

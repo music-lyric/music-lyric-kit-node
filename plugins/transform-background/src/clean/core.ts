@@ -4,7 +4,11 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
-export const removeBrackets = (line: Lyric.LineNormal | Lyric.LineBackground, removeStart: boolean = true, removeEnd: boolean = true): void => {
+export const removeBrackets = (
+  line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
+  removeStart: boolean = true,
+  removeEnd: boolean = true,
+): void => {
   const content = line.content
   if (!content) {
     return
@@ -14,7 +18,7 @@ export const removeBrackets = (line: Lyric.LineNormal | Lyric.LineBackground, re
   if (removeStart) {
     for (let i = 0; i < words.length; i++) {
       const word = words[i]
-      if (!Lyric.isWordNormal(word)) {
+      if (!Lyric.Runtime.isWordNormal(word)) {
         continue
       }
 
@@ -30,7 +34,7 @@ export const removeBrackets = (line: Lyric.LineNormal | Lyric.LineBackground, re
   if (removeEnd) {
     for (let i = words.length - 1; i >= 0; i--) {
       const word = words[i]
-      if (!Lyric.isWordNormal(word)) {
+      if (!Lyric.Runtime.isWordNormal(word)) {
         continue
       }
 

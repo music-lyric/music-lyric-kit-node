@@ -4,7 +4,7 @@ import { Lyric } from 'music-lyric-kit'
 import { PLUGIN_DEFS } from '@root/core/plugins'
 import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
 
-import { ref, shallowRef, computed } from 'vue'
+import { ref, shallowRef, computed, Ref } from 'vue'
 import { createParserPipeline } from 'music-lyric-kit'
 import { buildClient } from '@root/core/parser'
 import { usePluginConfig } from '@root/composables/usePluginConfig'
@@ -25,7 +25,28 @@ const measureInput = (input: Content): number => {
   return encoder.encode(input.original).length + encoder.encode(input.translate).length + encoder.encode(input.roman).length
 }
 
-export const useParser = () => {
+export interface ParseResult {
+  format: Ref<Format, Format>
+  engine: Ref<Engine, Engine>
+  songName: Ref<string, string>
+  singers: Ref<string, string>
+  original: Ref<string, string>
+  translate: Ref<string, string>
+  roman: Ref<string, string>
+  ttml: Ref<string, string>
+  result: Ref<Lyric.Runtime.Info | null, Lyric.Runtime.Info | null>
+  resultType: Ref<string, string>
+  resultVersion: Ref<string, string>
+  inferredFormat: Ref<string, string>
+  elapsed: Ref<number, number>
+  inputSize: Ref<number, number>
+  bufferSize: Ref<number, number>
+  error: Ref<string, string>
+  parsing: Ref<boolean, boolean>
+  parse: () => void
+}
+
+export const useParser = (): ParseResult => {
   const { states: pluginStates } = usePluginConfig()
 
   const format = ref<Format>((read(STORAGE_KEYS.FORMAT) as Format) || 'lrc')
@@ -39,9 +60,9 @@ export const useParser = () => {
   const roman = ref(read(STORAGE_KEYS.ROMAN, DEFAULT_LRC_ROMAN))
   const ttml = ref(read(STORAGE_KEYS.TTML, DEFAULT_TTML))
 
-  const result = shallowRef<Lyric.Info | null>(null)
+  const result = shallowRef<Lyric.Runtime.Info | null>(null)
   const resultType = ref('')
-  const resultVersion = ref<string | number>('')
+  const resultVersion = ref<string>('')
   const inferredFormat = ref('')
   const elapsed = ref(0)
   const inputSize = ref(0)
@@ -112,10 +133,11 @@ export const useParser = () => {
     try {
       const input = content()
       inputSize.value = measureInput(input)
+
       const start = performance.now()
       const parsed = engine.value === 'client' ? parseWithClient(input, musicInfo.value) : parseWithPipeline(input, musicInfo.value)
-      elapsed.value = performance.now() - start
 
+      elapsed.value = performance.now() - start
       console.log('parse done. ', parsed.format, parsed.info)
 
       if (!parsed.format || !parsed.info) {
@@ -123,7 +145,7 @@ export const useParser = () => {
         return
       }
 
-      const buffer = Lyric.encodeInfo(parsed.info)
+      const buffer = Lyric.Runtime.encodeInfo(parsed.info)
       bufferSize.value = buffer.length
       console.log('parse buffer length: ', buffer.length)
       console.log('parse buffer body: ', buffer)
@@ -131,7 +153,7 @@ export const useParser = () => {
 
       inferredFormat.value = parsed.format
       result.value = parsed.info
-      resultType.value = Lyric.InfoType[parsed.info.type] ?? String(parsed.info.type)
+      resultType.value = Lyric.Runtime.InfoType[parsed.info.type] ?? String(parsed.info.type)
       resultVersion.value = parsed.info.version
     } catch (e: any) {
       error.value = e?.message || String(e)

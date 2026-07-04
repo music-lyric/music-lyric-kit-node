@@ -21,7 +21,7 @@ export class Parser {
   }
 
   infer(params: ParserParams) {
-    const init = Lyric.makeInfo({ type: Lyric.InfoType.INVALID, timing: Lyric.InfoTiming.NONE })
+    const init = Lyric.Runtime.makeInfo({ type: Lyric.Runtime.InfoType.INVALID, timing: Lyric.Common.Timing.NONE })
     const context = new ParserContext(params, init)
 
     const plugins = this.plugin.filterByStage(PluginStage.Process, true) as ParserPlugin[]
@@ -48,7 +48,7 @@ export class Parser {
       throw new Error('format not found')
     }
 
-    const init = Lyric.makeInfo({ type: Lyric.InfoType.INVALID, timing: Lyric.InfoTiming.NONE })
+    const init = Lyric.Runtime.makeInfo({ type: Lyric.Runtime.InfoType.INVALID, timing: Lyric.Common.Timing.NONE })
     const context = new ParserContext(params, init)
 
     const plugins: ParserPlugin[] = []
