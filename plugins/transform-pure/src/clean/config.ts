@@ -11,10 +11,10 @@ export interface CleanConfig extends MatchOptions {
 }
 
 export const DEFAULT_CONFIG: CleanConfig = {
-  mode: 'fuzzy',
+  mode: 'exact',
   fuzzy: {},
   exact: {
-    check: 50,
+    check: 40,
   },
   rule: {
     useDefault: true,
