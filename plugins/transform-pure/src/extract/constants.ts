@@ -80,6 +80,25 @@ export const DEFAULT_CREATOR_RULES_ZH_CN: MatchRule[] = [
   /企宣|企划宣传/,
   /艺人助理/,
   /平面视觉|平面设计|平面/,
+
+  /首席运营官/,
+  /花絮/,
+  /妆发|妆造/,
+  /服装|造型/,
+  /物料/,
+  /承制/,
+  /资产管理/,
+  /短视频|短视频平台/,
+  /OP|原版权|原始版权/,
+  /SP|次级版权/,
+  /辅助监督|监督/,
+  /RAP词|Rap词|rap词/,
+  /PGM|Program|编程播放|音序/,
+  /中国笛/,
+  /母带处理制作人|母带制作人/,
+  /母带处理录音室|母带录音室/,
+  /筹划/,
+
   /**
    * inst
    */
@@ -304,6 +323,17 @@ export const DEFAULT_CREATOR_RULES_EN_US: MatchRule[] = [
   /Marketing\s+\&\s+promotion|PR\s+promotion/i,
   /Artist\s+assistant/i,
   /Graphic\s+visual|Print\s+visual|Flat\s+design/i,
+
+  /COO|Chief\s+Operating\s+Officer|ChiefOperatingOfficer/i,
+  /Behind[\s-]?the[\s-]?Scenes|BTS|Making[\s-]?of|Making/i,
+  /Makeup|Make[\s-]?up|Hair[\s-]?Stylist|HairStylist|Hair|MakeupArtist|Stylist/i,
+  /Costume|Wardrobe|Styling|Stylist|Fashion|Clothing/i,
+  /Material|Promo[\s-]?Material|Marketing[\s-]?Material/i,
+  /Asset\s+Management|AssetManagement/i,
+  /Short[\s-]?Video|ShortVideo|Short[\s-]?Form|Reels|TikTok|Shorts/i,
+  /Music\s+Concept|MusicConcept/i,
+  /Studio\s+Personnel|StudioPersonnel/i,
+
   /**
    * inst
    */
