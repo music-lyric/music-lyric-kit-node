@@ -1,3 +1,16 @@
+## v0.16.0 (2026-07-06)
+
+### Feature
+
+- bump lyric model version ([a6757da](https://github.com/music-lyric/music-lyric-kit-node/commit/a6757da))
+- `plugin-transform-pure`
+  - update default extract creator rules ([815417d](https://github.com/music-lyric/music-lyric-kit-node/commit/815417d))
+
+### Refactor
+
+- `plugin-transform-pure`
+  - update clean plugin default config ([c1e2ae8](https://github.com/music-lyric/music-lyric-kit-node/commit/c1e2ae8))
+
 ## v0.15.0 (2026-07-04)
 
 ### Feature
