@@ -2,7 +2,7 @@ import { Lyric } from '@music-lyric-kit/lyric'
 
 import type { BaseContext } from '@root/plugin'
 
-export type ParserResult = Lyric.Runtime.Info
+export type ParserResult = Lyric.Runtime.Proto.Info
 
 export interface ParserParams {
   content: any
@@ -65,9 +65,9 @@ export class ParserContext implements BaseContext {
   /**
    * Sync a time holder's range to the first and last normal word of the given words.
    */
-  private syncTimeWithWord(holder: { time?: Lyric.Common.Time }, words: Lyric.Runtime.Word[]) {
-    let first: Lyric.Runtime.WordNormal | null = null
-    let last: Lyric.Runtime.WordNormal | null = null
+  private syncTimeWithWord(holder: { time?: Lyric.Common.Proto.Time }, words: Lyric.Runtime.Proto.Word[]) {
+    let first: Lyric.Runtime.Proto.WordNormal | null = null
+    let last: Lyric.Runtime.Proto.WordNormal | null = null
     for (let i = 0, len = words.length; i < len; i++) {
       const word = words[i]
       if (!Lyric.Runtime.isWordNormal(word)) {
@@ -138,7 +138,7 @@ export class ParserContext implements BaseContext {
   /**
    * Trim leading and trailing space words of one line content.
    */
-  private cleanContentWord(content: Lyric.Runtime.LineContent | undefined) {
+  private cleanContentWord(content: Lyric.Runtime.Proto.LineContent | undefined) {
     if (!content) {
       return
     }

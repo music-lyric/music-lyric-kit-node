@@ -58,8 +58,8 @@ const getLeadingPunct = (text: string) => {
  *
  * Any other boundary punctuation splits into its own word, e.g. hello, and world become hello , world.
  */
-const normalizeBoundaryPunct = (words: Lyric.Runtime.Word[]): Lyric.Runtime.Word[] => {
-  const result: Lyric.Runtime.Word[] = []
+const normalizeBoundaryPunct = (words: Lyric.Runtime.Proto.Word[]): Lyric.Runtime.Proto.Word[] => {
+  const result: Lyric.Runtime.Proto.Word[] = []
 
   for (let index = 0; index < words.length; index++) {
     const word = words[index]
@@ -138,7 +138,7 @@ const normalizeBoundaryPunct = (words: Lyric.Runtime.Word[]): Lyric.Runtime.Word
 }
 
 const processNormal = (lines: MatchItem[]) => {
-  const result: Lyric.Runtime.Line[] = []
+  const result: Lyric.Runtime.Proto.Line[] = []
   for (const line of lines) {
     const time = parseTagTime(line.tag) || 0
     const text = line.content.trim()
@@ -159,7 +159,7 @@ const processNormal = (lines: MatchItem[]) => {
 }
 
 const processSyllableLine = (line: MatchItem) => {
-  const words: Lyric.Runtime.Word[] = []
+  const words: Lyric.Runtime.Proto.Word[] = []
 
   const lineTime = parseTagTime(line.tag)
   if (lineTime === null) {
@@ -217,8 +217,8 @@ const processSyllableLine = (line: MatchItem) => {
 
   const normalized = normalizeBoundaryPunct(words)
 
-  let first: Lyric.Runtime.WordNormal | null = null
-  let last: Lyric.Runtime.WordNormal | null = null
+  let first: Lyric.Runtime.Proto.WordNormal | null = null
+  let last: Lyric.Runtime.Proto.WordNormal | null = null
   for (const word of normalized) {
     if (!Lyric.Runtime.isWordNormal(word)) {
       continue
@@ -238,7 +238,7 @@ const processSyllableLine = (line: MatchItem) => {
 }
 
 const processSyllable = (lines: MatchItem[]) => {
-  const result: Lyric.Runtime.Line[] = []
+  const result: Lyric.Runtime.Proto.Line[] = []
   for (const line of lines) {
     const item = processSyllableLine(line)
     if (!item) continue
@@ -252,7 +252,7 @@ export const checkIsSyllable = (content: MatchItem[]) => {
   return content.some((line) => SYLLABLE_CHECK_REGXP.test(line.content))
 }
 
-export const processLines = (content: MatchItem[], forceNormal = false): Lyric.Runtime.Line[] => {
+export const processLines = (content: MatchItem[], forceNormal = false): Lyric.Runtime.Proto.Line[] => {
   if (!content.length) {
     return []
   }

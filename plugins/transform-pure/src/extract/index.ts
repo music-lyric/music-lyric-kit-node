@@ -47,7 +47,7 @@ export class ExtractCreator extends ParserPlugin {
     }
 
     const meta = ctx.result.meta ?? (ctx.result.meta = Lyric.Runtime.makeMeta())
-    const newLines: Lyric.Runtime.Line[] = []
+    const newLines: Lyric.Runtime.Proto.Line[] = []
 
     for (const line of lines) {
       if (!Lyric.Runtime.isLineNormal(line)) {

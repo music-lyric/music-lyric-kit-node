@@ -26,7 +26,7 @@ export const normalizeLanguage = (language?: string): string | undefined => {
 }
 
 export const appendLineTranslate = (
-  line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
+  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
   content: string,
   language?: string,
   fromItunes: boolean = false,
@@ -54,7 +54,7 @@ export const appendLineTranslate = (
   }
 }
 
-export const appendLineRoman = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground, content: string, language?: string) => {
+export const appendLineRoman = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground, content: string, language?: string) => {
   const text = content.trim()
   if (!text) {
     return

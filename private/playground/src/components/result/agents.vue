@@ -18,7 +18,7 @@ import { computed } from 'vue'
 import { getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-const props = defineProps<{ agents: Lyric.Runtime.AgentItem[]; lines: Lyric.Runtime.Line[] }>()
+const props = defineProps<{ agents: Lyric.Runtime.Proto.AgentItem[]; lines: Lyric.Runtime.Proto.Line[] }>()
 
 const { t } = useI18n()
 

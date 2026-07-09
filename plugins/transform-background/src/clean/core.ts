@@ -5,7 +5,7 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
 export const removeBrackets = (
-  line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
+  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
   removeStart: boolean = true,
   removeEnd: boolean = true,
 ): void => {

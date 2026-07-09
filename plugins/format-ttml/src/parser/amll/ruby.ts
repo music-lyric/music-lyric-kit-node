@@ -3,8 +3,8 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent, parseSpanTime } from '@root/utils'
 
-const parseRubyItems = (container: Xml.XmlElement): Lyric.Runtime.WordAnnotationContent[] => {
-  const tokens: Lyric.Runtime.WordAnnotationContent[] = []
+const parseRubyItems = (container: Xml.XmlElement): Lyric.Runtime.Proto.WordAnnotationContent[] => {
+  const tokens: Lyric.Runtime.Proto.WordAnnotationContent[] = []
   for (const span of getChildElementsByLocalName(container, 'span')) {
     if (getAttributeByName(span, 'ruby', true) !== 'text') {
       continue
@@ -22,13 +22,13 @@ const parseRubyItems = (container: Xml.XmlElement): Lyric.Runtime.WordAnnotation
   return tokens
 }
 
-export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Runtime.Word[]): boolean => {
+export const interceptRubySpan = (span: Xml.XmlElement, words: Lyric.Runtime.Proto.Word[]): boolean => {
   if (getAttributeByName(span, 'ruby', true) !== 'container') {
     return false
   }
 
   let base = ''
-  let items: Lyric.Runtime.WordAnnotationContent[] = []
+  let items: Lyric.Runtime.Proto.WordAnnotationContent[] = []
   for (const child of getChildElementsByLocalName(span, 'span')) {
     const kind = getAttributeByName(child, 'ruby', true)
     if (kind === 'base') {

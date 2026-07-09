@@ -36,7 +36,7 @@ export class Insert extends ParserPlugin {
 
     const { first: firstThreshold, normal: normalThreshold } = this.config.current.checkTime
 
-    const newLines: Lyric.Runtime.Line[] = []
+    const newLines: Lyric.Runtime.Proto.Line[] = []
 
     const firstStart = Lyric.Runtime.getLineTime(lines[0])?.start ?? 0
     if (firstStart > firstThreshold) {

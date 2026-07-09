@@ -3,11 +3,11 @@ import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 
 export * from './xml'
 
-export const parseTextToWords = (text: string): Lyric.Runtime.Word[] => {
+export const parseTextToWords = (text: string): Lyric.Runtime.Proto.Word[] => {
   const normalized = removeTextSpaceToOne(text).trim()
   const words = normalized.split(/(\s+)/g)
 
-  const result: Lyric.Runtime.Word[] = []
+  const result: Lyric.Runtime.Proto.Word[] = []
 
   for (let i = 0; i < words.length; i++) {
     const current = words[i]
@@ -27,7 +27,7 @@ export const parseTextToWords = (text: string): Lyric.Runtime.Word[] => {
   return result
 }
 
-export const hasWordTiming = (line?: Lyric.Runtime.Line) => {
+export const hasWordTiming = (line?: Lyric.Runtime.Proto.Line) => {
   if (!line || !Lyric.Runtime.isLineNormal(line)) {
     return false
   }
@@ -39,11 +39,11 @@ export const hasWordTiming = (line?: Lyric.Runtime.Line) => {
   return false
 }
 
-export const ensureContent = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground): Lyric.Runtime.LineContent => {
+export const ensureContent = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground): Lyric.Runtime.Proto.LineContent => {
   return line.content ?? (line.content = Lyric.Runtime.makeLineContent())
 }
 
-export const ensureAnnotation = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground): Lyric.Runtime.LineAnnotation => {
+export const ensureAnnotation = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground): Lyric.Runtime.Proto.LineAnnotation => {
   const content = ensureContent(line)
   return content.annotation ?? (content.annotation = Lyric.Runtime.makeLineAnnotation())
 }

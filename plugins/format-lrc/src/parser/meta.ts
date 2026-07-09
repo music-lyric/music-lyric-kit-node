@@ -3,7 +3,7 @@ import type { MatchItem } from './utils'
 import { Lyric } from '@music-lyric-kit/lyric'
 import { parseTime } from '@music-lyric-kit/utils'
 
-const applyMeta = (meta: Lyric.Runtime.Meta, key: string, rawKey: string, content: string) => {
+const applyMeta = (meta: Lyric.Runtime.Proto.Meta, key: string, rawKey: string, content: string) => {
   switch (key) {
     case 'offset':
       meta.offset = Number(content) || 0
@@ -36,7 +36,7 @@ const applyMeta = (meta: Lyric.Runtime.Meta, key: string, rawKey: string, conten
 
 const LYRIC_META_REGEXP = /^\s*\[\s*([A-Za-z0-9_-]+)\s*:\s*([^\]]*)\s*\]\s*$/
 
-export const processMetas = (metas: MatchItem[]): Lyric.Runtime.Meta => {
+export const processMetas = (metas: MatchItem[]): Lyric.Runtime.Proto.Meta => {
   const result = Lyric.Runtime.makeMeta()
 
   for (const meta of metas) {

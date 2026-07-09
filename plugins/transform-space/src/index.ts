@@ -38,7 +38,7 @@ export class Insert extends ParserPlugin {
 
     const target = processTypes(this.config.current.types)
 
-    const handleLine = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
+    const handleLine = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
       if (enableOriginal) {
         insertSpaceToLine(line, target)
       }

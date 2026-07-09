@@ -3,7 +3,7 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent } from '@root/utils'
 
-export const applyItunesMetas = (meta: Lyric.Runtime.Meta, songwriters: Xml.XmlElement[]) => {
+export const applyItunesMetas = (meta: Lyric.Runtime.Proto.Meta, songwriters: Xml.XmlElement[]) => {
   const names: string[] = []
   for (const element of songwriters) {
     const name = getTextContent(element).trim()
@@ -24,16 +24,16 @@ export const applyItunesMetas = (meta: Lyric.Runtime.Meta, songwriters: Xml.XmlE
   )
 }
 
-const resolveAgentType = (type: string): Lyric.Common.AgentType => {
+const resolveAgentType = (type: string): Lyric.Common.Proto.AgentType => {
   switch (type) {
     case 'person':
-      return Lyric.Common.AgentType.PERSON
+      return Lyric.Common.Proto.AgentType.PERSON
     case 'group':
-      return Lyric.Common.AgentType.GROUP
+      return Lyric.Common.Proto.AgentType.GROUP
     case 'other':
-      return Lyric.Common.AgentType.OTHER
+      return Lyric.Common.Proto.AgentType.OTHER
     default:
-      return Lyric.Common.AgentType.UNKNOWN
+      return Lyric.Common.Proto.AgentType.UNKNOWN
   }
 }
 
@@ -59,8 +59,8 @@ const parseAgent = (element: Xml.XmlElement) => {
   return Lyric.Runtime.makeAgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
 }
 
-export const parseAgents = (agents: Xml.XmlElement[]): Lyric.Runtime.AgentItem[] => {
-  const result: Lyric.Runtime.AgentItem[] = []
+export const parseAgents = (agents: Xml.XmlElement[]): Lyric.Runtime.Proto.AgentItem[] => {
+  const result: Lyric.Runtime.Proto.AgentItem[] = []
 
   for (const element of agents) {
     const item = parseAgent(element)

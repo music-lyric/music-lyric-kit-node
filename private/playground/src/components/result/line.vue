@@ -36,15 +36,15 @@ import { useI18n } from '@root/composables/useI18n'
 defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
-  line: Lyric.Runtime.Line | Lyric.Runtime.LineBackground
-  agents: Lyric.Runtime.AgentItem[]
+  line: Lyric.Runtime.Proto.Line | Lyric.Runtime.Proto.LineBackground
+  agents: Lyric.Runtime.Proto.AgentItem[]
   isBg?: boolean
 }>()
 
 const { t } = useI18n()
 
 // A Line wrapper carries the body oneof; a LineBackground carries its content directly.
-const content = computed<Lyric.Runtime.LineContent | undefined>(() => {
+const content = computed<Lyric.Runtime.Proto.LineContent | undefined>(() => {
   const line = props.line
   if ('body' in line) {
     return line.body.case === 'normal' ? line.body.value.content : undefined
@@ -62,7 +62,7 @@ const agentInfo = computed(() => {
   return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
 
-const annoItem = (item: { words: Lyric.Runtime.WordAnnotationContent[]; time?: Lyric.Common.Time; language?: string }) => {
+const annoItem = (item: { words: Lyric.Runtime.Proto.WordAnnotationContent[]; time?: Lyric.Common.Proto.Time; language?: string }) => {
   const timed = !!item.time && (item.time.start > 0 || item.time.end > 0)
   const time = timed ? `${formatTime(item.time!.start)} ~ ${formatTime(item.time!.end)}` : ''
   return { text: Lyric.Runtime.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
@@ -130,7 +130,7 @@ const wordAnno = computed(() => {
   return { roman, unknown }
 })
 
-const backgrounds = computed<Lyric.Runtime.LineBackground[]>(() => {
+const backgrounds = computed<Lyric.Runtime.Proto.LineBackground[]>(() => {
   const line = props.line
   return 'body' in line && line.body.case === 'normal' ? line.body.value.backgrounds : []
 })

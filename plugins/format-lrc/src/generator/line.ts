@@ -2,7 +2,7 @@ import { Lyric } from '@music-lyric-kit/lyric'
 
 import { formatTime } from '@music-lyric-kit/utils'
 
-export const exportLines = (info: Lyric.Runtime.Info) => {
+export const exportLines = (info: Lyric.Runtime.Proto.Info) => {
   const original = []
   const syllable = []
   const translate = []
@@ -16,7 +16,7 @@ export const exportLines = (info: Lyric.Runtime.Info) => {
 
     const lineTime = `[${formatTime(line.time?.start ?? 0)}]`
 
-    if (info.timing === Lyric.Common.Timing.WORD) {
+    if (info.timing === Lyric.Common.Proto.Timing.WORD) {
       const items = (body.content?.words ?? []).map((item) => {
         if (Lyric.Runtime.isWordNormal(item)) {
           const time = formatTime(item.body.value.time?.start ?? 0)

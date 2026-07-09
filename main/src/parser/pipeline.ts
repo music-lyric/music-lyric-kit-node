@@ -13,7 +13,7 @@ export interface ParserPipelineInput {
 
 export interface ParserPipelineResult {
   format: string
-  result: Lyric.Runtime.Info
+  result: Lyric.Runtime.Proto.Info
 }
 
 const BuiltInFormats = [new Format.Lrc.Parser(), new Format.Ttml.AmllParser(), new Format.Ttml.ItunesParser()]
@@ -122,7 +122,7 @@ export class ParserPipeline {
     this.input = input
     this.format = this.input.format || ''
 
-    const init = Lyric.Runtime.makeInfo({ type: Lyric.Runtime.InfoType.INVALID, timing: Lyric.Common.Timing.NONE })
+    const init = Lyric.Runtime.makeInfo({ type: Lyric.Runtime.Proto.InfoType.INVALID, timing: Lyric.Common.Proto.Timing.NONE })
     this.context = new ParserContext({ content: this.input.content, musicInfo: this.input.musicInfo }, init)
 
     this.agent = new Agent(this)

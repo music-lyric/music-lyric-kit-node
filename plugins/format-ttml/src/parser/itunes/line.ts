@@ -19,28 +19,28 @@ export interface ParseSpanOptions {
    *
    * Returns true when the hook has consumed the span.
    */
-  onSpan?: (span: Xml.XmlElement, words: Lyric.Runtime.Word[]) => boolean
+  onSpan?: (span: Xml.XmlElement, words: Lyric.Runtime.Proto.Word[]) => boolean
   /**
    * Observe each parsed background line together with its source span.
    *
    * Used to index background lines by their itunes:key.
    */
-  onBackground?: (span: Xml.XmlElement, background: Lyric.Runtime.LineBackground) => void
+  onBackground?: (span: Xml.XmlElement, background: Lyric.Runtime.Proto.LineBackground) => void
 }
 
 export interface ProcessLinesResult {
   /**
    * Parsed normal lines in document order.
    */
-  lines: Lyric.Runtime.Line[]
+  lines: Lyric.Runtime.Proto.Line[]
   /**
    * Lines indexed by their itunes:key, for attaching head annotations.
    */
-  lineMap: Map<string, Lyric.Runtime.LineNormal>
+  lineMap: Map<string, Lyric.Runtime.Proto.LineNormal>
   /**
    * Background lines indexed by their itunes:key, for attaching background annotations.
    */
-  backgroundMap: Map<string, Lyric.Runtime.LineBackground>
+  backgroundMap: Map<string, Lyric.Runtime.Proto.LineBackground>
 }
 
 const calcEndSpaceCount = (content: string) => {
@@ -89,7 +89,7 @@ const resolveWordSpace = (content: string, isFirst: boolean) => {
   return space
 }
 
-const appendWordSpan = (words: Lyric.Runtime.Word[], element: Xml.XmlElement): void => {
+const appendWordSpan = (words: Lyric.Runtime.Proto.Word[], element: Xml.XmlElement): void => {
   const text = getTextContent(element)
   const trimed = text.trim()
   if (!trimed) {
@@ -126,8 +126,8 @@ export const parseSpanWords = (
   element: Xml.XmlElement,
   onRole?: (span: Xml.XmlElement, role: string) => void,
   options?: ParseSpanOptions,
-): Lyric.Runtime.Word[] => {
-  const words: Lyric.Runtime.Word[] = []
+): Lyric.Runtime.Proto.Word[] => {
+  const words: Lyric.Runtime.Proto.Word[] = []
   const children = element.children
   for (let i = 0; i < children.length; i++) {
     const item = children[i]
@@ -160,7 +160,7 @@ export const parseSpanWords = (
 }
 
 const applyLineRole = (
-  line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
+  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
   span: Xml.XmlElement,
   role: string,
   background: boolean,
@@ -194,7 +194,7 @@ const applyLineRole = (
 }
 
 const fillBodyWords = (
-  body: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground,
+  body: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
   element: Xml.XmlElement,
   background: boolean,
   options?: ParseSpanOptions,
@@ -220,7 +220,7 @@ const resolveLineBase = (element: Xml.XmlElement, background: boolean) => {
   return { time, agent: parseLineAgent(element) }
 }
 
-const parseBackgroundLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.Runtime.LineBackground | null => {
+const parseBackgroundLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.Runtime.Proto.LineBackground | null => {
   const base = resolveLineBase(element, true)
   if (!base) {
     return null
@@ -235,7 +235,7 @@ const parseBackgroundLine = (element: Xml.XmlElement, options?: ParseSpanOptions
   return body
 }
 
-const parseNormalLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.Runtime.Line | null => {
+const parseNormalLine = (element: Xml.XmlElement, options?: ParseSpanOptions): Lyric.Runtime.Proto.Line | null => {
   const base = resolveLineBase(element, false)
   if (!base) {
     return null
@@ -256,9 +256,9 @@ const parseNormalLine = (element: Xml.XmlElement, options?: ParseSpanOptions): L
 }
 
 export const parseLines = (body?: Xml.XmlElement, options?: ParseSpanOptions): ProcessLinesResult => {
-  const lines: Lyric.Runtime.Line[] = []
-  const lineMap = new Map<string, Lyric.Runtime.LineNormal>()
-  const backgroundMap = new Map<string, Lyric.Runtime.LineBackground>()
+  const lines: Lyric.Runtime.Proto.Line[] = []
+  const lineMap = new Map<string, Lyric.Runtime.Proto.LineNormal>()
+  const backgroundMap = new Map<string, Lyric.Runtime.Proto.LineBackground>()
 
   if (!body) {
     return { lines, lineMap, backgroundMap }

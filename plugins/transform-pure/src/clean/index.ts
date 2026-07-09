@@ -48,7 +48,7 @@ export class Clean extends ParserPlugin {
       return
     }
 
-    const newLines: Lyric.Runtime.Line[] = []
+    const newLines: Lyric.Runtime.Proto.Line[] = []
 
     const musicInfo = ctx.params.musicInfo
 

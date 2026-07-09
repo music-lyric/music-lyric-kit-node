@@ -16,19 +16,19 @@ export interface TtmlDocument {
   /**
    * Parsed lines, with head iTunesMetadata annotations already attached.
    */
-  lines: Lyric.Runtime.Line[]
+  lines: Lyric.Runtime.Proto.Line[]
   /**
    * Structured meta read from the iTunesMetadata head.
    */
-  meta: Lyric.Runtime.Meta
+  meta: Lyric.Runtime.Proto.Meta
   /**
    * Performing agents declared in the head.
    */
-  agents: Lyric.Runtime.AgentItem[]
+  agents: Lyric.Runtime.Proto.AgentItem[]
   /**
    * Whether the lines carry per-word timing.
    */
-  timing: Lyric.Common.Timing
+  timing: Lyric.Common.Proto.Timing
   /**
    * Head elements grouped by local name, for dialects that read further from them.
    */
@@ -51,7 +51,7 @@ export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions):
     lines,
     meta,
     agents: parseAgents(groups.get('agent') ?? []),
-    timing: hasWordTiming(lines[0]) ? Lyric.Common.Timing.WORD : Lyric.Common.Timing.LINE,
+    timing: hasWordTiming(lines[0]) ? Lyric.Common.Proto.Timing.WORD : Lyric.Common.Proto.Timing.LINE,
     groups,
   }
 }

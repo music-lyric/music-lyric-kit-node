@@ -35,7 +35,7 @@ export class CalculatePercent extends ParserPlugin {
     let total = 0
 
     // CJK weighs per character while Latin and Cyrillic weigh per word, so letter-rich scripts do not inflate their share
-    const handleLine = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
+    const handleLine = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
       for (const word of line.content?.words ?? []) {
         if (!Lyric.Runtime.isWordNormal(word)) {
           continue
@@ -73,7 +73,7 @@ export class CalculatePercent extends ParserPlugin {
       return
     }
 
-    const list: Lyric.Runtime.LanguageItem[] = []
+    const list: Lyric.Runtime.Proto.LanguageItem[] = []
     for (const [tag, count] of counts) {
       list.push(Lyric.Runtime.makeLanguageItem({ tag, percent: Math.round((count / total) * 10000) / 100 }))
     }

@@ -4,11 +4,11 @@ import { removeTextSpaceToOne } from '@music-lyric-kit/utils'
 export * from './time'
 export * from './match'
 
-export const processTextToWords = (text: string): Lyric.Runtime.Word[] => {
+export const processTextToWords = (text: string): Lyric.Runtime.Proto.Word[] => {
   const normalized = removeTextSpaceToOne(text).trim()
   const words = normalized.split(/(\s+)/g)
 
-  const result: Lyric.Runtime.Word[] = []
+  const result: Lyric.Runtime.Proto.Word[] = []
 
   for (let i = 0; i < words.length; i++) {
     const current = words[i]

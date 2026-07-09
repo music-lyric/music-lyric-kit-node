@@ -30,7 +30,7 @@ export class Mark extends ParserPlugin {
       return
     }
 
-    const handleMark = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
+    const handleMark = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
       for (const word of line.content?.words || []) {
         if (!Lyric.Runtime.isWordNormal(word)) {
           continue

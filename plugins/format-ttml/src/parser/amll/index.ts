@@ -8,7 +8,7 @@ import { interceptRubySpan } from './ruby'
 
 const CHECK_REGEXP = /xmlns:amll=["'][^"']+["']|amll:meta/iu
 
-const applyAmllMeta = (meta: Lyric.Runtime.Meta, element: Xml.XmlElement) => {
+const applyAmllMeta = (meta: Lyric.Runtime.Proto.Meta, element: Xml.XmlElement) => {
   const key = getAttributeByName(element, 'key', true)
   const value = getAttributeByName(element, 'value', true)
 
@@ -39,7 +39,7 @@ const applyAmllMeta = (meta: Lyric.Runtime.Meta, element: Xml.XmlElement) => {
   }
 }
 
-const applyAmllMetas = (meta: Lyric.Runtime.Meta, metas: Xml.XmlElement[]) => {
+const applyAmllMetas = (meta: Lyric.Runtime.Proto.Meta, metas: Xml.XmlElement[]) => {
   for (const element of metas) {
     applyAmllMeta(meta, element)
   }
@@ -84,7 +84,7 @@ export class AmllParser extends ParserPlugin {
     // amll is itunes plus its own amll:meta layered on top.
     applyAmllMetas(meta, groups.get('meta') ?? [])
 
-    ctx.result.type = Lyric.Runtime.InfoType.VALID
+    ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
     ctx.result.timing = timing
     ctx.result.lines = lines
     ctx.result.meta = meta

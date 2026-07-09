@@ -33,14 +33,14 @@ export class Infer extends ParserPlugin {
 
     const override = this.config.current.override
 
-    const targets: { word: Lyric.Runtime.WordNormal; script: Script }[] = []
+    const targets: { word: Lyric.Runtime.Proto.WordNormal; script: Script }[] = []
     let kanaCount = 0
     let hanCount = 0
     let hanText = ''
     let latinText = ''
 
     // first pass: resolve each word's dominant script and gather document-level signals
-    const handleLine = (line: Lyric.Runtime.LineNormal | Lyric.Runtime.LineBackground) => {
+    const handleLine = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
       for (const word of line.content?.words ?? []) {
         if (!Lyric.Runtime.isWordNormal(word)) {
           continue

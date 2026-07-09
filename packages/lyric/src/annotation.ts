@@ -18,7 +18,7 @@ const refreshDerived = <T extends { derived: boolean }>(items: T[], derive: () =
  * Refreshes derived items while preserving explicit ones, so it is safe to call repeatedly.
  * Word-level ruby has no line-level counterpart and is intentionally dropped.
  */
-export const refreshLineAnnotation = (line: Runtime.LineNormal | Runtime.LineBackground): void => {
+export const refreshLineAnnotation = (line: Runtime.Proto.LineNormal | Runtime.Proto.LineBackground): void => {
   const content = line.content
   if (!content) {
     return

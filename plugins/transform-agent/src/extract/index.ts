@@ -30,9 +30,9 @@ export class Extract extends ParserPlugin {
       return
     }
 
-    const newLines: Lyric.Runtime.Line[] = []
+    const newLines: Lyric.Runtime.Proto.Line[] = []
 
-    const agentMap = new Map<string, Lyric.Runtime.AgentItem>()
+    const agentMap = new Map<string, Lyric.Runtime.Proto.AgentItem>()
     for (const item of ctx.result.agents) {
       agentMap.set(item.id, item)
     }

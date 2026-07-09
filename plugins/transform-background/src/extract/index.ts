@@ -30,7 +30,7 @@ export class Extract extends ParserPlugin {
       return
     }
 
-    const result: Lyric.Runtime.Line[] = []
+    const result: Lyric.Runtime.Proto.Line[] = []
 
     const processed = this.config.current.crossLine ? extractCrossLine(lines) : lines
     for (let i = 0; i < processed.length; i++) {

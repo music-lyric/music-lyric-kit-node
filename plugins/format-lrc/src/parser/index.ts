@@ -44,10 +44,10 @@ export class Parser extends ParserPlugin {
     return result
   }
 
-  private processExtended(lines: Lyric.Runtime.Line[], inputTranslate: string, inputRoman: string) {
-    const lineMap: Map<number, Lyric.Runtime.LineNormal> = new Map()
-    const translateMap: Map<number, Lyric.Runtime.LineAnnotationTranslate[]> = new Map()
-    const romanMap: Map<number, Lyric.Runtime.LineAnnotationRoman[]> = new Map()
+  private processExtended(lines: Lyric.Runtime.Proto.Line[], inputTranslate: string, inputRoman: string) {
+    const lineMap: Map<number, Lyric.Runtime.Proto.LineNormal> = new Map()
+    const translateMap: Map<number, Lyric.Runtime.Proto.LineAnnotationTranslate[]> = new Map()
+    const romanMap: Map<number, Lyric.Runtime.Proto.LineAnnotationRoman[]> = new Map()
 
     for (const line of lines) {
       if (!Lyric.Runtime.isLineNormal(line) || !line.time) {
@@ -84,8 +84,8 @@ export class Parser extends ParserPlugin {
         continue
       }
 
-      const translates: Lyric.Runtime.LineAnnotationTranslate[] = []
-      const romans: Lyric.Runtime.LineAnnotationRoman[] = []
+      const translates: Lyric.Runtime.Proto.LineAnnotationTranslate[] = []
+      const romans: Lyric.Runtime.Proto.LineAnnotationRoman[] = []
       for (const target of item.targets) {
         translates.push(...(translateMap.get(target.value) || []))
         romans.push(...(romanMap.get(target.value) || []))
@@ -125,18 +125,18 @@ export class Parser extends ParserPlugin {
 
     const lines = processLines(match.line)
     if (!lines.length) {
-      ctx.result.type = Lyric.Runtime.InfoType.VALID
+      ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
       return
     }
 
     this.processExtended(lines, input.translate || '', input.roman || '')
 
     ctx.result.lines = lines
-    ctx.result.type = Lyric.Runtime.InfoType.VALID
+    ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
     if (checkIsSyllable(match.line)) {
-      ctx.result.timing = Lyric.Common.Timing.WORD
+      ctx.result.timing = Lyric.Common.Proto.Timing.WORD
     } else {
-      ctx.result.timing = Lyric.Common.Timing.LINE
+      ctx.result.timing = Lyric.Common.Proto.Timing.LINE
     }
 
     ctx.result.meta = processMetas(match.meta)

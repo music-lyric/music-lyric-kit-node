@@ -29,8 +29,8 @@ import { formatTime } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
 const props = defineProps<{
-  lines: Lyric.Runtime.Line[]
-  agents: Lyric.Runtime.AgentItem[]
+  lines: Lyric.Runtime.Proto.Line[]
+  agents: Lyric.Runtime.Proto.AgentItem[]
 }>()
 
 const { t } = useI18n()
