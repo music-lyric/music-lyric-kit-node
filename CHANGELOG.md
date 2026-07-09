@@ -1,3 +1,9 @@
+## v0.17.0 (2026-07-09)
+
+### Feature
+
+- bump lyric model version ([63a4990](https://github.com/music-lyric/music-lyric-kit-node/commit/63a4990))
+
 ## v0.16.0 (2026-07-06)
 
 ### Feature
