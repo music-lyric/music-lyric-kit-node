@@ -206,7 +206,7 @@ export class ExactMatcher extends Matcher {
    * Match when rule coverage reaches the configured threshold.
    */
   protected override matchTarget(line: string, extra?: string[]): boolean {
-    const thresholdPercent = Math.max(this.threshold, 0)
+    const thresholdPercent = Math.min(Math.max(this.threshold, 0), 100)
     const targetMatchCount = Math.ceil((thresholdPercent / 100) * line.length)
     if (targetMatchCount === 0) {
       return true
@@ -233,15 +233,21 @@ export class ExactMatcher extends Matcher {
     }
 
     for (const rule of this.regexRules) {
-      rule.lastIndex = 0
-      const result = rule.exec(line)
-      if (!result?.[0] || result.index === undefined) {
-        continue
-      }
+      const flags = rule.flags.includes('g') ? rule.flags : `${rule.flags}g`
+      const matcher = new RegExp(rule.source, flags)
 
-      matchedCount += this.markMatchedRange(matchedChars, result.index, result[0].length)
-      if (matchedCount >= targetMatchCount) {
-        return true
+      let result = matcher.exec(line)
+      while (result) {
+        if (result[0]) {
+          matchedCount += this.markMatchedRange(matchedChars, result.index, result[0].length)
+          if (matchedCount >= targetMatchCount) {
+            return true
+          }
+        } else {
+          matcher.lastIndex++
+        }
+
+        result = matcher.exec(line)
       }
     }
 
