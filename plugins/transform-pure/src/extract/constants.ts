@@ -1,4 +1,4 @@
-import type { MatchRule } from '@root/utils/match'
+import type { MatchRule, MatchRuleGroup } from '@root/utils/match'
 
 export const DEFAULT_CREATOR_RULES_ZH_CN: MatchRule[] = [
   /**
@@ -480,4 +480,32 @@ export const DEFAULT_CREATOR_RULES_EN_US: MatchRule[] = [
   /Bandoneón|Bandoneon/i,
 ]
 
-export const DEFAULT_CREATOR_RULES_FULL: MatchRule[] = [...DEFAULT_CREATOR_RULES_ZH_CN, ...DEFAULT_CREATOR_RULES_EN_US]
+const DEFAULT_CREATOR_RULES_FUZZY: MatchRule[] = [
+  /演唱|主唱|原唱|翻唱|合唱/,
+  /和声|和音|伴唱/,
+  /作词|填词|歌词/,
+  /作曲|谱曲/,
+  /编曲/,
+  /制作人/,
+  /录音师|录音工程师/,
+  /混音师|混音工程师/,
+  /母带工程师|母带制作/,
+  /吉他|贝斯|钢琴|键盘/,
+  /鼓手|架子鼓/,
+  /弦乐|管乐/,
+  /Lead\s+Vocals?|Singer|Performed\s+by/i,
+  /Backing\s+Vocals?|Background\s+Vocals?/i,
+  /Lyricist|Lyrics\s+by|Songwriter/i,
+  /Composer|Composed\s+by/i,
+  /Arranger|Arranged\s+by/i,
+  /Producer|Produced\s+by/i,
+  /Recording\s+Engineer/i,
+  /Mixing\s+Engineer/i,
+  /Mastering\s+Engineer/i,
+  /Guitars?|Bass|Piano|Keyboards?|Drums?/i,
+]
+
+export const DEFAULT_CREATOR_RULES: MatchRuleGroup = {
+  fuzzy: DEFAULT_CREATOR_RULES_FUZZY,
+  exact: [...DEFAULT_CREATOR_RULES_FUZZY, ...DEFAULT_CREATOR_RULES_ZH_CN, ...DEFAULT_CREATOR_RULES_EN_US],
+}

@@ -2,7 +2,7 @@ import type { DeepPartial } from '@music-lyric-kit/utils'
 import type { ExtractCreatorConfig } from './config'
 
 import { DEFAULT_CREATOR_CONFIG } from './config'
-import { DEFAULT_CREATOR_RULES_FULL } from './constants'
+import { DEFAULT_CREATOR_RULES } from './constants'
 
 import { ConfigManager, removeTextSpaceAll } from '@music-lyric-kit/utils'
 import { Matcher } from '@root/utils/match'
@@ -30,9 +30,9 @@ export class ExtractCreator extends ParserPlugin {
 
   constructor() {
     super()
-    this.matcher = new Matcher(this.config.current.match, DEFAULT_CREATOR_RULES_FULL)
+    this.matcher = Matcher.create(this.config.current.match, DEFAULT_CREATOR_RULES)
     this.config.event.add('update', (keys, opt) => {
-      this.matcher.update(opt.match)
+      this.matcher = this.matcher.update(opt.match)
     })
   }
 

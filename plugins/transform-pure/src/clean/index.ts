@@ -31,9 +31,9 @@ export class Clean extends ParserPlugin {
 
   constructor() {
     super()
-    this.matcher = new Matcher(this.config.current, DEFAULT_RULES)
+    this.matcher = Matcher.create(this.config.current, DEFAULT_RULES)
     this.config.event.add('update', (keys, opt) => {
-      this.matcher.update(opt)
+      this.matcher = this.matcher.update(opt)
     })
   }
 
