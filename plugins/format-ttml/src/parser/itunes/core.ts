@@ -51,7 +51,7 @@ export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions):
     lines,
     meta,
     agents: parseAgents(groups.get('agent') ?? []),
-    timing: hasWordTiming(lines[0]) ? Lyric.Common.Timing.WORD : Lyric.Common.Timing.LINE,
+    timing: lines.some(hasWordTiming) ? Lyric.Common.Timing.WORD : Lyric.Common.Timing.LINE,
     groups,
   }
 }
