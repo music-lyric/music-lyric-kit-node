@@ -44,7 +44,6 @@ export class Extract extends ParserPlugin {
       if (this.config.current.fullLine && isFullLine(line.body.value)) {
         const prev = result.length > 0 ? result[result.length - 1] : null
         if (prev && Lyric.Parsed.isParsedLineNormal(prev)) {
-          // @ts-expect-error
           addBackground(prev.body.value, toBackground(line.body.value))
           continue
         }

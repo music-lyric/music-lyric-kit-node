@@ -53,8 +53,6 @@ export class Mark extends ParserPlugin {
         handleMark(background)
       }
     }
-
-    ctx.result.lines = lines
   }
 }
 

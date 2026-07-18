@@ -36,7 +36,5 @@ export class Clean extends ParserPlugin {
         removeBrackets(item)
       }
     }
-
-    ctx.result.lines = lines
   }
 }

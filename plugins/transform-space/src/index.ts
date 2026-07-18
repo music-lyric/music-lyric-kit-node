@@ -57,8 +57,6 @@ export class Insert extends ParserPlugin {
         handleLine(background)
       }
     }
-
-    ctx.result.lines = lines
   }
 }
 

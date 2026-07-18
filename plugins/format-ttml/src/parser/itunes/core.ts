@@ -41,7 +41,7 @@ export const parseDocument = (root: Xml.XmlElement, options?: ParseSpanOptions):
 
   const { lines, lineMap, backgroundMap } = parseLines(body, options)
 
-  const groups = metadata ? collectElementsByLocalName(metadata, HEAD_BLOCKS) : (new Map() as ElementGroups)
+  const groups: ElementGroups = metadata ? collectElementsByLocalName(metadata, HEAD_BLOCKS) : new Map()
   attachHeadAnnotations(groups, lineMap, backgroundMap)
 
   const meta = Lyric.Common.makeMeta()

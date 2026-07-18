@@ -10,13 +10,7 @@ export const processTextToWords = (text: string): Lyric.Common.Word[] => {
 
   const result: Lyric.Common.Word[] = []
 
-  for (let i = 0; i < words.length; i++) {
-    const current = words[i]
-
-    if (current === void 0 || current === null) {
-      continue
-    }
-
+  for (const current of words) {
     if (current.trim() === '') {
       result.push(Lyric.Common.makeWordSpace({ count: 1 }))
       continue

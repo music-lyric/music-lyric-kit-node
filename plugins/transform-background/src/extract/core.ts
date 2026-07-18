@@ -38,17 +38,13 @@ const copyNormalWord = (word: Lyric.Common.WordNormal, content: string): Lyric.C
 /**
  * Turn a line into a background line, carrying over its time, agents, languages, words and annotation.
  */
-export const toBackground = (line: Lyric.Parsed.ParsedLine): Lyric.Parsed.ParsedLineBackground => {
-  if (!Lyric.Parsed.isParsedLineNormal(line)) {
-    return Lyric.Parsed.makeParsedLineBackground({})
-  }
-  const body = line.body.value
+export const toBackground = (line: Lyric.Parsed.ParsedLineNormal): Lyric.Parsed.ParsedLineBackground => {
   return Lyric.Parsed.makeParsedLineBackground({
-    time: body.time,
-    agents: body.agents.slice(),
-    languages: body.languages.slice(),
-    words: body.words.slice(),
-    annotation: body.annotation,
+    time: line.time,
+    agents: line.agents.slice(),
+    languages: line.languages.slice(),
+    words: line.words.slice(),
+    annotation: line.annotation,
   })
 }
 
@@ -333,8 +329,8 @@ export const extractCrossLine = (lines: Lyric.Parsed.ParsedLine[]): Lyric.Parsed
 
       if (hasStartOpenBracket(current.body.value) && hasEndCloseBracket(next.body.value)) {
         if (Lyric.Parsed.isParsedLineNormal(prev)) {
-          addBackground(prev.body.value, toBackground(current))
-          addBackground(prev.body.value, toBackground(next))
+          addBackground(prev.body.value, toBackground(current.body.value))
+          addBackground(prev.body.value, toBackground(next.body.value))
 
           // skip next
           i++

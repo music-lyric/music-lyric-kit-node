@@ -105,8 +105,6 @@ export class Infer extends ParserPlugin {
           break
       }
     }
-
-    ctx.result.lines = lines
   }
 }
 
