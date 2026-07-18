@@ -1,17 +1,19 @@
+import type { ParserContent } from 'music-lyric-kit'
+import type { Ref } from 'vue'
 import type { Format, Engine } from '@root/core/constants'
 
 import { Lyric } from 'music-lyric-kit'
 import { PLUGIN_DEFS } from '@root/core/plugins'
 import { STORAGE_KEYS, DEFAULT_LRC_ORIGINAL, DEFAULT_LRC_TRANSLATE, DEFAULT_LRC_ROMAN, DEFAULT_TTML } from '@root/core/constants'
 
-import { ref, shallowRef, computed, Ref } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { createParserPipeline } from 'music-lyric-kit'
 import { buildClient } from '@root/core/parser'
 import { usePluginConfig } from '@root/composables/usePluginConfig'
 
 type MusicInfo = { name: string; singer: string[] } | undefined
 
-type Content = string | { original: string; translate: string; roman: string }
+type Content = ParserContent
 
 const read = (key: string, fallback = '') => localStorage.getItem(key) ?? fallback
 const write = (key: string, value: string) => localStorage.setItem(key, value)
@@ -21,8 +23,7 @@ const write = (key: string, value: string) => localStorage.setItem(key, value)
  */
 const measureInput = (input: Content): number => {
   const encoder = new TextEncoder()
-  if (typeof input === 'string') return encoder.encode(input).length
-  return encoder.encode(input.original).length + encoder.encode(input.translate).length + encoder.encode(input.roman).length
+  return encoder.encode(input.original).length + encoder.encode(input.translate ?? '').length + encoder.encode(input.roman ?? '').length
 }
 
 export interface ParseResult {
@@ -90,14 +91,14 @@ export const useParser = (): ParseResult => {
     write(STORAGE_KEYS.TTML, ttml.value)
   }
 
-  const content = () => {
+  const content = (): Content => {
     if (format.value === 'lrc') {
       return { original: original.value, translate: translate.value, roman: roman.value }
     }
-    return ttml.value
+    return { original: ttml.value }
   }
 
-  const parseWithPipeline = (input: any, info: MusicInfo) => {
+  const parseWithPipeline = (input: Content, info: MusicInfo) => {
     const pipeline = createParserPipeline({ content: input, musicInfo: info })
 
     pipeline.infer().parse()
@@ -114,7 +115,7 @@ export const useParser = (): ParseResult => {
     return { format: final.format, info: final.result }
   }
 
-  const parseWithClient = (input: any, info: MusicInfo) => {
+  const parseWithClient = (input: Content, info: MusicInfo) => {
     const client = buildClient(pluginStates)
     const detected = client.infer({ content: input })
     if (!detected) return { format: '', info: null }

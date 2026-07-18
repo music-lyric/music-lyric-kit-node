@@ -4,30 +4,43 @@ import type { BaseContext } from '@root/plugin'
 
 export type ParserResult = Lyric.Parsed.Info
 
+export interface ParserContent {
+  original: string
+  translate?: string
+  roman?: string
+}
+
 export interface ParserParams {
-  content: any
+  content: ParserContent | string
   musicInfo?: {
     name?: string
     singer?: string[]
   }
 }
 
+type ParserContextParams = Omit<ParserParams, 'content'> & {
+  content: ParserContent
+}
+
 export class ParserContext implements BaseContext {
   private readonly current: {
-    params: ParserParams
+    params: ParserContextParams
     result: ParserResult
     runtime: Record<string, any>
   }
 
   constructor(params: ParserParams, init: ParserResult) {
     this.current = {
-      params,
+      params: {
+        ...params,
+        content: typeof params.content === 'string' ? { original: params.content } : params.content,
+      },
       result: init,
       runtime: {},
     }
   }
 
-  get params(): ParserParams {
+  get params(): ParserContextParams {
     return this.current.params
   }
 

@@ -1,6 +1,6 @@
 import type { DeepPartial } from '@music-lyric-kit/utils'
 import type { ParserOptions } from './options'
-import type { ParserParams, ParserResult } from './context'
+import type { ParserParams, ParserContent, ParserResult } from './context'
 
 import { DEFAULT_OPTIONS } from './options'
 
@@ -98,4 +98,4 @@ export class Parser {
 
 export { ParserContext }
 
-export type { ParserParams, ParserResult, ParserOptions }
+export type { ParserParams, ParserContent, ParserResult, ParserOptions }

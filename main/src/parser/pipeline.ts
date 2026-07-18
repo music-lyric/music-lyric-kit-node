@@ -7,7 +7,7 @@ import { Format, Transform } from '@root/plugin'
 
 export interface ParserPipelineInput {
   format?: string
-  content: any
+  content: ParserParams['content']
   musicInfo?: ParserParams['musicInfo']
 }
 

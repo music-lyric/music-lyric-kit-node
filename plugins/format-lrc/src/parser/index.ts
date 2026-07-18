@@ -8,14 +8,6 @@ import { processMetas } from './meta'
 
 const CHECK_REGEXP = /\[(?:\d+:)?(?:\d+:)?\d+\.\d+\]/
 
-export interface ParserInput {
-  original: string
-  translate?: string
-  roman?: string
-}
-
-export type ParserInputFull = string | ParserInput
-
 export class Parser extends ParserPlugin {
   override get id() {
     return 'LRC-PARSER'
@@ -27,21 +19,6 @@ export class Parser extends ParserPlugin {
 
   override get format() {
     return 'lrc'
-  }
-
-  private processInput(input: any) {
-    const content = input as ParserInputFull
-
-    const result: ParserInput | null =
-      typeof content === 'string'
-        ? {
-            original: content,
-          }
-        : typeof content === 'object'
-          ? content
-          : null
-
-    return result
   }
 
   private processExtended(lines: Lyric.Parsed.ParsedLine[], inputTranslate: string, inputRoman: string) {
@@ -114,9 +91,8 @@ export class Parser extends ParserPlugin {
   }
 
   override check(ctx: ParserContext) {
-    const input = this.processInput(ctx.params.content)
-
-    if (!input?.original) {
+    const input = ctx.params.content
+    if (!input.original) {
       return false
     }
 
@@ -124,8 +100,8 @@ export class Parser extends ParserPlugin {
   }
 
   override exec(ctx: ParserContext) {
-    const input = this.processInput(ctx.params.content)
-    if (!input) {
+    const input = ctx.params.content
+    if (!input.original) {
       return
     }
 

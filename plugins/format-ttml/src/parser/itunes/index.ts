@@ -22,8 +22,8 @@ export class ItunesParser extends ParserPlugin {
   }
 
   override check(ctx: ParserContext) {
-    const input = ctx.params.content
-    if (typeof input !== 'string') {
+    const input = ctx.params.content.original
+    if (!input) {
       return false
     }
 
@@ -31,8 +31,8 @@ export class ItunesParser extends ParserPlugin {
   }
 
   override exec(ctx: ParserContext) {
-    const input = ctx.params.content
-    if (typeof input !== 'string') {
+    const input = ctx.params.content.original
+    if (!input) {
       return
     }
 
