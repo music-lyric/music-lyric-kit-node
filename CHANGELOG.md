@@ -1,3 +1,31 @@
+## v0.18.0 (2026-07-19)
+
+### Feature
+
+- bump lyric model version ([94ed3f1](https://github.com/music-lyric/music-lyric-kit-node/commit/94ed3f1))
+
+### Fix
+
+- `plugin-format-ttml`
+  - detect timing across lines ([f45485b](https://github.com/music-lyric/music-lyric-kit-node/commit/f45485b))
+- `plugin-transform-background`
+  - preserve word language ([4da6652](https://github.com/music-lyric/music-lyric-kit-node/commit/4da6652))
+- `plugin-transform-pure`
+  - improve exact matching ([dd442eb](https://github.com/music-lyric/music-lyric-kit-node/commit/dd442eb))
+  - reset matcher rules when update ([a1a1e71](https://github.com/music-lyric/music-lyric-kit-node/commit/a1a1e71))
+
+### Performance
+
+- `plugin-format-lrc`
+  - skip empty extended tracks ([53d00f4](https://github.com/music-lyric/music-lyric-kit-node/commit/53d00f4))
+
+### Refactor
+
+- optimize code ([5610b54](https://github.com/music-lyric/music-lyric-kit-node/commit/5610b54))
+- normalize parser input ([3de4414](https://github.com/music-lyric/music-lyric-kit-node/commit/3de4414))
+- `plugin-transform-pure`
+  - split matcher modes ([40d6b19](https://github.com/music-lyric/music-lyric-kit-node/commit/40d6b19))
+
 ## v0.17.0 (2026-07-09)
 
 ### Feature
