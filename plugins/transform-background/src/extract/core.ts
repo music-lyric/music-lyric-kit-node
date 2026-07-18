@@ -5,7 +5,7 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
 /**
- * Copy a word verbatim, dropping its language as the original did.
+ * Copy a word verbatim, preserving its language.
  */
 const copyWord = (word: Lyric.Common.Word): Lyric.Common.Word | undefined => {
   if (Lyric.Common.isWordSpace(word)) {
@@ -16,6 +16,7 @@ const copyWord = (word: Lyric.Common.Word): Lyric.Common.Word | undefined => {
     return Lyric.Common.makeWordNormal({
       content: value.content,
       time: value.time ? Lyric.Common.makeTime({ start: value.time.start, end: value.time.end }) : undefined,
+      language: value.language,
       annotation: value.annotation,
       stress: value.stress,
     })
@@ -30,6 +31,7 @@ const copyNormalWord = (word: Lyric.Common.WordNormal, content: string): Lyric.C
   return Lyric.Common.makeWordNormal({
     content,
     time: word.time ? Lyric.Common.makeTime({ start: word.time.start, end: word.time.end }) : undefined,
+    language: word.language,
     annotation: word.annotation,
     stress: word.stress,
   })
