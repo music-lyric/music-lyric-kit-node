@@ -37,32 +37,36 @@ export class Parser extends ParserPlugin {
       lineMap.set(time.start, line.body.value)
     }
 
-    const translate = processLines(matchLyric(inputTranslate).line, true)
-    for (const item of translate) {
-      if (!Lyric.Parsed.isParsedLineNormal(item)) {
-        continue
+    if (inputTranslate) {
+      const translate = processLines(matchLyric(inputTranslate).line, true)
+      for (const item of translate) {
+        if (!Lyric.Parsed.isParsedLineNormal(item)) {
+          continue
+        }
+        const time = item.body.value.time
+        if (!time) {
+          continue
+        }
+        const current = translateMap.get(time.start) || []
+        current.push(Lyric.Common.makeLineAnnotationTranslation({ content: Lyric.Parsed.getParsedLineText(item) }))
+        translateMap.set(time.start, current)
       }
-      const time = item.body.value.time
-      if (!time) {
-        continue
-      }
-      const current = translateMap.get(time.start) || []
-      current.push(Lyric.Common.makeLineAnnotationTranslation({ content: Lyric.Parsed.getParsedLineText(item) }))
-      translateMap.set(time.start, current)
     }
 
-    const roman = processLines(matchLyric(inputRoman).line, true) || []
-    for (const item of roman) {
-      if (!Lyric.Parsed.isParsedLineNormal(item)) {
-        continue
+    if (inputRoman) {
+      const roman = processLines(matchLyric(inputRoman).line, true)
+      for (const item of roman) {
+        if (!Lyric.Parsed.isParsedLineNormal(item)) {
+          continue
+        }
+        const time = item.body.value.time
+        if (!time) {
+          continue
+        }
+        const current = romanMap.get(time.start) || []
+        current.push(Lyric.Common.makeLineAnnotationRoman({ content: Lyric.Parsed.getParsedLineText(item) }))
+        romanMap.set(time.start, current)
       }
-      const time = item.body.value.time
-      if (!time) {
-        continue
-      }
-      const current = romanMap.get(time.start) || []
-      current.push(Lyric.Common.makeLineAnnotationRoman({ content: Lyric.Parsed.getParsedLineText(item) }))
-      romanMap.set(time.start, current)
     }
 
     const targets = [...new Set([...translateMap.keys(), ...romanMap.keys()])]
