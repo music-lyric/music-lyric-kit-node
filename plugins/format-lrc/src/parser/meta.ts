@@ -3,7 +3,7 @@ import type { MatchItem } from './utils'
 import { Lyric } from '@music-lyric-kit/lyric'
 import { parseTime } from '@music-lyric-kit/utils'
 
-const applyMeta = (meta: Lyric.Runtime.Proto.Meta, key: string, rawKey: string, content: string) => {
+const applyMeta = (meta: Lyric.Common.Meta, key: string, rawKey: string, content: string) => {
   switch (key) {
     case 'offset':
       meta.offset = Number(content) || 0
@@ -14,30 +14,30 @@ const applyMeta = (meta: Lyric.Runtime.Proto.Meta, key: string, rawKey: string, 
       return
     case 'ti':
     case 'title':
-      meta.titles.push(Lyric.Runtime.makeMetaText({ content }))
+      meta.titles.push(Lyric.Common.makeMetaText({ content }))
       return
     case 'ar':
     case 'artist':
-      meta.artists.push(Lyric.Runtime.makeMetaText({ content }))
+      meta.artists.push(Lyric.Common.makeMetaText({ content }))
       return
     case 'al':
     case 'album':
-      meta.albums.push(Lyric.Runtime.makeMetaText({ content }))
+      meta.albums.push(Lyric.Common.makeMetaText({ content }))
       return
     case 'by':
-      meta.authors.push(Lyric.Runtime.makeMetaText({ content }))
+      meta.authors.push(Lyric.Common.makeMetaText({ content }))
       return
     case 'isrc':
       meta.isrcs.push(content)
       return
   }
-  meta.unknowns.push(Lyric.Runtime.makeMetaUnknown({ key: rawKey, value: content }))
+  meta.unknowns.push(Lyric.Common.makeUnknown({ key: rawKey, value: content }))
 }
 
 const LYRIC_META_REGEXP = /^\s*\[\s*([A-Za-z0-9_-]+)\s*:\s*([^\]]*)\s*\]\s*$/
 
-export const processMetas = (metas: MatchItem[]): Lyric.Runtime.Proto.Meta => {
-  const result = Lyric.Runtime.makeMeta()
+export const processMetas = (metas: MatchItem[]): Lyric.Common.Meta => {
+  const result = Lyric.Common.makeMeta()
 
   for (const meta of metas) {
     if (!meta.tag) {

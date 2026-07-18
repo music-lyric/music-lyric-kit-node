@@ -7,13 +7,13 @@ const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 /**
  * Copy a word verbatim, dropping its language as the original did.
  */
-const copyWord = (word: Lyric.Runtime.Proto.Word): Lyric.Runtime.Proto.Word | undefined => {
-  if (Lyric.Runtime.isWordSpace(word)) {
-    return Lyric.Runtime.makeWordSpace({ count: word.body.value.count })
+const copyWord = (word: Lyric.Common.Word): Lyric.Common.Word | undefined => {
+  if (Lyric.Common.isWordSpace(word)) {
+    return Lyric.Common.makeWordSpace({ count: word.body.value.count })
   }
-  if (Lyric.Runtime.isWordNormal(word)) {
+  if (Lyric.Common.isWordNormal(word)) {
     const value = word.body.value
-    return Lyric.Runtime.makeWordNormal({
+    return Lyric.Common.makeWordNormal({
       content: value.content,
       time: value.time ? Lyric.Common.makeTime({ start: value.time.start, end: value.time.end }) : undefined,
       annotation: value.annotation,
@@ -26,8 +26,8 @@ const copyWord = (word: Lyric.Runtime.Proto.Word): Lyric.Runtime.Proto.Word | un
 /**
  * Copy a normal word but replace its text content.
  */
-const copyNormalWord = (word: Lyric.Runtime.Proto.WordNormal, content: string): Lyric.Runtime.Proto.Word => {
-  return Lyric.Runtime.makeWordNormal({
+const copyNormalWord = (word: Lyric.Common.WordNormal, content: string): Lyric.Common.Word => {
+  return Lyric.Common.makeWordNormal({
     content,
     time: word.time ? Lyric.Common.makeTime({ start: word.time.start, end: word.time.end }) : undefined,
     annotation: word.annotation,
@@ -36,43 +36,49 @@ const copyNormalWord = (word: Lyric.Runtime.Proto.WordNormal, content: string): 
 }
 
 /**
- * Turn a line into a background line, carrying over its time and content.
+ * Turn a line into a background line, carrying over its time, agents, languages, words and annotation.
  */
-export const toBackground = (line: Lyric.Runtime.Proto.Line): Lyric.Runtime.Proto.LineBackground => {
-  const content = Lyric.Runtime.isLineNormal(line) ? line.body.value.content : undefined
-  return Lyric.Runtime.makeLineBackground({
-    time: line.time,
-    content,
+export const toBackground = (line: Lyric.Parsed.ParsedLine): Lyric.Parsed.ParsedLineBackground => {
+  if (!Lyric.Parsed.isParsedLineNormal(line)) {
+    return Lyric.Parsed.makeParsedLineBackground({})
+  }
+  const body = line.body.value
+  return Lyric.Parsed.makeParsedLineBackground({
+    time: body.time,
+    agents: body.agents.slice(),
+    languages: body.languages.slice(),
+    words: body.words.slice(),
+    annotation: body.annotation,
   })
 }
 
-const findFirstNormalWord = (line: Lyric.Runtime.Proto.LineNormal): Lyric.Runtime.Proto.WordNormal | null => {
-  const words = line.content?.words ?? []
+const findFirstNormalWord = (line: Lyric.Parsed.ParsedLineNormal): Lyric.Common.WordNormal | null => {
+  const words = line.words
   for (let i = 0, len = words.length; i < len; i++) {
     const word = words[i]
-    if (Lyric.Runtime.isWordNormal(word)) {
+    if (Lyric.Common.isWordNormal(word)) {
       return word.body.value
     }
   }
   return null
 }
 
-const findLastNormalWord = (line: Lyric.Runtime.Proto.LineNormal): Lyric.Runtime.Proto.WordNormal | null => {
-  const words = line.content?.words ?? []
+const findLastNormalWord = (line: Lyric.Parsed.ParsedLineNormal): Lyric.Common.WordNormal | null => {
+  const words = line.words
   for (let i = words.length - 1; i >= 0; i--) {
     const word = words[i]
-    if (Lyric.Runtime.isWordNormal(word)) {
+    if (Lyric.Common.isWordNormal(word)) {
       return word.body.value
     }
   }
   return null
 }
 
-export const addBackground = (line: Lyric.Runtime.Proto.LineNormal, background: Lyric.Runtime.Proto.LineBackground) => {
+export const addBackground = (line: Lyric.Parsed.ParsedLineNormal, background: Lyric.Parsed.ParsedLineBackground) => {
   line.backgrounds.push(background)
 }
 
-export const hasStartOpenBracket = (line: Lyric.Runtime.Proto.LineNormal) => {
+export const hasStartOpenBracket = (line: Lyric.Parsed.ParsedLineNormal) => {
   const first = findFirstNormalWord(line)
   if (!first) {
     return false
@@ -80,7 +86,7 @@ export const hasStartOpenBracket = (line: Lyric.Runtime.Proto.LineNormal) => {
   return isOpenBracket(first.content.charAt(0))
 }
 
-export const hasEndCloseBracket = (line: Lyric.Runtime.Proto.LineNormal) => {
+export const hasEndCloseBracket = (line: Lyric.Parsed.ParsedLineNormal) => {
   const last = findLastNormalWord(line)
   if (!last) {
     return false
@@ -88,7 +94,7 @@ export const hasEndCloseBracket = (line: Lyric.Runtime.Proto.LineNormal) => {
   return isCloseBracket(last.content.charAt(last.content.length - 1))
 }
 
-export const isFullLine = (line: Lyric.Runtime.Proto.LineNormal) => {
+export const isFullLine = (line: Lyric.Parsed.ParsedLineNormal) => {
   const start = findFirstNormalWord(line)
   const end = findLastNormalWord(line)
   if (!start || !end || start === end) {
@@ -144,17 +150,13 @@ const extractInLineExtended = (content: string): [string, string[]] => {
 
   return [main, result]
 }
-export const extractInLine = (line: Lyric.Runtime.Proto.LineNormal) => {
-  const content = line.content
-  if (!content) {
-    return
-  }
 
+export const extractInLine = (line: Lyric.Parsed.ParsedLineNormal) => {
   let hasOpen = false
   let hasClose = false
 
-  for (const word of content.words) {
-    if (Lyric.Runtime.isWordNormal(word)) {
+  for (const word of line.words) {
+    if (Lyric.Common.isWordNormal(word)) {
       const text = word.body.value.content
       for (let i = 0; i < text.length; i++) {
         if (isOpenBracket(text[i])) hasOpen = true
@@ -167,17 +169,17 @@ export const extractInLine = (line: Lyric.Runtime.Proto.LineNormal) => {
     return
   }
 
-  const words = content.words
-  const mainWords: Lyric.Runtime.Proto.Word[] = []
-  const backgroundGroups: Lyric.Runtime.Proto.Word[][] = []
+  const words = line.words
+  const mainWords: Lyric.Common.Word[] = []
+  const backgroundGroups: Lyric.Common.Word[][] = []
 
-  let currentBackground: Lyric.Runtime.Proto.Word[] = []
+  let currentBackground: Lyric.Common.Word[] = []
   let inBracket = false
   let lastOpenChar = ''
-  let lastOpenWord: Lyric.Runtime.Proto.WordNormal | null = null
+  let lastOpenWord: Lyric.Common.WordNormal | null = null
 
   for (const word of words) {
-    if (!Lyric.Runtime.isWordNormal(word)) {
+    if (!Lyric.Common.isWordNormal(word)) {
       const copy = copyWord(word)
       if (copy) {
         if (inBracket) {
@@ -246,36 +248,36 @@ export const extractInLine = (line: Lyric.Runtime.Proto.LineNormal) => {
     return
   }
 
-  content.words = mainWords
+  line.words = mainWords
 
   for (const item of backgroundGroups) {
-    const normals = item.filter(Lyric.Runtime.isWordNormal).map((w) => w.body.value)
-    const result = Lyric.Runtime.makeLineBackground({
+    const normals = item.filter(Lyric.Common.isWordNormal).map((w) => w.body.value)
+    const result = Lyric.Parsed.makeParsedLineBackground({
       time:
         normals.length > 0
           ? Lyric.Common.makeTime({ start: normals[0].time?.start ?? 0, end: normals[normals.length - 1].time?.end ?? 0 })
           : undefined,
-      content: { words: item },
+      words: item,
     })
 
     addBackground(line, result)
   }
 }
 
-export const assignBackgroundAnnotation = (line: Lyric.Runtime.Proto.LineNormal) => {
+export const assignBackgroundAnnotation = (line: Lyric.Parsed.ParsedLineNormal) => {
   const backgroundLines = line.backgrounds
   if (!backgroundLines.length) {
     return
   }
 
-  const annotation = line.content?.annotation
+  const annotation = line.annotation
   if (!annotation) {
     return
   }
 
   const split = (
     items: { content: string; language?: string }[],
-    push: (background: Lyric.Runtime.Proto.LineBackground, content: string, language?: string) => void,
+    push: (background: Lyric.Parsed.ParsedLineBackground, content: string, language?: string) => void,
   ) => {
     for (const item of items) {
       if (!item.content.trim()) {
@@ -294,20 +296,18 @@ export const assignBackgroundAnnotation = (line: Lyric.Runtime.Proto.LineNormal)
     }
   }
 
-  split(annotation.translates, (background, text, language) => {
-    const content = background.content ?? (background.content = Lyric.Runtime.makeLineContent())
-    const target = content.annotation ?? (content.annotation = Lyric.Runtime.makeLineAnnotation())
-    target.translates.push(Lyric.Runtime.makeLineAnnotationTranslate({ content: text, language }))
+  split(annotation.translations, (background, text, language) => {
+    const target = background.annotation ?? (background.annotation = Lyric.Common.makeLineAnnotation())
+    target.translations.push(Lyric.Common.makeLineAnnotationTranslation({ content: text, language }))
   })
   split(annotation.romans, (background, text, language) => {
-    const content = background.content ?? (background.content = Lyric.Runtime.makeLineContent())
-    const target = content.annotation ?? (content.annotation = Lyric.Runtime.makeLineAnnotation())
-    target.romans.push(Lyric.Runtime.makeLineAnnotationRoman({ content: text, language }))
+    const target = background.annotation ?? (background.annotation = Lyric.Common.makeLineAnnotation())
+    target.romans.push(Lyric.Common.makeLineAnnotationRoman({ content: text, language }))
   })
 }
 
-export const extractCrossLine = (lines: Lyric.Runtime.Proto.Line[]): Lyric.Runtime.Proto.Line[] => {
-  const result: Lyric.Runtime.Proto.Line[] = []
+export const extractCrossLine = (lines: Lyric.Parsed.ParsedLine[]): Lyric.Parsed.ParsedLine[] => {
+  const result: Lyric.Parsed.ParsedLine[] = []
 
   for (let i = 0; i < lines.length; i++) {
     const current = lines[i]
@@ -324,7 +324,7 @@ export const extractCrossLine = (lines: Lyric.Runtime.Proto.Line[]): Lyric.Runti
       continue
     }
 
-    if (Lyric.Runtime.isLineNormal(current) && Lyric.Runtime.isLineNormal(next)) {
+    if (Lyric.Parsed.isParsedLineNormal(current) && Lyric.Parsed.isParsedLineNormal(next)) {
       // Skip if current line has complete brackets
       if (hasStartOpenBracket(current.body.value) && hasEndCloseBracket(current.body.value)) {
         result.push(current)
@@ -332,7 +332,7 @@ export const extractCrossLine = (lines: Lyric.Runtime.Proto.Line[]): Lyric.Runti
       }
 
       if (hasStartOpenBracket(current.body.value) && hasEndCloseBracket(next.body.value)) {
-        if (Lyric.Runtime.isLineNormal(prev)) {
+        if (Lyric.Parsed.isParsedLineNormal(prev)) {
           addBackground(prev.body.value, toBackground(current))
           addBackground(prev.body.value, toBackground(next))
 

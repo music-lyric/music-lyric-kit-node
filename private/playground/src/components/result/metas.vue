@@ -34,7 +34,7 @@ interface MetaRow {
   mono?: boolean
 }
 
-const props = defineProps<{ meta?: Lyric.Runtime.Proto.Meta }>()
+const props = defineProps<{ meta?: Lyric.Common.Meta }>()
 
 const { t } = useI18n()
 
@@ -46,7 +46,7 @@ const rows = computed<MetaRow[]>(() => {
 
   const result: MetaRow[] = []
 
-  const pushTexts = (label: string, items: Lyric.Runtime.Proto.MetaText[]) => {
+  const pushTexts = (label: string, items: Lyric.Common.MetaText[]) => {
     if (items.length) {
       result.push({ label, values: items.map((item) => item.content) })
     }

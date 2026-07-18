@@ -93,8 +93,8 @@ importers:
         specifier: ^2.12.1
         version: 2.12.1
       music-lyric-model:
-        specifier: ^4.0.0
-        version: 4.0.0
+        specifier: ^5.0.0
+        version: 5.0.0
 
   packages/utils:
     dependencies:
@@ -1003,8 +1003,8 @@ packages:
   muggle-string@0.4.1:
     resolution: {integrity: sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ==}
 
-  music-lyric-model@4.0.0:
-    resolution: {integrity: sha512-adwf2w6WQziULUNlS2BKTJpVzTVDAX/NfXE6S8q8vZ0byYaICHz0TrMhLoym2gP7M0D0abuGIWCBvtEks6N/Rg==}
+  music-lyric-model@5.0.0:
+    resolution: {integrity: sha512-CZv0UzYGJISXwokgQJfCceF0O9+dNeY1lddKjGf7f3JUQBRTLyGJyRgR1gdaGpp4/LI9AYrVIcwNXCdiZO6FWw==}
 
   nanoid@3.3.11:
     resolution: {integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==}
@@ -1135,6 +1135,7 @@ packages:
   tsconfck@3.1.6:
     resolution: {integrity: sha512-ks6Vjr/jEw0P1gmOVwutM3B7fWxoWBL2KRDb1JfqGVawBmO5UsvmWOQFGHBPl5yxYz4eERr19E6L7NMv+Fej4w==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0
@@ -1949,7 +1950,7 @@ snapshots:
 
   muggle-string@0.4.1: {}
 
-  music-lyric-model@4.0.0:
+  music-lyric-model@5.0.0:
     dependencies:
       '@bufbuild/protobuf': 2.12.1
 

@@ -44,36 +44,48 @@ export class Parser extends ParserPlugin {
     return result
   }
 
-  private processExtended(lines: Lyric.Runtime.Proto.Line[], inputTranslate: string, inputRoman: string) {
-    const lineMap: Map<number, Lyric.Runtime.Proto.LineNormal> = new Map()
-    const translateMap: Map<number, Lyric.Runtime.Proto.LineAnnotationTranslate[]> = new Map()
-    const romanMap: Map<number, Lyric.Runtime.Proto.LineAnnotationRoman[]> = new Map()
+  private processExtended(lines: Lyric.Parsed.ParsedLine[], inputTranslate: string, inputRoman: string) {
+    const lineMap: Map<number, Lyric.Parsed.ParsedLineNormal> = new Map()
+    const translateMap: Map<number, Lyric.Common.LineAnnotationTranslation[]> = new Map()
+    const romanMap: Map<number, Lyric.Common.LineAnnotationRoman[]> = new Map()
 
     for (const line of lines) {
-      if (!Lyric.Runtime.isLineNormal(line) || !line.time) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
-      lineMap.set(line.time.start, line.body.value)
+      const time = line.body.value.time
+      if (!time) {
+        continue
+      }
+      lineMap.set(time.start, line.body.value)
     }
 
     const translate = processLines(matchLyric(inputTranslate).line, true)
     for (const item of translate) {
-      if (!Lyric.Runtime.isLineNormal(item) || !item.time) {
+      if (!Lyric.Parsed.isParsedLineNormal(item)) {
         continue
       }
-      const current = translateMap.get(item.time.start) || []
-      current.push(Lyric.Runtime.makeLineAnnotationTranslate({ content: Lyric.Runtime.getLineText(item) }))
-      translateMap.set(item.time.start, current)
+      const time = item.body.value.time
+      if (!time) {
+        continue
+      }
+      const current = translateMap.get(time.start) || []
+      current.push(Lyric.Common.makeLineAnnotationTranslation({ content: Lyric.Parsed.getParsedLineText(item) }))
+      translateMap.set(time.start, current)
     }
 
     const roman = processLines(matchLyric(inputRoman).line, true) || []
     for (const item of roman) {
-      if (!Lyric.Runtime.isLineNormal(item) || !item.time) {
+      if (!Lyric.Parsed.isParsedLineNormal(item)) {
         continue
       }
-      const current = romanMap.get(item.time.start) || []
-      current.push(Lyric.Runtime.makeLineAnnotationRoman({ content: Lyric.Runtime.getLineText(item) }))
-      romanMap.set(item.time.start, current)
+      const time = item.body.value.time
+      if (!time) {
+        continue
+      }
+      const current = romanMap.get(time.start) || []
+      current.push(Lyric.Common.makeLineAnnotationRoman({ content: Lyric.Parsed.getParsedLineText(item) }))
+      romanMap.set(time.start, current)
     }
 
     const targets = [...new Set([...translateMap.keys(), ...romanMap.keys()])]
@@ -84,8 +96,8 @@ export class Parser extends ParserPlugin {
         continue
       }
 
-      const translates: Lyric.Runtime.Proto.LineAnnotationTranslate[] = []
-      const romans: Lyric.Runtime.Proto.LineAnnotationRoman[] = []
+      const translates: Lyric.Common.LineAnnotationTranslation[] = []
+      const romans: Lyric.Common.LineAnnotationRoman[] = []
       for (const target of item.targets) {
         translates.push(...(translateMap.get(target.value) || []))
         romans.push(...(romanMap.get(target.value) || []))
@@ -95,9 +107,8 @@ export class Parser extends ParserPlugin {
         continue
       }
 
-      const content = line.content ?? (line.content = Lyric.Runtime.makeLineContent())
-      const annotation = content.annotation ?? (content.annotation = Lyric.Runtime.makeLineAnnotation())
-      annotation.translates.push(...translates)
+      const annotation = line.annotation ?? (line.annotation = Lyric.Common.makeLineAnnotation())
+      annotation.translations.push(...translates)
       annotation.romans.push(...romans)
     }
   }
@@ -125,18 +136,18 @@ export class Parser extends ParserPlugin {
 
     const lines = processLines(match.line)
     if (!lines.length) {
-      ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
+      ctx.result.type = Lyric.Parsed.InfoType.VALID
       return
     }
 
     this.processExtended(lines, input.translate || '', input.roman || '')
 
     ctx.result.lines = lines
-    ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
+    ctx.result.type = Lyric.Parsed.InfoType.VALID
     if (checkIsSyllable(match.line)) {
-      ctx.result.timing = Lyric.Common.Proto.Timing.WORD
+      ctx.result.timing = Lyric.Common.Timing.WORD
     } else {
-      ctx.result.timing = Lyric.Common.Proto.Timing.LINE
+      ctx.result.timing = Lyric.Common.Timing.LINE
     }
 
     ctx.result.meta = processMetas(match.meta)

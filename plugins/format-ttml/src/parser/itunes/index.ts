@@ -44,7 +44,7 @@ export class ItunesParser extends ParserPlugin {
 
     const { lines, meta, agents, timing } = parseDocument(root)
 
-    ctx.result.type = Lyric.Runtime.Proto.InfoType.VALID
+    ctx.result.type = Lyric.Parsed.InfoType.VALID
     ctx.result.timing = timing
     ctx.result.lines = lines
     ctx.result.meta = meta

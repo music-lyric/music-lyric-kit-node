@@ -18,11 +18,14 @@ import { computed } from 'vue'
 import { getAgentColor } from '@root/core/utils'
 import { useI18n } from '@root/composables/useI18n'
 
-const props = defineProps<{ agents: Lyric.Runtime.Proto.AgentItem[]; lines: Lyric.Runtime.Proto.Line[] }>()
+const props = defineProps<{ agents: Lyric.Common.AgentItem[]; lines: Lyric.Parsed.ParsedLine[] }>()
 
 const { t } = useI18n()
 
-const counts = computed(() => Lyric.Runtime.getAgentLineCounts(props.lines))
+const counts = computed(() => {
+  const refs = props.lines.filter(Lyric.Parsed.isParsedLineNormal).map((line) => line.body.value)
+  return Lyric.Common.getAgentLineCounts(refs)
+})
 </script>
 
 <style module lang="scss">

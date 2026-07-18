@@ -5,7 +5,7 @@ const renderItem = (key: string, content: string) => {
   return `[${key}:${content}]`
 }
 
-export const exportMeta = (info: Lyric.Runtime.Proto.Info) => {
+export const exportMeta = (info: Lyric.Parsed.Info) => {
   const result: string[] = []
 
   const meta = info.meta

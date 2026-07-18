@@ -33,6 +33,6 @@
   ],
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.1",
-    "music-lyric-model": "^4.0.0"
+    "music-lyric-model": "^5.0.0"
   }
 }

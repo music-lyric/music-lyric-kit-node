@@ -2,7 +2,7 @@ import { Lyric } from '@music-lyric-kit/lyric'
 
 import type { BaseContext } from '@root/plugin'
 
-export type ParserResult = Lyric.Runtime.Proto.Info
+export type ParserResult = Lyric.Parsed.Info
 
 export interface ParserParams {
   content: any
@@ -43,7 +43,7 @@ export class ParserContext implements BaseContext {
    * Sort all lines and their background lines by start time in ascending order.
    */
   sort() {
-    Lyric.Runtime.sortLinesByTime(this.result)
+    Lyric.Parsed.sortParsedLinesByTime(this.result)
   }
 
   /**
@@ -51,13 +51,13 @@ export class ParserContext implements BaseContext {
    */
   syncLineTimeWithWord() {
     for (const line of this.result.lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
       const body = line.body.value
-      this.syncTimeWithWord(line, body.content?.words ?? [])
+      this.syncTimeWithWord(body, body.words)
       for (const background of body.backgrounds) {
-        this.syncTimeWithWord(background, background.content?.words ?? [])
+        this.syncTimeWithWord(background, background.words)
       }
     }
   }
@@ -65,12 +65,12 @@ export class ParserContext implements BaseContext {
   /**
    * Sync a time holder's range to the first and last normal word of the given words.
    */
-  private syncTimeWithWord(holder: { time?: Lyric.Common.Proto.Time }, words: Lyric.Runtime.Proto.Word[]) {
-    let first: Lyric.Runtime.Proto.WordNormal | null = null
-    let last: Lyric.Runtime.Proto.WordNormal | null = null
+  private syncTimeWithWord(holder: { time?: Lyric.Common.Time }, words: Lyric.Common.Word[]) {
+    let first: Lyric.Common.WordNormal | null = null
+    let last: Lyric.Common.WordNormal | null = null
     for (let i = 0, len = words.length; i < len; i++) {
       const word = words[i]
-      if (!Lyric.Runtime.isWordNormal(word)) {
+      if (!Lyric.Common.isWordNormal(word)) {
         continue
       }
       if (!first) {
@@ -102,11 +102,11 @@ export class ParserContext implements BaseContext {
    */
   syncLineTimeWithBackground() {
     for (const line of this.result.lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
       const body = line.body.value
-      if (!body.backgrounds.length || !line.time) {
+      if (!body.backgrounds.length || !body.time) {
         continue
       }
 
@@ -115,7 +115,7 @@ export class ParserContext implements BaseContext {
         continue
       }
 
-      line.time.end = Math.max(line.time.end, last.time.end)
+      body.time.end = Math.max(body.time.end, last.time.end)
     }
   }
 
@@ -124,35 +124,31 @@ export class ParserContext implements BaseContext {
    */
   cleanWord() {
     for (const line of this.result.lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
       const body = line.body.value
-      this.cleanContentWord(body.content)
+      this.cleanContentWord(body.words)
       for (const background of body.backgrounds) {
-        this.cleanContentWord(background.content)
+        this.cleanContentWord(background.words)
       }
     }
   }
 
   /**
-   * Trim leading and trailing space words of one line content.
+   * Trim leading and trailing space words of one word list.
    */
-  private cleanContentWord(content: Lyric.Runtime.Proto.LineContent | undefined) {
-    if (!content) {
-      return
-    }
-    const words = content.words
+  private cleanContentWord(words: Lyric.Common.Word[]) {
     if (!words.length) {
       return
     }
 
-    while (words.length > 0 && Lyric.Runtime.isWordSpace(words[words.length - 1])) {
+    while (words.length > 0 && Lyric.Common.isWordSpace(words[words.length - 1])) {
       words.pop()
     }
 
     let startCount = 0
-    while (startCount < words.length && Lyric.Runtime.isWordSpace(words[startCount])) {
+    while (startCount < words.length && Lyric.Common.isWordSpace(words[startCount])) {
       startCount++
     }
     if (startCount > 0) {
@@ -165,7 +161,7 @@ export class ParserContext implements BaseContext {
    */
   finalizeAnnotation() {
     for (const line of this.result.lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
       const body = line.body.value

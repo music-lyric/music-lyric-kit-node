@@ -33,16 +33,16 @@ export class Infer extends ParserPlugin {
 
     const override = this.config.current.override
 
-    const targets: { word: Lyric.Runtime.Proto.WordNormal; script: Script }[] = []
+    const targets: { word: Lyric.Common.WordNormal; script: Script }[] = []
     let kanaCount = 0
     let hanCount = 0
     let hanText = ''
     let latinText = ''
 
     // first pass: resolve each word's dominant script and gather document-level signals
-    const handleLine = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
-      for (const word of line.content?.words ?? []) {
-        if (!Lyric.Runtime.isWordNormal(word)) {
+    const handleLine = (line: Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground) => {
+      for (const word of line.words) {
+        if (!Lyric.Common.isWordNormal(word)) {
           continue
         }
         const value = word.body.value
@@ -69,7 +69,7 @@ export class Infer extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
       const body = line.body.value

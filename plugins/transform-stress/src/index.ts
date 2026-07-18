@@ -30,9 +30,9 @@ export class Mark extends ParserPlugin {
       return
     }
 
-    const handleMark = (line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground) => {
-      for (const word of line.content?.words || []) {
-        if (!Lyric.Runtime.isWordNormal(word)) {
+    const handleMark = (line: Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground) => {
+      for (const word of line.words) {
+        if (!Lyric.Common.isWordNormal(word)) {
           continue
         }
         const value = word.body.value
@@ -43,7 +43,7 @@ export class Mark extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
 

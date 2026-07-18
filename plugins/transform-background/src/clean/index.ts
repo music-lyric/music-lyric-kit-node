@@ -23,7 +23,7 @@ export class Clean extends ParserPlugin {
     }
 
     for (const line of lines) {
-      if (!Lyric.Runtime.isLineNormal(line)) {
+      if (!Lyric.Parsed.isParsedLineNormal(line)) {
         continue
       }
 

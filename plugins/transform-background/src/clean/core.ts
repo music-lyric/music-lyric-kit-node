@@ -5,20 +5,16 @@ const isOpenBracket = (ch: string) => ch === '(' || ch === '（'
 const isCloseBracket = (ch: string) => ch === ')' || ch === '）'
 
 export const removeBrackets = (
-  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
+  line: Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground,
   removeStart: boolean = true,
   removeEnd: boolean = true,
 ): void => {
-  const content = line.content
-  if (!content) {
-    return
-  }
-  const words = content.words
+  const words = line.words
 
   if (removeStart) {
     for (let i = 0; i < words.length; i++) {
       const word = words[i]
-      if (!Lyric.Runtime.isWordNormal(word)) {
+      if (!Lyric.Common.isWordNormal(word)) {
         continue
       }
 
@@ -34,7 +30,7 @@ export const removeBrackets = (
   if (removeEnd) {
     for (let i = words.length - 1; i >= 0; i--) {
       const word = words[i]
-      if (!Lyric.Runtime.isWordNormal(word)) {
+      if (!Lyric.Common.isWordNormal(word)) {
         continue
       }
 
@@ -65,9 +61,9 @@ export const removeBrackets = (
     }
   }
 
-  const annotation = content.annotation
+  const annotation = line.annotation
   if (annotation) {
-    stripBrackets(annotation.translates)
+    stripBrackets(annotation.translations)
     stripBrackets(annotation.romans)
   }
 }

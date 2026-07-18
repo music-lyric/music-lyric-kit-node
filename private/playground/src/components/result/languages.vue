@@ -15,7 +15,7 @@ import { Lyric } from 'music-lyric-kit'
 
 import { useI18n } from '@root/composables/useI18n'
 
-defineProps<{ languages: Lyric.Runtime.Proto.LanguageItem[] }>()
+defineProps<{ languages: Lyric.Parsed.LanguageItem[] }>()
 
 const { t } = useI18n()
 </script>

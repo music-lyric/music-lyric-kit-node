@@ -6,7 +6,7 @@
       <div :class="$style.words">
         <template v-for="(word, i) in words" :key="i">
           <span v-if="word.type === 'word'" :class="$style.wordCol">
-            <span v-if="word.ruby" :class="$style.ruby" :title="word.ruby.title">{{ word.ruby.text }}</span>
+            <span v-for="(r, ri) in word.rubies" :key="`rb${ri}`" :class="$style.ruby" :title="r.title">{{ r.text }}</span>
             <span v-for="(r, ri) in word.romans" :key="`r${ri}`" :class="$style.wordRoman" :title="r.title">{{ r.text }}</span>
             <span v-for="(u, ui) in word.unknowns" :key="`u${ui}`" :class="$style.wordUnknown" :title="u.title">{{ u.text }}</span>
             <span :class="[$style.word, { [$style.hasTime]: word.hasTime, [$style.stress]: word.stress }]" :title="word.title">{{ word.text }}</span>
@@ -36,36 +36,39 @@ import { useI18n } from '@root/composables/useI18n'
 defineOptions({ name: 'ResultLine' })
 
 const props = defineProps<{
-  line: Lyric.Runtime.Proto.Line | Lyric.Runtime.Proto.LineBackground
-  agents: Lyric.Runtime.Proto.AgentItem[]
+  line: Lyric.Parsed.ParsedLine | Lyric.Parsed.ParsedLineBackground
+  agents: Lyric.Common.AgentItem[]
   isBg?: boolean
 }>()
 
 const { t } = useI18n()
 
-// A Line wrapper carries the body oneof; a LineBackground carries its content directly.
-const content = computed<Lyric.Runtime.Proto.LineContent | undefined>(() => {
+// A Line wrapper carries the body oneof; a LineBackground carries fields directly.
+const normal = computed<Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground | undefined>(() => {
   const line = props.line
   if ('body' in line) {
-    return line.body.case === 'normal' ? line.body.value.content : undefined
+    return line.body.case === 'normal' ? line.body.value : undefined
   }
-  return line.content
+  return line
 })
 
-const timeStr = computed(() => `${formatTime(props.line.time?.start ?? 0)} ~ ${formatTime(props.line.time?.end ?? 0)}`)
+const timeStr = computed(() => {
+  const time = normal.value?.time ?? ('time' in props.line ? props.line.time : undefined)
+  return `${formatTime(time?.start ?? 0)} ~ ${formatTime(time?.end ?? 0)}`
+})
 
 const agentInfo = computed(() => {
-  const agent = content.value?.agent
-  if (!agent) return null
-  const index = props.agents.findIndex((item) => item.id === agent.id)
+  const ids = normal.value?.agents ?? []
+  if (!ids.length) return null
+  const index = props.agents.findIndex((item) => item.id === ids[0])
   if (index < 0) return null
   return { name: props.agents[index].names.join(' / '), color: getAgentColor(index) }
 })
 
-const annoItem = (item: { words: Lyric.Runtime.Proto.WordAnnotationContent[]; time?: Lyric.Common.Proto.Time; language?: string }) => {
+const annoItem = (item: { words: Lyric.Common.WordAnnotationContent[]; time?: Lyric.Common.Time; language?: string }) => {
   const timed = !!item.time && (item.time.start > 0 || item.time.end > 0)
   const time = timed ? `${formatTime(item.time!.start)} ~ ${formatTime(item.time!.end)}` : ''
-  return { text: Lyric.Runtime.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
+  return { text: Lyric.Common.getWordAnnotationText(item), title: [item.language, time].filter(Boolean).join(' · ') }
 }
 
 const words = computed(() => {
@@ -75,17 +78,17 @@ const words = computed(() => {
     hasTime?: boolean
     stress?: boolean
     title?: string
-    ruby?: { text: string; title: string } | null
+    rubies?: { text: string; title: string }[]
     romans?: { text: string; title: string }[]
     unknowns?: { text: string; title: string }[]
   }[] = []
 
-  for (const word of content.value?.words ?? []) {
-    if (Lyric.Runtime.isWordSpace(word)) {
+  for (const word of normal.value?.words ?? []) {
+    if (Lyric.Common.isWordSpace(word)) {
       result.push({ type: 'space', text: ' '.repeat(word.body.value.count) })
       continue
     }
-    if (!Lyric.Runtime.isWordNormal(word)) {
+    if (!Lyric.Common.isWordNormal(word)) {
       continue
     }
     const w = word.body.value
@@ -97,7 +100,7 @@ const words = computed(() => {
       hasTime,
       stress: w.stress,
       title: hasTime ? `${formatTime(w.time?.start ?? 0)} ~ ${formatTime(w.time?.end ?? 0)}` : '',
-      ruby: anno?.ruby ? annoItem(anno.ruby) : null,
+      rubies: (anno?.rubies ?? []).map(annoItem),
       romans: (anno?.romans ?? []).map(annoItem),
       unknowns: (anno?.unknowns ?? []).map((u) => {
         return { text: u.value, title: u.key }
@@ -112,8 +115,8 @@ const words = computed(() => {
 const wordAnno = computed(() => {
   let roman = false
   let unknown = false
-  for (const word of content.value?.words ?? []) {
-    if (!Lyric.Runtime.isWordNormal(word)) {
+  for (const word of normal.value?.words ?? []) {
+    if (!Lyric.Common.isWordNormal(word)) {
       continue
     }
     const anno = word.body.value.annotation
@@ -130,16 +133,16 @@ const wordAnno = computed(() => {
   return { roman, unknown }
 })
 
-const backgrounds = computed<Lyric.Runtime.Proto.LineBackground[]>(() => {
+const backgrounds = computed<Lyric.Parsed.ParsedLineBackground[]>(() => {
   const line = props.line
   return 'body' in line && line.body.case === 'normal' ? line.body.value.backgrounds : []
 })
 
 const extended = computed(() => {
   const result: { kind: 'translate' | 'roman' | 'other'; text: string }[] = []
-  const annotation = content.value?.annotation
+  const annotation = normal.value?.annotation
 
-  for (const item of annotation?.translates ?? []) {
+  for (const item of annotation?.translations ?? []) {
     result.push({ kind: 'translate', text: item.content })
   }
   if (!wordAnno.value.roman) {

@@ -34,7 +34,7 @@ export interface ParseResult {
   translate: Ref<string, string>
   roman: Ref<string, string>
   ttml: Ref<string, string>
-  result: Ref<Lyric.Runtime.Proto.Info | null, Lyric.Runtime.Proto.Info | null>
+  result: Ref<Lyric.Parsed.Info | null, Lyric.Parsed.Info | null>
   resultType: Ref<string, string>
   resultVersion: Ref<string, string>
   inferredFormat: Ref<string, string>
@@ -60,7 +60,7 @@ export const useParser = (): ParseResult => {
   const roman = ref(read(STORAGE_KEYS.ROMAN, DEFAULT_LRC_ROMAN))
   const ttml = ref(read(STORAGE_KEYS.TTML, DEFAULT_TTML))
 
-  const result = shallowRef<Lyric.Runtime.Proto.Info | null>(null)
+  const result = shallowRef<Lyric.Parsed.Info | null>(null)
   const resultType = ref('')
   const resultVersion = ref<string>('')
   const inferredFormat = ref('')
@@ -145,7 +145,7 @@ export const useParser = (): ParseResult => {
         return
       }
 
-      const buffer = Lyric.Runtime.encodeInfo(parsed.info)
+      const buffer = Lyric.Parsed.encodeParsedInfo(parsed.info)
       bufferSize.value = buffer.length
       console.log('parse buffer length: ', buffer.length)
       console.log('parse buffer body: ', buffer)
@@ -153,7 +153,7 @@ export const useParser = (): ParseResult => {
 
       inferredFormat.value = parsed.format
       result.value = parsed.info
-      resultType.value = Lyric.Runtime.Proto.InfoType[parsed.info.type] ?? String(parsed.info.type)
+      resultType.value = Lyric.Parsed.InfoType[parsed.info.type] ?? String(parsed.info.type)
       resultVersion.value = parsed.info.version
     } catch (e: any) {
       error.value = e?.message || String(e)

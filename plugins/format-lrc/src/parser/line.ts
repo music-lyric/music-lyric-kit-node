@@ -58,14 +58,14 @@ const getLeadingPunct = (text: string) => {
  *
  * Any other boundary punctuation splits into its own word, e.g. hello, and world become hello , world.
  */
-const normalizeBoundaryPunct = (words: Lyric.Runtime.Proto.Word[]): Lyric.Runtime.Proto.Word[] => {
-  const result: Lyric.Runtime.Proto.Word[] = []
+const normalizeBoundaryPunct = (words: Lyric.Common.Word[]): Lyric.Common.Word[] => {
+  const result: Lyric.Common.Word[] = []
 
   for (let index = 0; index < words.length; index++) {
     const word = words[index]
     const prev = result[result.length - 1]
 
-    if (!Lyric.Runtime.isWordNormal(word) || !prev || !Lyric.Runtime.isWordNormal(prev)) {
+    if (!Lyric.Common.isWordNormal(word) || !prev || !Lyric.Common.isWordNormal(prev)) {
       result.push(word)
       continue
     }
@@ -77,7 +77,7 @@ const normalizeBoundaryPunct = (words: Lyric.Runtime.Proto.Word[]): Lyric.Runtim
     const isNumberConnector = wordValue.content.length > 0 && [...wordValue.content].every((char) => NUMBER_CONNECTORS.has(char))
     if (isNumberConnector) {
       const next = words[index + 1]
-      const nextValue = next && Lyric.Runtime.isWordNormal(next) ? next.body.value : undefined
+      const nextValue = next && Lyric.Common.isWordNormal(next) ? next.body.value : undefined
       const joinable = isDigitChar(prevValue.content[prevValue.content.length - 1]) && !!nextValue && isDigitChar(nextValue.content[0])
 
       if (joinable && nextValue) {
@@ -128,7 +128,7 @@ const normalizeBoundaryPunct = (words: Lyric.Runtime.Proto.Word[]): Lyric.Runtim
     const start = trailing ? prevValue.time?.start : wordValue.time?.start
     const end = leading ? wordValue.time?.end : prevValue.time?.end
     const punctTime = start !== void 0 && end !== void 0 ? Lyric.Common.makeTime({ start, end }) : void 0
-    result.push(Lyric.Runtime.makeWordNormal({ content: punct, time: punctTime }))
+    result.push(Lyric.Common.makeWordNormal({ content: punct, time: punctTime }))
 
     wordValue.content = rightCore
     result.push(word)
@@ -138,19 +138,22 @@ const normalizeBoundaryPunct = (words: Lyric.Runtime.Proto.Word[]): Lyric.Runtim
 }
 
 const processNormal = (lines: MatchItem[]) => {
-  const result: Lyric.Runtime.Proto.Line[] = []
+  const result: Lyric.Parsed.ParsedLine[] = []
   for (const line of lines) {
     const time = parseTagTime(line.tag) || 0
     const text = line.content.trim()
 
-    const item = Lyric.Runtime.makeLineNormal({ content: { words: processTextToWords(text) } }, { start: time })
+    const item = Lyric.Parsed.makeParsedLineNormal({
+      words: processTextToWords(text),
+      time: Lyric.Common.makeTime({ start: time }),
+    })
 
     result.push(item)
   }
 
   for (let index = 0; index < result.length; index++) {
-    const current = Lyric.Runtime.getLineTime(result[index])
-    const next = result[index + 1] ? Lyric.Runtime.getLineTime(result[index + 1]) : undefined
+    const current = Lyric.Parsed.getParsedLineTime(result[index])
+    const next = result[index + 1] ? Lyric.Parsed.getParsedLineTime(result[index + 1]) : undefined
     if (!current || !next) continue
     current.end = next.start
   }
@@ -159,7 +162,7 @@ const processNormal = (lines: MatchItem[]) => {
 }
 
 const processSyllableLine = (line: MatchItem) => {
-  const words: Lyric.Runtime.Proto.Word[] = []
+  const words: Lyric.Common.Word[] = []
 
   const lineTime = parseTagTime(line.tag)
   if (lineTime === null) {
@@ -195,8 +198,8 @@ const processSyllableLine = (line: MatchItem) => {
         continue
       }
       const current = words[words.length - 1]
-      if (!current || !Lyric.Runtime.isWordSpace(current)) {
-        words.push(Lyric.Runtime.makeWordSpace({ count: 1 }))
+      if (!current || !Lyric.Common.isWordSpace(current)) {
+        words.push(Lyric.Common.makeWordSpace({ count: 1 }))
       }
     }
 
@@ -204,23 +207,23 @@ const processSyllableLine = (line: MatchItem) => {
       continue
     }
 
-    const item = Lyric.Runtime.makeWordNormal({
+    const item = Lyric.Common.makeWordNormal({
       time: Lyric.Common.makeTime({ start: time, end: time + duration }),
       content: removeTextSpaceToOne(content),
     })
     words.push(item)
 
     if (content.endsWith(' ')) {
-      words.push(Lyric.Runtime.makeWordSpace({ count: 1 }))
+      words.push(Lyric.Common.makeWordSpace({ count: 1 }))
     }
   }
 
   const normalized = normalizeBoundaryPunct(words)
 
-  let first: Lyric.Runtime.Proto.WordNormal | null = null
-  let last: Lyric.Runtime.Proto.WordNormal | null = null
+  let first: Lyric.Common.WordNormal | null = null
+  let last: Lyric.Common.WordNormal | null = null
   for (const word of normalized) {
-    if (!Lyric.Runtime.isWordNormal(word)) {
+    if (!Lyric.Common.isWordNormal(word)) {
       continue
     }
     if (!first) {
@@ -232,13 +235,16 @@ const processSyllableLine = (line: MatchItem) => {
   const start = first?.time?.start ?? lineTime
   const end = last?.time?.end ?? start
 
-  const target = Lyric.Runtime.makeLineNormal({ content: { words: normalized } }, { start, end })
+  const target = Lyric.Parsed.makeParsedLineNormal({
+    words: normalized,
+    time: Lyric.Common.makeTime({ start, end }),
+  })
 
   return target
 }
 
 const processSyllable = (lines: MatchItem[]) => {
-  const result: Lyric.Runtime.Proto.Line[] = []
+  const result: Lyric.Parsed.ParsedLine[] = []
   for (const line of lines) {
     const item = processSyllableLine(line)
     if (!item) continue
@@ -252,7 +258,7 @@ export const checkIsSyllable = (content: MatchItem[]) => {
   return content.some((line) => SYLLABLE_CHECK_REGXP.test(line.content))
 }
 
-export const processLines = (content: MatchItem[], forceNormal = false): Lyric.Runtime.Proto.Line[] => {
+export const processLines = (content: MatchItem[], forceNormal = false): Lyric.Parsed.ParsedLine[] => {
   if (!content.length) {
     return []
   }

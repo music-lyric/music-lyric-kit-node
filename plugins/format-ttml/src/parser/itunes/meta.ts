@@ -3,7 +3,7 @@ import { Xml } from '@music-lyric-kit/utils'
 
 import { getChildElementsByLocalName, getAttributeByName, getTextContent } from '@root/utils'
 
-export const applyItunesMetas = (meta: Lyric.Runtime.Proto.Meta, songwriters: Xml.XmlElement[]) => {
+export const applyItunesMetas = (meta: Lyric.Common.Meta, songwriters: Xml.XmlElement[]) => {
   const names: string[] = []
   for (const element of songwriters) {
     const name = getTextContent(element).trim()
@@ -17,23 +17,23 @@ export const applyItunesMetas = (meta: Lyric.Runtime.Proto.Meta, songwriters: Xm
   }
 
   meta.credits.push(
-    Lyric.Runtime.makeMetaCredit({
+    Lyric.Common.makeMetaCredit({
       role: 'songWriter',
-      names: names.map((name) => Lyric.Runtime.makeMetaText({ content: name })),
+      names: names.map((name) => Lyric.Common.makeMetaText({ content: name })),
     }),
   )
 }
 
-const resolveAgentType = (type: string): Lyric.Common.Proto.AgentType => {
+const resolveAgentType = (type: string): Lyric.Common.AgentType => {
   switch (type) {
     case 'person':
-      return Lyric.Common.Proto.AgentType.PERSON
+      return Lyric.Common.AgentType.PERSON
     case 'group':
-      return Lyric.Common.Proto.AgentType.GROUP
+      return Lyric.Common.AgentType.GROUP
     case 'other':
-      return Lyric.Common.Proto.AgentType.OTHER
+      return Lyric.Common.AgentType.OTHER
     default:
-      return Lyric.Common.Proto.AgentType.UNKNOWN
+      return Lyric.Common.AgentType.UNKNOWN
   }
 }
 
@@ -56,11 +56,11 @@ const parseAgent = (element: Xml.XmlElement) => {
     return null
   }
 
-  return Lyric.Runtime.makeAgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
+  return Lyric.Common.makeAgentItem({ id, type: resolveAgentType(type), names: parseAgentNames(element) })
 }
 
-export const parseAgents = (agents: Xml.XmlElement[]): Lyric.Runtime.Proto.AgentItem[] => {
-  const result: Lyric.Runtime.Proto.AgentItem[] = []
+export const parseAgents = (agents: Xml.XmlElement[]): Lyric.Common.AgentItem[] => {
+  const result: Lyric.Common.AgentItem[] = []
 
   for (const element of agents) {
     const item = parseAgent(element)

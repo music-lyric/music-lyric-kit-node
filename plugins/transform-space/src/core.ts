@@ -163,26 +163,26 @@ export function alignElements<T, R>(
 }
 
 export const insertSpaceToLine = (
-  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
+  line: Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground,
   target: Set<InsertTextSpaceTypes>,
 ): void => {
-  if (!line || !line.content?.words || line.content.words.length === 0) {
+  if (!line || !line.words.length) {
     return
   }
 
-  const full = Lyric.Runtime.getWordsText(line.content.words)
+  const full = Lyric.Common.getWordsText(line.words)
   const processed = insertSpace(full, target)
 
-  const normalWords = line.content.words.filter(Lyric.Runtime.isWordNormal).map((w) => w.body.value)
+  const normalWords = line.words.filter(Lyric.Common.isWordNormal).map((w) => w.body.value)
 
-  const newWords = alignElements<Lyric.Runtime.Proto.WordNormal, Lyric.Runtime.Proto.Word>(
+  const newWords = alignElements<Lyric.Common.WordNormal, Lyric.Common.Word>(
     normalWords,
     processed,
     (count) => {
-      return Lyric.Runtime.makeWordSpace({ count })
+      return Lyric.Common.makeWordSpace({ count })
     },
     (originalWord, matchedText) => {
-      return Lyric.Runtime.makeWordNormal({
+      return Lyric.Common.makeWordNormal({
         content: matchedText,
         time: originalWord.time,
         language: originalWord.language,
@@ -194,18 +194,18 @@ export const insertSpaceToLine = (
     (w) => w.content.replaceAll(' ', ''),
   )
 
-  line.content.words = newWords
+  line.words = newWords
 }
 
 export const insertSpaceToExtended = (
-  line: Lyric.Runtime.Proto.LineNormal | Lyric.Runtime.Proto.LineBackground,
+  line: Lyric.Parsed.ParsedLineNormal | Lyric.Parsed.ParsedLineBackground,
   target: Set<InsertTextSpaceTypes>,
 ): void => {
-  const annotation = line.content?.annotation
+  const annotation = line.annotation
   if (!annotation) {
     return
   }
-  for (const item of annotation.translates) {
+  for (const item of annotation.translations) {
     item.content = insertSpace(item.content, target)
   }
   for (const item of annotation.romans) {

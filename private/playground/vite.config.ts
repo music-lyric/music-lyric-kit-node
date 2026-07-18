@@ -13,9 +13,12 @@ const cwd = process.cwd()
 const src = join(cwd, 'src')
 const root = join(cwd, '..', '..')
 
-// music-lyric-model ships only dist, but the `dev` resolve condition points packages at their src; pin it to the built entry.
 const require = createRequire(import.meta.url)
-const modelEntry = join(dirname(require.resolve('music-lyric-model')), 'index.ecma.js')
+const modelDir = dirname(require.resolve('music-lyric-model'))
+const modelEntry = join(modelDir, 'index.ecma.js')
+const modelCommonEntry = join(modelDir, 'common/index.ecma.js')
+const modelParsedEntry = join(modelDir, 'parsed/index.ecma.js')
+const modelStorageEntry = join(modelDir, 'storage/index.ecma.js')
 
 const rootPkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf-8')) as { version: string }
 
@@ -46,6 +49,9 @@ export default buildConfig({
     resolve: {
       conditions: ['dev'],
       alias: {
+        'music-lyric-model/common': modelCommonEntry,
+        'music-lyric-model/parsed': modelParsedEntry,
+        'music-lyric-model/storage': modelStorageEntry,
         'music-lyric-model': modelEntry,
       },
     },
