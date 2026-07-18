@@ -47,6 +47,10 @@ export class Matcher {
   }
 
   private init() {
+    this.stringRules = []
+    this.regexRules = []
+    this.combinedRegex = null
+
     const raw = this.options.rule.useDefault ? [...this.defaultRules, ...(this.options.rule.custom || [])] : [...(this.options.rule.custom || [])]
 
     for (const rule of raw) {
